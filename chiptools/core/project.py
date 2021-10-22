@@ -18,7 +18,7 @@ from chiptools.core.cache import FileCache
 from chiptools.parsers import options
 from chiptools.parsers import xml_project
 from chiptools.parsers import callgraph
-from chiptools.testing import testloader
+#from chiptools.testing import testloader
 from chiptools.testing.custom_runners import HTMLTestRunner
 from chiptools.wrappers.wrapper import ToolWrapper
 
