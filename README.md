@@ -27,24 +27,24 @@ providing a consistent interface to vendor applications and automating simulatio
 ```
   # Clone the ChipTools repository to your system:
   $ git clone --recursive https://github.com/pabennett/chiptools.git
-  
+
   # Install using the setup.py script provided in the root directory:
   $ cd chiptools
   $ python setup.py install
-  
+
   # Start the ChipTools command line interface:
   $ cd examples/max_hold
   $ chiptools
-  
+
   # Load the example project:
   (cmd) load_project max_hold.xml
-  
+
   # Run the testsuite using Modelsim:
   (cmd) run_tests modelsim
-  
+
   # ...or Vivado (GHDL and ISIM are also supported):
   (cmd) run_tests vivado
-  
+
   # Synthesise the max_hold component in the lib_max_hold library (ISE, Vivado and Quartus are supported)
   (cmd) synthesise lib_max_hold.max_hold
 ```
@@ -53,7 +53,7 @@ Refer to the [documentation](http://chiptools.readthedocs.org/en/latest/max_hold
 ## Supported Tools
 
 The following tools are currently supported, support for additional tools
-will be added in the future. 
+will be added in the future; now requires [graphviz](https://www.graphviz.org/) for generating diagrams.
 
 ### Simulation Tools
 
@@ -68,4 +68,3 @@ will be added in the future.
 * Xilinx ISE (tested with 14.7)
 * Quartus (tested with 13.1)
 * Vivado (tested with 2015.4)
-
