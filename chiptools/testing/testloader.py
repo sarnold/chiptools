@@ -43,7 +43,7 @@ class ChipToolsTest(unittest.TestCase):
     ...         # More advanced checks could search stdout/stderr for
     ...         # assertions, or read output files and compare the
     ...         # response to a Python model.
-    ...         pass            
+    ...         pass
     ...     # The tearDown method is called at the end of each test:
     ...     def tearDown(self):
     ...         # Clean up after your tests here
@@ -113,7 +113,7 @@ class ChipToolsTest(unittest.TestCase):
     your test can be run from any directory:
 
     >>> from chiptools.testing.testloader import ChipToolsTest
-    >>> class MyUnitTest(ChipToolsTest) 
+    >>> class MyUnitTest(ChipToolsTest)
     ...     base = os.path.dirname(__file__)
     ...     # Now use os.path.join to build a relative path to the project.
     ...     project = os.path.join(base, '..', 'my_project.xml')
@@ -144,7 +144,7 @@ class ChipToolsTest(unittest.TestCase):
             )
         )
         return (simulator, simulation_root, simulation_libraries)
-    
+
     @property
     def simulation_root(self):
         """
@@ -167,8 +167,8 @@ class ChipToolsTest(unittest.TestCase):
     def setUpClass(cls):
         """
         The *setUpClass* method prepares the ChipTools simulation environment
-        if it has not already been loaded. 
-        
+        if it has not already been loaded.
+
         If this test case is loaded via the ChipTools Project API it will be
         initialised via a call to the *load_environment* method, which pulls
         the simulation environment information from the parent Project
@@ -222,7 +222,7 @@ class ChipToolsTest(unittest.TestCase):
             )
     def load_environment(self, project, tool_name=None):
         """
-        Initialise the TestCase simulation environment using the supplied 
+        Initialise the TestCase simulation environment using the supplied
         Project reference so that the individual tests implemented in this
         TestCase are able to compile and simulate the design.
         """
@@ -232,7 +232,7 @@ class ChipToolsTest(unittest.TestCase):
             )
             return
         simulator, root, libs = ChipToolsTest.get_environment(
-            project, 
+            project,
             tool_name
         )
         self.__class__._loaded_path = None
@@ -286,4 +286,3 @@ class ChipToolsTest(unittest.TestCase):
             gui=False
         )
         return (ret_val, stdout, stderr)
-

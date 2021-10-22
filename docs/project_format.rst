@@ -2,7 +2,7 @@
 Project Format
 ##############
 
-ChipTools supports an XML project format that is intended to allow the 
+ChipTools supports an XML project format that is intended to allow the
 designer to express an FPGA project configuration in a tool-agnostic manner.
 This means that the same project file should work for different synthesis or
 simulation tools when used with ChipTools. Certain *tool specific* data is

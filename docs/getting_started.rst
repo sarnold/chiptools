@@ -98,7 +98,7 @@ directly:
     # Add constraints
     project.add_constraints('path/to/synthesis_constraints.sdc')
     # Add source files
-    project.add_file('path/to/my_top.vhd', library='top')    
+    project.add_file('path/to/my_top.vhd', library='top')
     # Synthesise the project (library and entity)
     project.synthesise('top', 'my_top')
 
@@ -132,4 +132,3 @@ The XML file can be loaded into the ChipTools command line interface and operate
     $ chiptools
     (cmd) load_project my_project.xml
     (cmd) synthesise top.my_top
-

@@ -401,7 +401,7 @@ class XmlProjectParser:
         project_dictionary. Any files containedwithin the library will be
         added to the project_dictionary under that library"""
         attribs = ProjectAttributes.process_attributes(
-            child.attributes, 
+            child.attributes,
             root,
             defaults=ProjectAttributes.LIBRARY_NODE_DEFAULTS
         )
@@ -427,7 +427,7 @@ class XmlProjectParser:
     @staticmethod
     def _add_constraints(child, root, project_object):
         attribs = ProjectAttributes.process_attributes(
-            child.attributes, 
+            child.attributes,
             root,
             defaults=ProjectAttributes.CONSTRAINTS_NODE_DEFAULTS
         )
@@ -442,7 +442,7 @@ class XmlProjectParser:
     @staticmethod
     def _add_unittest(child, root, project_object):
         attribs = ProjectAttributes.process_attributes(
-            child.attributes, 
+            child.attributes,
             root,
             defaults=ProjectAttributes.UNITTEST_NODE_DEFAULTS
         )

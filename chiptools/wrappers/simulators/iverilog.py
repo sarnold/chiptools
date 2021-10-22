@@ -101,7 +101,7 @@ class Iverilog(Simulator):
         for k, v in generics.items():
             args += [
                 '-D',
-                '{0}={1}'.format(k, v) 
+                '{0}={1}'.format(k, v)
             ]
         # Add custom library paths (the library name is ignored)
         for k, v in includes.items():
@@ -153,4 +153,3 @@ class Iverilog(Simulator):
             quiet=False
         )
         return ret, stdout, stderr
-

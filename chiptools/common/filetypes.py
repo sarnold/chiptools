@@ -165,12 +165,12 @@ class ProjectAttributes:
         """Process each of the attributes in the supplied dictionary or
         xml.dom.minidom.NamedNodeMap using the associated functions in the
         NODE_PROCESSOR dictionary and return an updated dictionary of the
-        attribute name, value pairs. 
-        
+        attribute name, value pairs.
+
         If the defaults dictionary is supplied, the returned dictionary will
         contain *at least* the keys and associated values present in the
         defaults dictionary.
-        
+
         The root argument is passed to the NODE_PROCESSOR functions and it
         should be a string path pointing to the project root directory, this
         ensures any file paths can be cast to absolute paths correctly.
@@ -191,13 +191,13 @@ class ProjectAttributes:
             processor = ProjectAttributes.NODE_PROCESSOR.get(
                 name,
                 # Return the original value.
-                lambda x, root: x 
+                lambda x, root: x
             )
             value = attributes.get(name, defaults.get(name, None))
             attributes[name] = value
             if value is not None:
                 attributes[name] = processor(value, root)
-            
+
         return attributes
 
     @staticmethod
@@ -209,7 +209,7 @@ class ProjectAttributes:
         function can be found that matches the name.
         """
         return ProjectAttributes.NODE_PROCESSOR.get(
-            name, 
+            name,
             lambda x, root: x
         )(attribute, root)
 

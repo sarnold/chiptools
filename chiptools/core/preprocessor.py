@@ -31,7 +31,7 @@ def get_preprocessor(path):
         return
     try:
         if sys.version_info < (3, 0, 0):
-            # imp.load_source in Python2 will try to use a matching .pyc if 
+            # imp.load_source in Python2 will try to use a matching .pyc if
             # found. We do not want this behavior so delete the .pyc:
             base = os.path.basename(path)
             root = os.path.dirname(path)

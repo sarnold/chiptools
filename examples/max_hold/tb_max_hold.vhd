@@ -14,7 +14,7 @@ library ieee;
     use ieee.math_real.all;
 
 library std;
-    use std.textio.all; 
+    use std.textio.all;
 
 library lib_max_hold;
     use lib_max_hold.pkg_max_hold.all;
@@ -26,7 +26,7 @@ entity tb_max_hold is
 end entity;
 
 architecture beh of tb_max_hold is
-    signal uut_data     : std_logic_vector(data_width-1 downto 0) 
+    signal uut_data     : std_logic_vector(data_width-1 downto 0)
         := (others => '0');
     signal uut_output   : std_logic_vector(data_width-1 downto 0);
     signal clock        : std_logic := '0';
@@ -56,11 +56,11 @@ begin
     begin
         if status /= open_ok then
             file_open(status, input_file, input_path, read_mode);
-            assert (status = open_ok) 
+            assert (status = open_ok)
                 report "Failed to open " & input_path
                 severity failure;
             file_open(status, output_file, output_path, write_mode);
-            assert (status = open_ok) 
+            assert (status = open_ok)
                 report "Failed to open " & output_path
                 severity failure;
         end if;

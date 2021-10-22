@@ -56,7 +56,7 @@ class MaxHoldsTestBase(ChipToolsTest):
             for value in self.values:
                 f.write(
                     '{0} {1}\n'.format(
-                        '0',  # Reset status (0) 
+                        '0',  # Reset status (0)
                         bin(value)[2:].zfill(32),  # write 32bit data
                     )
                 )

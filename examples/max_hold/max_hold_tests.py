@@ -169,7 +169,7 @@ class MaxHoldTests(ChipToolsTest):
             # (https://bugs.python.org/issue19217)
             self.assertEqual(
                 val,
-                expected[valIdx], 
+                expected[valIdx],
                 msg='Index {0}'.format(valIdx)
             )
         log.info("...done")
