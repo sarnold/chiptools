@@ -1,0 +1,39 @@
+[build-system]
+requires = [
+    "setuptools >= 42",  # At least v42 of setuptools required!
+    "colorama; sys_platform=='win32'",
+    "versioningit ~= 0.3.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["chiptools"]
+omit = ["tests", ".tox"]
+
+[tool.coverage.paths]
+source = ["chiptools"]
+
+[tool.coverage.report]
+#fail_under = 80
+show_missing = true
+
+[tool.versioningit]
+
+[tool.versioningit.next-version]
+method = "smallest"
+
+[tool.versioningit.format]
+distance = "{version}.post{distance}"
+dirty = "{version}"
+distance-dirty = "{version}.post{distance}"
+
+[tool.versioningit.write]
+file = "chiptools/_version.py"
