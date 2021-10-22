@@ -17,12 +17,9 @@ class Simulator(ToolchainBase):
     Common functions used by all simulator tool wrappers are implemented in
     this class.
     """
+
     def __init__(self, project, executables, user_paths):
-        super(Simulator, self).__init__(
-            project,
-            executables,
-            user_paths
-        )
+        super(Simulator, self).__init__(project, executables, user_paths)
         self.libraries = {}
 
     def compile(self, file_object):
@@ -96,9 +93,8 @@ class Simulator(ToolchainBase):
                     # md5sum cache to see if it has changed since it was
                     # last compiled
                     if os.path.isfile(file_object.path):
-                        if (
-                            not force and
-                            not cache.is_file_changed(file_object, self.name)
+                        if not force and not cache.is_file_changed(
+                            file_object, self.name
                         ):
                             # The hashes match. If the library already exists
                             # then dont compile the file.
@@ -106,22 +102,21 @@ class Simulator(ToolchainBase):
                                 if libname not in created_libraries:
                                     skipped += 1
                                     log.info(
-                                        "...skipping: " + file_object.path
+                                        '...skipping: ' + file_object.path
                                     )
                                     continue
                         cache.add_file(file_object, self.name)
                         # Map or create the library, track which libraries
                         # were already created
-                        if (
-                            not cache.library_in_cache(libname, self.name) or
-                            not self.library_exists(libname, cwd)
-                        ):
+                        if not cache.library_in_cache(
+                            libname, self.name
+                        ) or not self.library_exists(libname, cwd):
                             # If this library is in the cache file someone must
                             # have deleted it since the last run, we need to
                             # recompile all files that are targeted at this
                             # library.
                             created_libraries.append(libname)
-                            log.info("...adding library: " + libname)
+                            log.info('...adding library: ' + libname)
                             self.add_library(libname)
                             cache.add_library(libname.lower(), self.name)
                         # Map the library to work so files can be added
@@ -130,14 +125,15 @@ class Simulator(ToolchainBase):
                             '...compiling {0} ({1}) into library {2}'.format(
                                 os.path.basename(file_object.path),
                                 file_object.fileType,
-                                libname)
+                                libname,
+                            )
                         )
                         # Compile the source
                         self.compile(file_object, cwd=cwd)
                     else:
                         raise FileNotFoundError(
-                            'File could not be found: ' +
-                            '{0}, operation aborted.'.format(
+                            'File could not be found: '
+                            + '{0}, operation aborted.'.format(
                                 file_object.path
                             )
                         )
@@ -150,18 +146,19 @@ class Simulator(ToolchainBase):
                 raise
             if skipped > 0:
                 log.info(
-                    '...skipped ' + str(skipped) +
-                    ' unmodified file(s). Use \"clean\" to erase' +
-                    ' the file cache'
+                    '...skipped '
+                    + str(skipped)
+                    + ' unmodified file(s). Use "clean" to erase'
+                    + ' the file cache'
                 )
-            log.info("...saving cache file")
+            log.info('...saving cache file')
             # Save the cache file
             cache.save_cache()
-            log.info("...done")
+            log.info('...done')
             log.info(
-                str(count) +
-                ' file(s) processed in ' +
-                utils.time_delta_string(start_time, time.time())
+                str(count)
+                + ' file(s) processed in '
+                + utils.time_delta_string(start_time, time.time())
             )
         except exceptions.ProjectFileException:
             log.error('Compilation aborted due to error in project file.')

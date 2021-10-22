@@ -31,6 +31,7 @@ def subgraph(graph, root):
     >>> subgraph(graph, 8)
     {8: {3, 7}, 3: {5}, 5: set(), 7: set()}
     """
+
     def subgraph_recurse(graph, root, top=False, new_graph=None):
         if top:
             new_graph = {root: graph[root]}
@@ -42,6 +43,7 @@ def subgraph(graph, root):
             new_graph[root].add(child)
             subgraph_recurse(graph, child, new_graph=new_graph)
         return new_graph
+
     return subgraph_recurse(graph, root, top=True)
 
 
@@ -126,7 +128,7 @@ def parse_range(astr):
     result = set()
     for part in astr.split(','):
         x = part.split('-')
-        result.update(range(int(x[0]), int(x[-1])+1))
+        result.update(range(int(x[0]), int(x[-1]) + 1))
     return sorted(result)
 
 
@@ -148,7 +150,7 @@ def time_delta_string(start_time, end_time):
     >>> time_delta_string(50e-3, 100e-3)
     '50.0ms'
     """
-    return str(seconds_to_timestring(end_time-start_time))
+    return str(seconds_to_timestring(end_time - start_time))
 
 
 def seconds_to_timestring(duration):
@@ -171,12 +173,12 @@ def seconds_to_timestring(duration):
     '0.1ns'
     """
     if duration >= 1000e-3:
-        return str(duration) + "s"
+        return str(duration) + 's'
     if duration >= 1000e-6:
-        return str(duration * 1e3) + "ms"
+        return str(duration * 1e3) + 'ms'
     if duration >= 1000e-9:
-        return str(duration * 1e6) + "us"
-    return str(duration * 1e9) + "ns"
+        return str(duration * 1e6) + 'us'
+    return str(duration * 1e9) + 'ns'
 
 
 def execute(command, path=None, shell=True, quiet=False):
@@ -191,9 +193,7 @@ def call(command, path=None, shell=True):
     return_val = 0
     if path:
         return_val = subprocess.call(
-            command,
-            shell=shell,
-            cwd=os.path.expandvars(path)
+            command, shell=shell, cwd=os.path.expandvars(path)
         )
     else:
         return_val = subprocess.call(command, shell=shell)
@@ -228,6 +228,7 @@ def tee(infile, *files):
     """
     Print `infile` to `files` in a separate thread.
     """
+
     def fanout(infile, *files):
         while True:
             line = infile.readline().decode('utf-8')
@@ -237,7 +238,8 @@ def tee(infile, *files):
             else:
                 break
         infile.close()
-    t = threading.Thread(target=fanout, args=(infile,)+files)
+
+    t = threading.Thread(target=fanout, args=(infile,) + files)
     t.daemon = True
     t.start()
     return t
@@ -246,6 +248,7 @@ def tee(infile, *files):
 class LogWrapper:
     """Simple class to provide a file interface using a logger
     message function"""
+
     def __init__(self, logfn):
         self.logfn = logfn
 
@@ -274,6 +277,7 @@ def teed_call(cmd_args, **kwargs):
 
 def popen(command, path=None):
     from io import StringIO
+
     fout, ferr = StringIO(), StringIO()
     exitcode = teed_call(command, cwd=path, stdout=fout, stderr=ferr)
     stdout = fout.getvalue()
@@ -290,20 +294,13 @@ def popen_quiet(command, path=None):
     stdout = ''
     stderr = ''
     if path:
-        process = subprocess.Popen(
-            command,
-            cwd=path,
-            stdout=subprocess.PIPE
-        )
+        process = subprocess.Popen(command, cwd=path, stdout=subprocess.PIPE)
         # execute it, get stdout and stderr
         stdout, stderr = process.communicate()
         # when finished, get the exit code
         returnVal = process.wait()
     else:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE
-        )
+        process = subprocess.Popen(command, stdout=subprocess.PIPE)
         # execute it, get stdout and stderr
         stdout, stderr = process.communicate()
         # when finished, get the exit code
@@ -316,6 +313,8 @@ def popen_quiet(command, path=None):
 
     return returnVal, stdout, stderr
 
+
 if __name__ == '__main__':
     import doctest
+
     doctest.testmod(verbose=True)

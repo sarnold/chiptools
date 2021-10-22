@@ -60,7 +60,7 @@ class Vivado(Simulator):
         generics={},
         includes={},
         args=[],
-        duration=None
+        duration=None,
     ):
         cwd = self.project.get_simulation_directory()
         # Set simulator generics
@@ -78,30 +78,35 @@ class Vivado(Simulator):
                 # the future, which will mean this code needs modifying again.
                 # The issue is present in Vivado 2015.4
                 xelab_args += (
-                    '-generic_top' + ' ' +
-                    name +
-                    '\"' + '=' + '\"' +
-                    str(binding) + ' '
+                    '-generic_top'
+                    + ' '
+                    + name
+                    + '"'
+                    + '='
+                    + '"'
+                    + str(binding)
+                    + ' '
                 )
             # Add external includes
             for libname, path in includes.items():
                 xelab_args += (
-                    '-lib' + ' ' +
-                    libname +
-                    '\"' + '=' + '\"' +
-                    path + ' '
+                    '-lib' + ' ' + libname + '"' + '=' + '"' + path + ' '
                 )
             # Add project libraries
             for libname in self.project.get_libraries():
                 xelab_args += (
-                    '-lib' + ' ' +
-                    libname +               # Library Name
-                    '\"' + '=' + '\"' +
-                    libname + ' '           # Library Path
+                    '-lib'
+                    + ' '
+                    + libname
+                    + '"'  # Library Name
+                    + '='
+                    + '"'
+                    + libname
+                    + ' '  # Library Path
                 )
             # Execute XELAB on the design files:
-            xelab_args += (' ' + library + '.' + str(entity))
-            xelab_args += (' ' + '-s' + ' ' + str(entity))
+            xelab_args += ' ' + library + '.' + str(entity)
+            xelab_args += ' ' + '-s' + ' ' + str(entity)
             Vivado._call_str_args(self.xelab, xelab_args, cwd=cwd, quiet=False)
         else:
             # Normal behavior on other platforms.
@@ -151,11 +156,12 @@ class Vivado(Simulator):
                     duration = utils.seconds_to_timestring(duration)
                 f.write(
                     (
-                        'if { [catch {%(command)s} result] } {\n' +
-                        '   puts stderr \"Command failed: $result\"\n' +
-                        '   exit 1\n' +
-                        '}\n'
-                    ) % dict(command='run {0}\n'.format(duration))
+                        'if { [catch {%(command)s} result] } {\n'
+                        + '   puts stderr "Command failed: $result"\n'
+                        + '   exit 1\n'
+                        + '}\n'
+                    )
+                    % dict(command='run {0}\n'.format(duration))
                 )
                 f.write('exit\n')
         sim_args += ['-tclbatch', self.sim_tcl_name]
@@ -166,7 +172,7 @@ class Vivado(Simulator):
             self.xsim,
             sim_args,
             cwd=self.project.get_simulation_directory(),
-            quiet=False
+            quiet=False,
         )
 
         return ret, stdout, stderr
@@ -180,11 +186,7 @@ class Vivado(Simulator):
         if len(args) == 0:
             args = file_object.get_tool_arguments(self.name, 'compile')
         args = shlex.split(['', args][args is not None])
-        args += [
-            '-work',
-            file_object.library,
-            file_object.path
-        ]
+        args += ['-work', file_object.library, file_object.path]
         if file_object.fileType == FileType.VHDL:
             Vivado._call(self.xvhdl, args, cwd=cwd)
         elif file_object.fileType == FileType.Verilog:
@@ -193,8 +195,8 @@ class Vivado(Simulator):
             Vivado._call(self.xvlog, args, cwd=cwd)
         else:
             log.warning(
-                'Vivado wrapper skipping file with unknown type: ' +
-                file_object.path
+                'Vivado wrapper skipping file with unknown type: '
+                + file_object.path
             )
 
     def library_exists(self, libname, workdir):

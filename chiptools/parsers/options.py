@@ -44,22 +44,16 @@ class Options:
     the CONFIG_DEFAULTS as a base.
     """
 
-    CONFIG_DEFAULTS = OrderedDict([
-        ('modelsim simulation libraries', OrderedDict([
-        ])),
-        ('vivado simulation libraries', OrderedDict([
-        ])),
-        ('isim simulation libraries', OrderedDict([
-        ])),
-        ('ghdl simulation libraries', OrderedDict([
-        ])),
-        ('simulation executables', OrderedDict([
-
-        ])),
-        ('synthesis executables', OrderedDict([
-
-        ])),
-    ])
+    CONFIG_DEFAULTS = OrderedDict(
+        [
+            ('modelsim simulation libraries', OrderedDict([])),
+            ('vivado simulation libraries', OrderedDict([])),
+            ('isim simulation libraries', OrderedDict([])),
+            ('ghdl simulation libraries', OrderedDict([])),
+            ('simulation executables', OrderedDict([])),
+            ('synthesis executables', OrderedDict([])),
+        ]
+    )
 
     def __init__(self):
         """
@@ -103,9 +97,9 @@ class Options:
             log.debug('...done loading options file')
         except (configparser.ParsingError):
             log.error(
-                'The Options file is badly formatted, ' +
-                'parsing failed with the ' +
-                'following error:'
+                'The Options file is badly formatted, '
+                + 'parsing failed with the '
+                + 'following error:'
             )
             log.error(traceback.format_exc())
 
@@ -119,8 +113,8 @@ class Options:
         """
         if not os.path.exists(options_path):
             log.debug(
-                'The options file could not be found, a default options ' +
-                'file will be created...'
+                'The options file could not be found, a default options '
+                + 'file will be created...'
             )
             for section in self.CONFIG_DEFAULTS.keys():
                 self._options.add_section(section)
@@ -219,7 +213,7 @@ class Options:
             paths = Options.readOptionsPaths(
                 self._options,
                 section_name,
-                transform=lambda x: os.path.expandvars(x)
+                transform=lambda x: os.path.expandvars(x),
             )
         else:
             log.debug(

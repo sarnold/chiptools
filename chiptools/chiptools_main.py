@@ -24,8 +24,10 @@ def main():
     main.cmdloop()
     logging.shutdown()
 
+
 if __name__ == '__main__':
     from core.cli import CommandLine
+
     main()
 else:
     from chiptools.core.cli import CommandLine

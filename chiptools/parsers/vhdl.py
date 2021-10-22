@@ -27,7 +27,8 @@ class Function:
         (?:\w+)
         \s+
         is
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, name, library='work'):
@@ -38,7 +39,7 @@ class Function:
         return hash(self.name)
 
     def __repr__(self):
-        return "<Function {0}>".format(self.name)
+        return '<Function {0}>'.format(self.name)
 
     def __eq__(self, other):
         if not isinstance(other, Function):
@@ -70,7 +71,8 @@ class Procedure:
         (?:\w+)
         \s+
         is
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, name, library='work'):
@@ -81,7 +83,7 @@ class Procedure:
         return hash(self.name)
 
     def __repr__(self):
-        return "<Procedure {0}>".format(self.name)
+        return '<Procedure {0}>'.format(self.name)
 
     def __eq__(self, other):
         if not isinstance(other, Procedure):
@@ -107,11 +109,11 @@ class Package:
         (?P<ident>\w+)          # Mandatory identifier
         \s+                     # 1 or more whitespace
         (?:is)                  # 'is' keyword
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
-    PACKAGE_USE_CLAUSES = (
-        r"""
+    PACKAGE_USE_CLAUSES = r"""
         \b                      # Word boundary
         use                     # use keyword
         \s*                     # Optional whitepsace
@@ -123,7 +125,6 @@ class Package:
         \s*                     # Optional whitespace
         ;                       # Terminator
         """
-    )
 
     def __init__(self, name, library='work', unit=None):
         self.name = name
@@ -144,7 +145,7 @@ class Package:
                 package = Package(
                     include.group('module'),
                     library=library,
-                    unit=include.group('unit')
+                    unit=include.group('unit'),
                 )
                 references.add(package)
         return list(references)
@@ -161,12 +162,12 @@ class Package:
         return hash((self.name, self.library))
 
     def __repr__(self):
-        return "<Package {0}.{1}>".format(self.library, self.name)
+        return '<Package {0}.{1}>'.format(self.library, self.name)
 
     def __eq__(self, other):
         if not isinstance(other, Package):
             return False
-        return (self.name == other.name and self.library == other.library)
+        return self.name == other.name and self.library == other.library
 
 
 class Entity:
@@ -179,7 +180,8 @@ class Entity:
         (?P<ident>\w+)  # Mandatory identifier
         \s+             # 1 or more whitespace
         (?:is)          # 'is' keyword
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, name, library='work'):
@@ -190,7 +192,7 @@ class Entity:
         return hash(self.name)
 
     def __repr__(self):
-        return "<Entity {0}>".format(self.name)
+        return '<Entity {0}>'.format(self.name)
 
     def __eq__(self, other):
         if not isinstance(other, Entity):
@@ -230,7 +232,8 @@ class Configuration:
         (?P<entity>\w+)                     # Identifier
         \s+                                 # At least one whitespace
         is                                  # 'is' keyword
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, name, entity, library='work'):
@@ -242,7 +245,7 @@ class Configuration:
         return hash(self.name)
 
     def __repr__(self):
-        return "<Configuration {0}>".format(self.name)
+        return '<Configuration {0}>'.format(self.name)
 
     def __eq__(self, other):
         if not isinstance(other, Configuration):
@@ -253,14 +256,10 @@ class Configuration:
     def get_all_definitions(cls, data, library):
         definitions = set()
         for match in cls.CONFIGURATION_RE.finditer(data):
-            ident = match.group('ident'),
+            ident = (match.group('ident'),)
             entity = match.group('entity')
             definitions.add(
-                Configuration(
-                    name=ident,
-                    entity=entity,
-                    library=library
-                )
+                Configuration(name=ident, entity=entity, library=library)
             )
         return list(definitions)
 
@@ -276,7 +275,8 @@ class Component:
         \s*                                 # Optional whitespace
         (is)?                               # Optional 'is' keyword
         \s*                                 # Optional whitespace
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     # Detect an Entity or Component instantation
@@ -294,7 +294,8 @@ class Component:
         (?:generic\s+map|port\s+map)        # Generic map or port map
         [^;]*                               # Everything except a Terminator
         ;                                   # Terminator
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, entity, instance=None, library=None):
@@ -312,9 +313,9 @@ class Component:
 
     def __repr__(self):
         if self.name is not None:
-            return "<Component {0} ({1})>".format(self.entity, self.name)
+            return '<Component {0} ({1})>'.format(self.entity, self.name)
         else:
-            return "<Component {0}>".format(self.entity)
+            return '<Component {0}>'.format(self.entity)
 
     @classmethod
     def get_all_definitions(cls, data, library):
@@ -370,7 +371,8 @@ class ParsedVhdlFile:
         (?P<library>\w+)    # Library name
         \s*                 # Optional whitespace
         ;                   # Terminator
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     # Find any binding indications which indicate which unit to use for a
@@ -397,7 +399,8 @@ class ParsedVhdlFile:
             (?P<e_library>\w+)\.(?P<entity>\w+)\((?P<architecture>\w+)\) |
             (?P<c_library>\w+)\.(?P<configuration>\w+)
         )
-        """, re.IGNORECASE | re.VERBOSE,
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     def __init__(self, file_object):
@@ -411,11 +414,7 @@ class ParsedVhdlFile:
         self._parse(self.path, self.library)
 
     def __repr__(self):
-        return "<ParsedVhdlFile {0} ({1})>".format(
-            self.name,
-            self.library
-        )
-
+        return '<ParsedVhdlFile {0} ({1})>'.format(self.name, self.library)
 
     @classmethod
     def _get_libraries(cls, data):
@@ -434,9 +433,7 @@ class ParsedVhdlFile:
 
         indications = {'all': {}}
 
-        for match in cls.BINDING_INDICATION_RE.finditer(
-            data
-        ):
+        for match in cls.BINDING_INDICATION_RE.finditer(data):
             instance_label = match.group('instance_label')
             component_name = match.group('component_name')
             target_spec = match.group('target_spec')
@@ -448,15 +445,10 @@ class ParsedVhdlFile:
                 target = Configuration(configuration_name, library=library)
             elif target_spec == 'entity':
                 library = match.group('e_library')
-                target = Entity(
-                    entity_name,
-                    library=library
-                )
+                target = Entity(entity_name, library=library)
             else:
                 log.error(
-                    'Illegal configuration target: {0}'.format(
-                        target_spec
-                    )
+                    'Illegal configuration target: {0}'.format(target_spec)
                 )
                 target = None
 
@@ -495,8 +487,7 @@ class ParsedVhdlFile:
 
         # Get any embedded configurations
         self.configuration_defs = Configuration.get_all_definitions(
-            data,
-            library
+            data, library
         )
 
         # Get any component and entity references and declarations

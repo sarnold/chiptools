@@ -26,7 +26,7 @@ class Ghdl(Simulator):
         generics={},
         includes={},
         args=[],
-        duration=None
+        duration=None,
     ):
         # Elaborate
         args = [
@@ -57,7 +57,7 @@ class Ghdl(Simulator):
             self.ghdl,
             args,
             cwd=self.project.get_simulation_directory(),
-            quiet=False
+            quiet=False,
         )
 
         return ret, stdout, stderr
@@ -67,21 +67,15 @@ class Ghdl(Simulator):
         if len(args) == 0:
             args = file_object.get_tool_arguments(self.name, 'compile')
         args = shlex.split(['', args][args is not None])
-        args += [
-            '-a',
-            '--work=' + file_object.library,
-            file_object.path
-        ]
+        args += ['-a', '--work=' + file_object.library, file_object.path]
         if file_object.fileType == FileType.VHDL:
             Ghdl._call(
-                self.ghdl,
-                args,
-                cwd=self.project.get_simulation_directory()
+                self.ghdl, args, cwd=self.project.get_simulation_directory()
             )
         else:
             log.warning(
-                'Simulator ignoring file with unsupported extension: ' +
-                file_object.path
+                'Simulator ignoring file with unsupported extension: '
+                + file_object.path
             )
 
     def library_exists(self, libname, workdir):

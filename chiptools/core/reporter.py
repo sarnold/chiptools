@@ -48,16 +48,14 @@ def get_reporter(path):
         import chiptools_reporter_temporary_module
     except:
         log.error(
-            'The module could not be imported due to the ' +
-            ' following error:'
+            'The module could not be imported due to the '
+            + ' following error:'
         )
         log.error(traceback.format_exc())
         return None
     # Search the module members until a function with the name 'report' is
     # found. If no function can be found return None
-    for name, obj in inspect.getmembers(
-        chiptools_reporter_temporary_module
-    ):
+    for name, obj in inspect.getmembers(chiptools_reporter_temporary_module):
         if hasattr(obj, '__name__'):
             if obj.__name__ == 'report' and callable(obj):
                 return obj

@@ -39,11 +39,11 @@ from chiptools.testing.testloader import ChipToolsTest
 log = logging.getLogger(__name__)
 base = os.path.dirname(__file__)
 
+
 def get_random_data(data_width, sequence_lengths):
     return [
-        [
-            random.randint(0, 2**data_width-1) for i in range(l)
-        ] for l in sequence_lengths
+        [random.randint(0, 2 ** data_width - 1) for i in range(l)]
+        for l in sequence_lengths
     ]
 
 
@@ -57,6 +57,7 @@ class MaxHoldTests(ChipToolsTest):
     As your tests grow more complex could move common functions such as these
     into a 'test library' which can be imported by your unit tests.
     """
+
     # Specify the duration your test should run for in seconds.
     # If the test should run until the testbench aborts itself use 0.
     duration = 0
@@ -105,12 +106,7 @@ class MaxHoldTests(ChipToolsTest):
         with open(path, 'w') as f:
             for sequence in values:
                 # Reset the component at the beginning of a new sequence.
-                f.write(
-                    '{0} {1}\n'.format(
-                        '1',
-                        '0' * data_width
-                    )
-                )
+                f.write('{0} {1}\n'.format('1', '0' * data_width))
                 # Write each value in the sequence to the stimulus file
                 for value in sequence:
                     f.write(
@@ -154,25 +150,23 @@ class MaxHoldTests(ChipToolsTest):
         actual = self.read_output(path)
         # Get the expected maximum values from the value sequence
         expected = self.sequence_max(input_values)
-        log.info("Got {0} actual values".format(len(actual)))
-        log.info("Got {0} expected values".format(len(expected)))
-        log.info("Plotting data...")
+        log.info('Got {0} actual values'.format(len(actual)))
+        log.info('Got {0} expected values'.format(len(expected)))
+        log.info('Plotting data...')
         # Save the actual and expected values as a plot for reference
         if plt is not None:
             self.save_figure(actual, expected, input_values, testname)
         # Compare our actual values with our expected values
-        log.info("Comparing data values...")
+        log.info('Comparing data values...')
         self.assertEqual(len(actual), len(expected))
         for valIdx, val in enumerate(actual):
             # Per element comparison checking, you could use assertListEqual
             # but it can be slow for large lists
             # (https://bugs.python.org/issue19217)
             self.assertEqual(
-                val,
-                expected[valIdx],
-                msg='Index {0}'.format(valIdx)
+                val, expected[valIdx], msg='Index {0}'.format(valIdx)
             )
-        log.info("...done")
+        log.info('...done')
 
     def save_figure(
         self, actual, expected, input_values, testname, fontsize=10
@@ -184,25 +178,21 @@ class MaxHoldTests(ChipToolsTest):
         fig = plt.figure(0, figsize=(10, 7.5))
         # Plot the actual maximum and expected maximum values together
         plt.title(
-            'Actual and Expected Results for \'{0}\''.format(testname),
-            fontsize=fontsize
+            "Actual and Expected Results for '{0}'".format(testname),
+            fontsize=fontsize,
         )
         plt.xlabel('Value Index', fontsize=fontsize)
         plt.ylabel('Value', fontsize=fontsize)
         yvals = [v for sl in input_values for v in sl]
         plt.plot(
-            range(len(actual)),
-            actual,
-            'r:',
-            label='Actual values',
-            alpha=0.8
+            range(len(actual)), actual, 'r:', label='Actual values', alpha=0.8
         )
         plt.plot(
             range(len(yvals)),
             expected,
             'g--',
             label='Expected values',
-            alpha=0.8
+            alpha=0.8,
         )
         plt.plot(range(len(yvals)), yvals, 'b-', label='Input', alpha=0.5)
         plt.legend(loc='best', shadow=True)
@@ -270,25 +260,19 @@ class MaxHoldTests(ChipToolsTest):
     def test_max_hold_ramp_up(self):
         """Test the max hold function with positive gradient ramps."""
         sequence_lengths = [random.randint(0, 400) for i in range(10)]
-        values = [
-            [i for i in range(l)] for l in sequence_lengths
-        ]
+        values = [[i for i in range(l)] for l in sequence_lengths]
         self.run_generic_data(32, values, 'test_max_hold_ramp_up')
 
     def test_max_hold_ramp_down(self):
         """Test the max hold function with negative gradient ramps."""
         sequence_lengths = [random.randint(0, 400) for i in range(10)]
-        values = [
-            [l-i for i in range(l)] for l in sequence_lengths
-        ]
+        values = [[l - i for i in range(l)] for l in sequence_lengths]
         self.run_generic_data(32, values, 'test_max_hold_ramp_down')
 
     def test_max_hold_impulse(self):
         """Test the max hold function with impulses."""
         sequence_lengths = [random.randint(0, 400) for i in range(10)]
-        values = [
-            [[0, l][i == 0] for i in range(l)] for l in sequence_lengths
-        ]
+        values = [[[0, l][i == 0] for i in range(l)] for l in sequence_lengths]
         self.run_generic_data(32, values, 'test_max_hold_impulse')
 
     def test_max_hold_sinusoid(self):
@@ -297,9 +281,14 @@ class MaxHoldTests(ChipToolsTest):
         values = [
             [
                 int(
-                    i/l * (2**10-1) * (math.sin(8*math.pi*(i/l)) + 1)
-                ) for i in range(l)
-            ] for l in sequence_lengths
+                    i
+                    / l
+                    * (2 ** 10 - 1)
+                    * (math.sin(8 * math.pi * (i / l)) + 1)
+                )
+                for i in range(l)
+            ]
+            for l in sequence_lengths
         ]
         self.run_generic_data(32, values, 'test_max_hold_sinusoid')
 
@@ -307,9 +296,8 @@ class MaxHoldTests(ChipToolsTest):
         """Test the max hold function with square waves."""
         sequence_lengths = [random.randint(0, 400) for i in range(10)]
         values = [
-            [
-                int((2**8-1) * (i % 2)) for i in range(l)
-            ] for l in sequence_lengths
+            [int((2 ** 8 - 1) * (i % 2)) for i in range(l)]
+            for l in sequence_lengths
         ]
         self.run_generic_data(32, values, 'test_max_hold_square')
 
@@ -319,9 +307,14 @@ class MaxHoldTests(ChipToolsTest):
         values = [
             [
                 int(
-                    i/l * (2**10-1) * (math.sin(8*math.pi*(i/l)) + 1)
-                ) for i in range(l)
-            ] for l in sequence_lengths
+                    i
+                    / l
+                    * (2 ** 10 - 1)
+                    * (math.sin(8 * math.pi * (i / l)) + 1)
+                )
+                for i in range(l)
+            ]
+            for l in sequence_lengths
         ]
         self.run_generic_data(
             32, values, 'test_max_hold_sinusoid_single_sequence'

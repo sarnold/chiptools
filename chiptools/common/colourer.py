@@ -9,23 +9,23 @@ except ImportError:
     colorama = None
 
 _colours = [
-    ('black',     'darkgray'),
-    ('darkred',   'red'),
+    ('black', 'darkgray'),
+    ('darkred', 'red'),
     ('darkgreen', 'green'),
-    ('brown',     'yellow'),
-    ('darkblue',  'blue'),
-    ('purple',    'fuchsia'),
+    ('brown', 'yellow'),
+    ('darkblue', 'blue'),
+    ('purple', 'fuchsia'),
     ('turquoise', 'teal'),
     ('lightgray', 'white'),
 ]
 
 _attrs = {
-    'reset':     '39;49;00m',
-    'bold':      '01m',
-    'faint':     '02m',
-    'standout':  '03m',
+    'reset': '39;49;00m',
+    'bold': '01m',
+    'faint': '02m',
+    'standout': '03m',
     'underline': '04m',
-    'blink':     '05m',
+    'blink': '05m',
 }
 
 foreground_codes = {}
@@ -33,10 +33,10 @@ background_codes = {}
 function_codes = {}
 
 for i, (dark, light) in enumerate(_colours):
-    foreground_codes[dark] = '\x1b[%im' % (i+30)
-    foreground_codes[light] = '\x1b[%i;01m' % (i+30)
-    background_codes[dark] = '\x1b[%im' % (i+40)
-    background_codes[light] = '\x1b[%i;01m' % (i+40)
+    foreground_codes[dark] = '\x1b[%im' % (i + 30)
+    foreground_codes[light] = '\x1b[%i;01m' % (i + 30)
+    background_codes[dark] = '\x1b[%im' % (i + 40)
+    background_codes[light] = '\x1b[%i;01m' % (i + 40)
 
 for name, value in _attrs.items():
     function_codes[name] = '\x1b[' + value
@@ -45,7 +45,9 @@ for name, value in _attrs.items():
 def create_named_functions(name):
     def wrapped(text):
         return colourise(text, fg=name)
+
     globals()[name] = wrapped
+
 
 # Create functions so that the colour names can be called directly outside of
 # this module. Note that this has the limitation of not allowing foreground,
@@ -77,11 +79,11 @@ def colour_terminal():
 
 def colourise(text, fg=None, bg=None, fn=None):
     return (
-        foreground_codes.get(fg, '') +
-        background_codes.get(bg, '') +
-        function_codes.get(fn, '') +
-        text +
-        function_codes.get('reset', '')
+        foreground_codes.get(fg, '')
+        + background_codes.get(bg, '')
+        + function_codes.get(fn, '')
+        + text
+        + function_codes.get('reset', '')
     )
 
 
@@ -108,8 +110,7 @@ class ColouredStreamHandler(logging.StreamHandler):
     def emit(self, record):
         try:
             msg = ColouredStreamHandler.add_colour(
-                self.format(record) + '\n',
-                record.levelname
+                self.format(record) + '\n', record.levelname
             )
             self.stream.write(msg)
             self.flush()

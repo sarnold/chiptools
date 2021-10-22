@@ -44,8 +44,8 @@ class Vivado(synthesiser.Synthesiser):
             if fpga_part is None:
                 fpga_part = self.project.get_fpga_part()
             generics = self.project.get_generics()
-            synthesis_name = entity + '_synth_' + start_time.strftime(
-                '%d%m%y_%H%M%S'
+            synthesis_name = (
+                entity + '_synth_' + start_time.strftime('%d%m%y_%H%M%S')
             )
             archive_name = synthesis_name + '.tar'
             tcl_name = entity + '.tcl'
@@ -89,9 +89,7 @@ class Vivado(synthesiser.Synthesiser):
             # checkpoint, run DRCs.
             self.write_tcl('route_design')
             self.write_checkpoint(synthesis_name + '_post_route.dcp')
-            self.report_timing_summary(
-                entity + '_post_route_timing.rpt'
-            )
+            self.report_timing_summary(entity + '_post_route_timing.rpt')
             self.report_utilization(entity + '_post_route_util.rpt')
             self.write_tcl(
                 'report_power -file {0}'.format(
@@ -108,8 +106,10 @@ class Vivado(synthesiser.Synthesiser):
                     self.vivado,
                     [
                         '-nojournal',
-                        '-mode', 'tcl',
-                        '-source', tcl_name,
+                        '-mode',
+                        'tcl',
+                        '-source',
+                        tcl_name,
                     ],
                     cwd=synthesis_dir,
                     quiet=False,
@@ -122,8 +122,8 @@ class Vivado(synthesiser.Synthesiser):
                 self.storeOutputs(working_directory, 'ERROR_' + archive_name)
                 raise
             log.info(
-                'Build successful, checking reports for unacceptable ' +
-                'messages...'
+                'Build successful, checking reports for unacceptable '
+                + 'messages...'
             )
             try:
                 #  Check the report
@@ -132,8 +132,8 @@ class Vivado(synthesiser.Synthesiser):
                     reporter_fn(synthesis_dir)
             except:
                 log.error(
-                    'The post-synthesis reporter script caused an error:\n' +
-                    traceback.format_exc()
+                    'The post-synthesis reporter script caused an error:\n'
+                    + traceback.format_exc()
                 )
             # Archive the outputs
             log.info('Synthesis completed, saving output to archive...')
@@ -145,8 +145,8 @@ class Vivado(synthesiser.Synthesiser):
 
     def report_timing(self, path):
         self.write_tcl(
-            'report_timing -sort_by group -max_paths 5 ' +
-            '-path_type summary -file {0}'.format(path)
+            'report_timing -sort_by group -max_paths 5 '
+            + '-path_type summary -file {0}'.format(path)
         )
 
     def report_timing_summary(self, path):
@@ -167,21 +167,20 @@ class Vivado(synthesiser.Synthesiser):
     def synth_design(self, name, part, entity, generics, *args):
         self.write_tcl(
             (
-                'synth_design -name %(name)s -part %(part)s -top %(top)s ' +
-                '%(generics)s' +
-                '%(additional_args)s'
-            ) % dict(
+                'synth_design -name %(name)s -part %(part)s -top %(top)s '
+                + '%(generics)s'
+                + '%(additional_args)s'
+            )
+            % dict(
                 name=name,
                 part=part,
                 entity=entity,
                 top=entity,
                 generics=''.join(
-                    '-generic {0}={1} '.format(
-                        k,
-                        v
-                    ) for k, v in generics.items()
+                    '-generic {0}={1} '.format(k, v)
+                    for k, v in generics.items()
                 ),
-                additional_args=''.join(a + ' ' for a in args)
+                additional_args=''.join(a + ' ' for a in args),
             )
         )
 
@@ -213,13 +212,9 @@ class Vivado(synthesiser.Synthesiser):
                             )
                         )
                     elif file_object.fileType == FileType.NGCNetlist:
-                        self.write_tcl(
-                            'read_edif {0}'.format(path)
-                        )
+                        self.write_tcl('read_edif {0}'.format(path))
                     elif file_object.filetype == FileType.VivadoIp:
-                        self.write_tcl(
-                            'read_ip {0}'.format(path)
-                        )
+                        self.write_tcl('read_ip {0}'.format(path))
                     else:
                         log.warning(
                             'Ignoring file of unknown type: {0}'.format(path)
@@ -239,8 +234,8 @@ class Vivado(synthesiser.Synthesiser):
                         log.info('Added constraints file: ' + path)
                     else:
                         log.warning(
-                            'Ignoring constraints file of unknown type: ' +
-                            path
+                            'Ignoring constraints file of unknown type: '
+                            + path
                         )
             files_processed.append(path)
 
@@ -252,9 +247,9 @@ class Vivado(synthesiser.Synthesiser):
         """
         with open(self.project_path, 'a') as f:
             string = (
-                'if { [catch {%(command)s} result] } {\n' +
-                '   puts stderr \"Command failed: $result\"\n' +
-                '   exit 1\n' +
-                '}\n'
+                'if { [catch {%(command)s} result] } {\n'
+                + '   puts stderr "Command failed: $result"\n'
+                + '   exit 1\n'
+                + '}\n'
             ) % dict(command=command)
             f.write(string)

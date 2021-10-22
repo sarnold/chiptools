@@ -84,9 +84,8 @@ class CallGraph:
                 # Initialise parent edge set
                 if parent not in graph:
                     graph[parent] = set()
-                if (
-                    len(children) == 0 and
-                    not isinstance(dependency, Component)
+                if len(children) == 0 and not isinstance(
+                    dependency, Component
                 ):
                     # If no files implement this dependency then it is
                     # unresolved, it could be the case that this dependency is
@@ -108,39 +107,35 @@ class CallGraph:
                         colour = '{0} {1} {2}'.format(
                             0.6,
                             (
-                                (1.0 / len(highlight_nodes)) *
-                                highlight_nodes.index(node)
+                                (1.0 / len(highlight_nodes))
+                                * highlight_nodes.index(node)
                             ),
-                            1.0
+                            1.0,
                         )
                         f.write(
-                            node.name +
-                            ' [shape=box,style=filled,color="' + colour + '"];\n'
+                            node.name
+                            + ' [shape=box,style=filled,color="'
+                            + colour
+                            + '"];\n'
                         )
                     else:
                         f.write(
-                            node.name +
-                            ' [shape=box,style=filled,color="1. 1. 1."];\n'
+                            node.name
+                            + ' [shape=box,style=filled,color="1. 1. 1."];\n'
                         )
                 for child in graph[node]:
                     if isinstance(child, ParsedVhdlFile):
-                        f.write(
-                            '{0} -> {1};\n'.format(
-                                node.name,
-                                child.name
-                            )
-                        )
+                        f.write('{0} -> {1};\n'.format(node.name, child.name))
                     elif show_unresolved and (
-                        isinstance(child, Entity) or isinstance(child, Component)
+                        isinstance(child, Entity)
+                        or isinstance(child, Component)
                     ):
                         f.write(
-                            node.name +
-                            ' -> ' +
-                            str(child) +
-                            '[style=dotted]' +
-                            ';\n'
+                            node.name
+                            + ' -> '
+                            + str(child)
+                            + '[style=dotted]'
+                            + ';\n'
                         )
             f.write('}')
-        subprocess.call(
-            ['dot', f.name, '-Tpng', '-o', 'output.png']
-        )
+        subprocess.call(['dot', f.name, '-Tpng', '-o', 'output.png'])

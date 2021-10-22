@@ -1,6 +1,5 @@
 import logging
 import os
-import shlex
 import time
 
 from chiptools.wrappers.simulator import Simulator
@@ -20,11 +19,9 @@ class Iverilog(Simulator):
         super(Iverilog, self).__init__(project, self.executables, user_paths)
         self.iverilog = os.path.join(self.path, 'iverilog')
         self.vvp = os.path.join(self.path, 'vvp')
-        self.filetypes = [
-            FileType.Verilog,
-            FileType.SystemVerilog
-        ]
+        self.filetypes = [FileType.Verilog, FileType.SystemVerilog]
         self.files = []
+
     def compile_project(self, includes={}):
         """
         This method stages files for compilation as we cannot perform
@@ -40,24 +37,20 @@ class Iverilog(Simulator):
                     self.files.append(file_object)
                 else:
                     log.warning(
-                        'Icarus ignoring file with unsupported ' +
-                        'extension: ' +
-                        file_object.path
+                        'Icarus ignoring file with unsupported '
+                        + 'extension: '
+                        + file_object.path
                     )
             else:
                 raise FileNotFoundError(
-                    'File could not be found: ' +
-                    '{0}, operation aborted.'.format(
-                        file_object.path
-                    )
+                    'File could not be found: '
+                    + '{0}, operation aborted.'.format(file_object.path)
                 )
         log.info(
             (
                 'Deferring compilation of {0} file(s) until simulation '
                 'is called.'
-            ).format(
-                len(self.files)
-            )
+            ).format(len(self.files))
         )
 
     def simulate(
@@ -68,7 +61,7 @@ class Iverilog(Simulator):
         generics={},
         includes={},
         args=[],
-        duration=None
+        duration=None,
     ):
         """
         Compile and simulate the design.
@@ -76,49 +69,36 @@ class Iverilog(Simulator):
         start_time = time.time()
         args = []
         # Specify the output name
-        args += [
-            '-o',
-            'icarus_sim'
-        ]
+        args += ['-o', 'icarus_sim']
         # Get the files
         for file_object in self.files:
             args.append(file_object.path)
             # TODO: Add additional custom compile args for each file.
         # Define the top level
-        args += [
-            '-s',
-            entity
-        ]
+        args += ['-s', entity]
         # Define top level parameters
         # TODO: Icarus does not seem to support parameter/generic overrides
         # in the latest version so `define overrides need to be used instead.
         if len(generics.keys()) > 0:
             log.warning(
-                'Icarus parameter overrides via the -P flag are not ' +
-                'supported. Parameter overrides will be translated into ' +
-                '`define overrides via the -D command line switch.'
+                'Icarus parameter overrides via the -P flag are not '
+                + 'supported. Parameter overrides will be translated into '
+                + '`define overrides via the -D command line switch.'
             )
         for k, v in generics.items():
-            args += [
-                '-D',
-                '{0}={1}'.format(k, v)
-            ]
+            args += ['-D', '{0}={1}'.format(k, v)]
         # Add custom library paths (the library name is ignored)
         for k, v in includes.items():
-            args += [
-                '-y' + v
-            ]
+            args += ['-y' + v]
         # Call the Iverilog compilation stage
         Iverilog._call(
-            self.iverilog,
-            args,
-            cwd=self.project.get_simulation_directory()
+            self.iverilog, args, cwd=self.project.get_simulation_directory()
         )
-        log.info("...done")
+        log.info('...done')
         log.info(
-            str(len(self.files)) +
-            ' file(s) processed in ' +
-            utils.time_delta_string(start_time, time.time())
+            str(len(self.files))
+            + ' file(s) processed in '
+            + utils.time_delta_string(start_time, time.time())
         )
         ######################################################################
         # Invoke simulation
@@ -131,9 +111,16 @@ class Iverilog(Simulator):
         #   -sdf-info
         #   -sdf-verbose
         extended_args = [
-            '-none', '-vcd-none', '-vcd-off', '-fst-none',
-            '-fst', '-lxt', '-lxt2', '-sdf-warn', '-sdf-info',
-            '-sdf-verbose'
+            '-none',
+            '-vcd-none',
+            '-vcd-off',
+            '-fst-none',
+            '-fst',
+            '-lxt',
+            '-lxt2',
+            '-sdf-warn',
+            '-sdf-info',
+            '-sdf-verbose',
         ]
         ######################################################################
         # Get user specified args
@@ -150,6 +137,6 @@ class Iverilog(Simulator):
             self.vvp,
             args,
             cwd=self.project.get_simulation_directory(),
-            quiet=False
+            quiet=False,
         )
         return ret, stdout, stderr

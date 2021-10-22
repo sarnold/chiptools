@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import logging
 from chiptools.common import utils
 import xml
@@ -9,13 +8,13 @@ log = logging.getLogger(__name__)
 
 filetypes = [
     'Unknown',
-    'VHDL',             # VHDL
-    'Verilog',          # Verilog
-    'SystemVerilog',    # Verilog (SV)
-    'NGCNetlist',       # Netlist
-    'TCL',              # TCL
-    'UCF',              # Universal constraints format
-    'SDC',              # Synopsis design constraints
+    'VHDL',  # VHDL
+    'Verilog',  # Verilog
+    'SystemVerilog',  # Verilog (SV)
+    'NGCNetlist',  # Netlist
+    'TCL',  # TCL
+    'UCF',  # Universal constraints format
+    'SDC',  # Synopsis design constraints
     'Python',
     'VivadoIp',
     'VivadoXDC',
@@ -23,12 +22,14 @@ filetypes = [
 
 try:
     from enum import Enum
+
     FileType = Enum('FileType', ' '.join(f for f in filetypes))
 except ImportError:
     # Enum module not supported, roll our own.
     def enum(*sequence, **names):
         enums = dict(zip(sequence, range(len(sequence))), **names)
         return type('Enum', (), enums)
+
     FileType = enum(*filetypes)
 
 # Mapping of file extensions to FileType objects
@@ -89,9 +90,7 @@ class ProjectAttributes:
     # These attributes will be stored with the file so that the additional
     # arguments can be used by the relevent tool and flow stage if it is
     # invoked on the file.
-    XML_ADDITIONAL_TOOL_ARGS_RE = re.compile(
-        'args_([A-Z,a-z]+)_([A-Z,a-z]+)'
-    )
+    XML_ADDITIONAL_TOOL_ARGS_RE = re.compile('args_([A-Z,a-z]+)_([A-Z,a-z]+)')
 
     def bool_processor(value, root):
         if isinstance(value, bool):
@@ -191,7 +190,7 @@ class ProjectAttributes:
             processor = ProjectAttributes.NODE_PROCESSOR.get(
                 name,
                 # Return the original value.
-                lambda x, root: x
+                lambda x, root: x,
             )
             value = attributes.get(name, defaults.get(name, None))
             attributes[name] = value
@@ -208,14 +207,14 @@ class ProjectAttributes:
         project root. The original attribute is returned if no NODE_PROCESSOR
         function can be found that matches the name.
         """
-        return ProjectAttributes.NODE_PROCESSOR.get(
-            name,
-            lambda x, root: x
-        )(attribute, root)
+        return ProjectAttributes.NODE_PROCESSOR.get(name, lambda x, root: x)(
+            attribute, root
+        )
 
 
 class UnitTestFile(object):
     """The UnitTestFile object provides a container for Python test shims."""
+
     def __init__(self, **kwargs):
         self.path = kwargs[ProjectAttributes.ATTRIBUTE_PATH]
         self.fileType = FileType.Python
@@ -238,16 +237,14 @@ class File(object):
         # A flag to indicate whether or not this file should be included for
         # synthesis. It not specified it will default to True.
         self.synthesise = kwargs.get(
-            ProjectAttributes.ATTRIBUTE_SYNTHESIS,
-            True
+            ProjectAttributes.ATTRIBUTE_SYNTHESIS, True
         )
         self.synthesise = True if self.synthesise is None else self.synthesise
         # The preprocessor is a path to a Python module containing a
         # preprocessor object that can edit the associated source file before
         # it is passed to synthesis.
         self.preprocessor = kwargs.get(
-            ProjectAttributes.ATTRIBUTE_PREPROCESSOR,
-            None
+            ProjectAttributes.ATTRIBUTE_PREPROCESSOR, None
         )
         # Automatically discover the filetype from the extension
         fileName, fileExtension = os.path.splitext(self.path)
@@ -268,8 +265,7 @@ class File(object):
                     # groups.
                     log.warning(
                         'Ignoring attribute {0} on file {1}'.format(
-                            k,
-                            self.path
+                            k, self.path
                         )
                     )
                     continue
@@ -278,9 +274,7 @@ class File(object):
                 self.optionalToolArgs[toolName][flowName] = v
                 log.debug(
                     'Added attribute {0} with value {2} to file {1}'.format(
-                        k,
-                        self.path,
-                        v
+                        k, self.path, v
                     )
                 )
 
@@ -288,7 +282,7 @@ class File(object):
         return self.__dict__ == other.__dict__
 
     def __repr__(self):
-        return('<File ({0})>'.format(os.path.basename(self.path)))
+        return '<File ({0})>'.format(os.path.basename(self.path))
 
     def get_tool_arguments(self, toolName, flowName):
         """
@@ -301,6 +295,7 @@ class File(object):
 
 class Constraints(object):
     """The constraints object provides a container for constraints files"""
+
     def __init__(self, **kwargs):
         self.path = kwargs[ProjectAttributes.ATTRIBUTE_PATH]
         self.fileType = FileType.Unknown

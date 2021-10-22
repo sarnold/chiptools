@@ -32,6 +32,7 @@ class Quartus(synthesiser.Synthesiser):
     timestamp.
 
     """
+
     name = 'quartus'
     executables = ['quartus_sh', 'quartus_cpf']
 
@@ -59,6 +60,7 @@ class Quartus(synthesiser.Synthesiser):
         super(Quartus, self).synthesise(library, entity, fpga_part)
         # make a temporary working directory for the synth tool
         import tempfile
+
         startTime = datetime.datetime.now()
         with tempfile.TemporaryDirectory(
             dir=self.project.get_synthesis_directory()
@@ -66,8 +68,8 @@ class Quartus(synthesiser.Synthesiser):
             log.info(
                 'Created temporary synthesis directory: ' + workingDirectory
             )
-            synthName = entity + '_synth_' + startTime.strftime(
-                '%d%m%y_%H%M%S'
+            synthName = (
+                entity + '_synth_' + startTime.strftime('%d%m%y_%H%M%S')
             )
             archiveName = synthName + '.tar'
             synthesisDirectory = os.path.join(workingDirectory, synthName)
@@ -87,8 +89,7 @@ class Quartus(synthesiser.Synthesiser):
             try:
                 # Run the flow
                 self.exec_quartus_sh(
-                    os.path.basename(projectFilePath),
-                    synthesisDirectory
+                    os.path.basename(projectFilePath), synthesisDirectory
                 )
                 # Convert programming files using user-supplied args
                 self.generate_programming_files(entity, synthesisDirectory)
@@ -100,8 +101,8 @@ class Quartus(synthesiser.Synthesiser):
                 self.storeOutputs(workingDirectory, 'ERROR_' + archiveName)
                 raise
             log.info(
-                'Build successful, checking reports for unacceptable ' +
-                'messages...'
+                'Build successful, checking reports for unacceptable '
+                + 'messages...'
             )
             #  Check the report
             reporter_fn = self.project.get_reporter()
@@ -110,8 +111,8 @@ class Quartus(synthesiser.Synthesiser):
                     reporter_fn(synthesisDirectory)
             except:
                 log.error(
-                    'The post-synthesis reporter script caused an error:\n' +
-                    traceback.format_exc()
+                    'The post-synthesis reporter script caused an error:\n'
+                    + traceback.format_exc()
                 )
             # Archive the outputs
             log.info('Synthesis completed, saving output to archive...')
@@ -127,7 +128,7 @@ class Quartus(synthesiser.Synthesiser):
         part,
         generics,
         workingDirectory,
-        entity
+        entity,
     ):
         """
         Generate a TCL file that is compatible with the quartus_sh API to
@@ -175,16 +176,16 @@ class Quartus(synthesiser.Synthesiser):
                         projectFileString += constraintsFile.read()
                         projectFileString += '\n'
                         log.info(
-                            'Added supplementary TCL script: ' +
-                            fileObject.path
+                            'Added supplementary TCL script: '
+                            + fileObject.path
                         )
                 elif fileObject.fileType == FileType.SDC:
                     with open(fileObject.path, 'r') as constraintsFile:
                         sdcString += constraintsFile.read()
                         sdcString += '\n'
                         log.info(
-                            'Added timing constraints script: ' +
-                            fileObject.path
+                            'Added timing constraints script: '
+                            + fileObject.path
                         )
         if len(sdcString) > 0:
             sdcPath = os.path.join(workingDirectory, entity + '.sdc')
@@ -203,7 +204,7 @@ class Quartus(synthesiser.Synthesiser):
         log.debug('Writing: ' + projectFilePath)
         with open(projectFilePath, 'w') as f:
             f.write(projectFileString)
-        log.info("...done")
+        log.info('...done')
 
     def tcl_set_part(self, part):
         """
@@ -247,8 +248,8 @@ class Quartus(synthesiser.Synthesiser):
                 string += 'VERILOG_FILE '
             else:
                 raise exceptions.SynthesisException(
-                    'Unknown file type for synthesis tool: ' +
-                    fileObject.fileType
+                    'Unknown file type for synthesis tool: '
+                    + fileObject.fileType
                 )
             # Quartus will not allow backslashes, force forward slashes here.
             filePath = fileObject.path.replace('\\', '/')
@@ -272,8 +273,12 @@ class Quartus(synthesiser.Synthesiser):
         <revision_name>] <project_name>
         """
         return (
-            'project_new -overwrite -revision ' +
-            entity + ' ' + entity + 'proj' + '\n'
+            'project_new -overwrite -revision '
+            + entity
+            + ' '
+            + entity
+            + 'proj'
+            + '\n'
         )
 
     @synthesiser.throws_synthesis_exception
@@ -308,15 +313,12 @@ class Quartus(synthesiser.Synthesiser):
                 args = shlex.split(['', args][args is not None])
                 # Append the input and output file names
                 args += [
-                    entity + '.sof',        # Input SOF
-                    entity + '.' + mode     # Output file
+                    entity + '.sof',  # Input SOF
+                    entity + '.' + mode,  # Output file
                 ]
                 # Run quartus_cpf using the mode recovered from the config key
                 Quartus._call(
-                    self.quartus_cpf,
-                    args,
-                    cwd=working_directory,
-                    quiet=False
+                    self.quartus_cpf, args, cwd=working_directory, quiet=False
                 )
 
     @synthesiser.throws_synthesis_exception
@@ -367,9 +369,4 @@ class Quartus(synthesiser.Synthesiser):
         args = shlex.split(['', args][args is not None])
         args += ['-t' + projectFilePath]
 
-        Quartus._call(
-            self.quartus_sh,
-            args,
-            cwd=workingDirectory,
-            quiet=False
-        )
+        Quartus._call(self.quartus_sh, args, cwd=workingDirectory, quiet=False)

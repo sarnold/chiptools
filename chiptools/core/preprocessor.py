@@ -45,8 +45,8 @@ def get_preprocessor(path):
         import chiptools_preprocessor_temporary_module
     except:
         log.error(
-            'The module could not be imported due to the ' +
-            ' following error:'
+            'The module could not be imported due to the '
+            + ' following error:'
         )
         log.error(traceback.format_exc())
         return None
@@ -63,6 +63,7 @@ def get_preprocessor(path):
 
 class Preprocessor:
     """Preprocessor class to handle file preprocessor execution."""
+
     def __init__(self):
         super(Preprocessor, self).__init__()
 
@@ -84,8 +85,8 @@ class Preprocessor:
             data = processor(data, path)
         except:
             log.error(
-                'The preprocessor caused an exception, ' +
-                'no modifications were made'
+                'The preprocessor caused an exception, '
+                + 'no modifications were made'
             )
             log.error(traceback.format_exc())
             return False
