@@ -1,12 +1,17 @@
 *.pyc
 *.cache
 *.egg-info
+
 dist/
 docs/_build
 docs/rce
+
 *.sublime-project
 *.sublime-workspace
 *.swp
+
 .coverage
 coverage.xml
 nosetests.xml
+
+**/_version.py
