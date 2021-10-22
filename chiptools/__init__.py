@@ -1,6 +1,8 @@
 import logging.config
 import chiptools.common.colourer as colourer
 
+from ._version import __version__
+
 colourer.colour_terminal()  # Init colorama
 
 handler_name = 'chiptools.common.colourer.ColouredStreamHandler'
