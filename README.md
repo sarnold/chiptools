@@ -1,6 +1,13 @@
 **ChipTools** is a utility to automate FPGA build and verification
 
 [![Smoke](https://github.com/sarnold/chiptools/actions/workflows/ci.yml/badge.svg)](https://github.com/sarnold/chiptools/actions/workflows/ci.yml)
+[![Coverage](https://github.com/sarnold/chiptools/actions/workflows/coverage.yml/badge.svg)](https://github.com/sarnold/chiptools/actions/workflows/coverage.yml)
+
+[![Branch Coverage](https://raw.githubusercontent.com/sarnold/chiptools/badges/master/test-coverage.svg)](https://github.com/sarnold/chiptools)
+
+[![Latest release](https://img.shields.io/github/v/release/sarnold/chiptools?include_prereleases)](https://github.com/sarnold/chiptools/releases/latest)
+[![License](https://img.shields.io/github/license/sarnold/chiptools)](https://github.com/sarnold/chiptools/blob/master/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
 
 ## What can it do?
 
