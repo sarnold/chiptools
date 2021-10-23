@@ -19,7 +19,7 @@ Installation
 ChipTools should work on any platform that can run Python 3 and your preferred
 FPGA simulation and synthesis tools.
 
-Clone the ChipTools repository to your system (or download the `latest tag <https://github.com/pabennett/chiptools/tags>` or master tarball from github):
+Clone the ChipTools repository to your system (or download the `latest tag <https://github.com/pabennett/chiptools/tags>`_ or master tarball from github):
 
 .. code-block:: bash
 
