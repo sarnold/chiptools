@@ -1,6 +1,7 @@
 import logging
 import os
 import shlex
+import types
 
 from chiptools.wrappers.simulator import Simulator
 from chiptools.common.filetypes import FileType
@@ -23,9 +24,9 @@ class Ghdl(Simulator):
         library,
         entity,
         gui=False,
-        generics={},
-        includes={},
-        args=[],
+        generics=types.MappingProxyType({}),
+        includes=types.MappingProxyType({}),
+        args=tuple(),
         duration=None,
     ):
         # Elaborate

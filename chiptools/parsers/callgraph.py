@@ -97,7 +97,11 @@ class CallGraph:
         return graph
 
     @staticmethod
-    def write_graph_png(graph, show_unresolved=False, highlight_nodes=[]):
+    def write_graph_png(
+        graph,
+        show_unresolved=False,
+        highlight_nodes=tuple(),  # empty list bad
+    ):
         with open('out.dot', 'w') as f:
             f.write('digraph project {\n')
             f.write('node [fontname = "helvetica", fontsize = "10"];\n')
