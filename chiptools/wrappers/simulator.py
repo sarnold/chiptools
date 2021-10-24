@@ -137,7 +137,7 @@ class Simulator(ToolchainBase):
                                 file_object.path
                             )
                         )
-            except:
+            except Exception:
                 # Clear the SHA1 for the file that failed so it will recompile
                 # next time
                 if file_object is not None:

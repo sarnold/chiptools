@@ -24,7 +24,7 @@ def wraps_do_commands(fn):
         log.debug('USER COMMAND: (' + fn.__name__ + ') ' + args[1])
         try:
             return fn(*args, **kwargs)
-        except:
+        except Exception:
             log.error('Command failed due to error:')
             log.error(traceback.format_exc())
 
@@ -86,7 +86,7 @@ class CommandLine(cmd.Cmd, object):
                     'The project file contains errors, '
                     + "fix them and then type 'reload'"
                 )
-            except:
+            except Exception:
                 log.error(
                     'The software has to terminate due to the following error:'
                 )
@@ -129,7 +129,7 @@ class CommandLine(cmd.Cmd, object):
                     files = files if files is not None else []
                     if len(files) != 0:
                         projects.append(filePath)
-                except:
+                except Exception:
                     pass
         logging.getLogger('chiptools').setLevel(logging.DEBUG)
         return projects
@@ -146,7 +146,7 @@ class CommandLine(cmd.Cmd, object):
                     )
                 )
                 XmlProjectParser.load_project(path, self.project)
-            except:
+            except Exception:
                 log.error('The project could not be loaded due to an error:')
                 log.error(traceback.format_exc())
         else:

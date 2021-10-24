@@ -40,7 +40,7 @@ def throws_synthesis_exception(fn):
                 + 'paths in the options file.'
             )
             raise exceptions.SynthesisException(e)
-        except:
+        except Exception:
             raise
 
     return wrapper

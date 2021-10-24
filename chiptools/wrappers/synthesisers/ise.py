@@ -178,7 +178,7 @@ class Ise(synthesiser.Synthesiser):
         )
         try:
             self.ise_webtalk_off()
-        except:
+        except Exception:
             log.debug(traceback.format_exc())
             log.warning(
                 'Could not disable WebTalk, '
@@ -222,7 +222,7 @@ class Ise(synthesiser.Synthesiser):
                         exportDirectory,
                     )
                     self.generate_programming_files(entity, synthesisDirectory)
-                except:
+                except Exception:
                     # Archive the outputs
                     log.error(
                         'Synthesis error, storing output in error directory...'
@@ -242,7 +242,7 @@ class Ise(synthesiser.Synthesiser):
                         exportDirectory,
                     )
                     self.generate_programming_files(entity, synthesisDirectory)
-                except:
+                except Exception:
                     # Archive the outputs
                     log.error(
                         'Synthesis error, storing output in error directory...'
@@ -259,7 +259,7 @@ class Ise(synthesiser.Synthesiser):
             try:
                 if reporter_fn is not None:
                     reporter_fn(synthesisDirectory)
-            except:
+            except Exception:
                 log.error(
                     'The post-synthesis reporter script caused an error:\n'
                     + traceback.format_exc()

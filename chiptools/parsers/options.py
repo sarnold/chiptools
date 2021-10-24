@@ -6,18 +6,12 @@ configuration settings with error checking and file-modification checking.
 
 The path to the system configuration file is hard-coded into options_path.
 """
-import sys
-
-if sys.version_info < (3, 0, 0):
-    # Python 2
-    import ConfigParser as configparser
-else:
-    # Python 3
-    import configparser
+import configparser
 import os
 import logging
 import traceback
 import hashlib
+
 from collections import OrderedDict
 from os.path import expanduser
 

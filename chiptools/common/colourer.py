@@ -4,8 +4,8 @@ import os
 
 try:
     # If colorama is available use it, otherwise turn colours off (win only)
-    import colorama
-except ImportError:
+    import colorama  # type: ignore
+except Exception:
     colorama = None
 
 _colours = [
@@ -114,5 +114,5 @@ class ColouredStreamHandler(logging.StreamHandler):
             )
             self.stream.write(msg)
             self.flush()
-        except:
+        except Exception:
             self.handleError(record)

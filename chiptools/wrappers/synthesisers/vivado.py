@@ -114,7 +114,7 @@ class Vivado(synthesiser.Synthesiser):
                     cwd=synthesis_dir,
                     quiet=False,
                 )
-            except:
+            except Exception:
                 # Archive the outputs
                 log.error(
                     'Synthesis error, storing output in error directory...'
@@ -130,7 +130,7 @@ class Vivado(synthesiser.Synthesiser):
                 reporter_fn = self.project.get_reporter()
                 if reporter_fn is not None:
                     reporter_fn(synthesis_dir)
-            except:
+            except Exception:
                 log.error(
                     'The post-synthesis reporter script caused an error:\n'
                     + traceback.format_exc()

@@ -1,10 +1,10 @@
+import importlib
 import logging
 import glob
 import os
 import traceback
 import re
 import unittest
-import sys
 
 from chiptools.common import exceptions
 from chiptools.common import utils
@@ -23,11 +23,6 @@ from chiptools.parsers import callgraph
 from chiptools.testing.custom_runners import HTMLTestRunner
 from chiptools.wrappers.wrapper import ToolWrapper
 
-if sys.version_info < (3, 0, 0):
-    import imp
-else:
-    import importlib.machinery
-
 
 log = logging.getLogger(__name__)
 
@@ -43,20 +38,11 @@ def load_tests(path, simulation_path):
 
     try:
         test_loader = unittest.TestLoader()
-        # Load modules with support for Python 2 or 3
-        if sys.version_info < (3, 0, 0):
-            module = imp.load_source(
-                'chiptools_tests_' + os.path.basename(path).split('.')[0], path
-            )
-            suite = test_loader.loadTestsFromModule(module)
-        else:
-            module_loader = importlib.machinery.SourceFileLoader(
-                'chiptools_tests_' + os.path.basename(path).split('.')[0], path
-            )
-            suite = test_loader.loadTestsFromModule(
-                module_loader.load_module()
-            )
-    except:
+        module_loader = importlib.machinery.SourceFileLoader(
+            'chiptools_tests_' + os.path.basename(path).split('.')[0], path
+        )
+        suite = test_loader.loadTestsFromModule(module_loader.load_module())
+    except Exception:
         log.error(
             'The module could not be imported due to the '
             + ' following error:'

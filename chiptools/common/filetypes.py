@@ -1,36 +1,31 @@
 import os
 import re
 import logging
-from chiptools.common import utils
 import xml
+
+from enum import Enum
+
+from chiptools.common import utils
+
 
 log = logging.getLogger(__name__)
 
-filetypes = [
-    'Unknown',
-    'VHDL',  # VHDL
-    'Verilog',  # Verilog
-    'SystemVerilog',  # Verilog (SV)
-    'NGCNetlist',  # Netlist
-    'TCL',  # TCL
-    'UCF',  # Universal constraints format
-    'SDC',  # Synopsis design constraints
-    'Python',
-    'VivadoIp',
-    'VivadoXDC',
-]
-
-try:
-    from enum import Enum
-
-    FileType = Enum('FileType', ' '.join(f for f in filetypes))
-except ImportError:
-    # Enum module not supported, roll our own.
-    def enum(*sequence, **names):
-        enums = dict(zip(sequence, range(len(sequence))), **names)
-        return type('Enum', (), enums)
-
-    FileType = enum(*filetypes)
+FileType = Enum(
+    'FileType',
+    [
+        'Unknown',
+        'VHDL',  # VHDL
+        'Verilog',  # Verilog
+        'SystemVerilog',  # Verilog (SV)
+        'NGCNetlist',  # Netlist
+        'TCL',  # TCL
+        'UCF',  # Universal constraints format
+        'SDC',  # Synopsis design constraints
+        'Python',
+        'VivadoIp',
+        'VivadoXDC',
+    ],
+)
 
 # Mapping of file extensions to FileType objects
 fileExtensionsLookup = {

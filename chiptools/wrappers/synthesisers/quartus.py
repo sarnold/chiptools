@@ -93,7 +93,7 @@ class Quartus(synthesiser.Synthesiser):
                 )
                 # Convert programming files using user-supplied args
                 self.generate_programming_files(entity, synthesisDirectory)
-            except:
+            except Exception:
                 # Archive the outputs
                 log.error(
                     'Synthesis error, storing output in error directory...'
@@ -109,7 +109,7 @@ class Quartus(synthesiser.Synthesiser):
             try:
                 if reporter_fn is not None:
                     reporter_fn(synthesisDirectory)
-            except:
+            except Exception:
                 log.error(
                     'The post-synthesis reporter script caused an error:\n'
                     + traceback.format_exc()

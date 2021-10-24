@@ -164,6 +164,7 @@ def process(data, path):
 
         with open(self.preprocessor_path, 'w') as f:
             f.write(self.preprocessor_data)
+        self.addCleanup(os.remove, self.preprocessor_path)
 
         with open(self.invalid_project_path, 'w') as f:
             f.write(self.invalid_project_data)
@@ -211,7 +212,7 @@ def process(data, path):
 
     def run_and_check_preprocessors(self, project):
         project.run_preprocessors()
-        regex = re.compile('-- Preprocessed at (\d+){2}:(\d+){2}:(\d+){2}')
+        regex = re.compile(r'-- Preprocessed at (\d+){2}:(\d+){2}:(\d+){2}')
         for libname in self.project_structure.keys():
             files = self.project_structure[libname]
             for path in files:

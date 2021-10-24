@@ -36,7 +36,7 @@ def plugin_discovery(
                         + os.path.basename(path).split('.')[0],
                         os.path.join(plugin_directory, path),
                     )
-                except:
+                except Exception:
                     log.error(
                         'Plugin module '
                         + '{0} contains errors and will be disabled:'.format(
@@ -58,7 +58,7 @@ def plugin_discovery(
                 )
                 try:
                     module = loader.load_module()
-                except:
+                except Exception:
                     log.error(
                         'Plugin module '
                         + '{0} contains errors and will be disabled:'.format(
@@ -122,7 +122,7 @@ def get_all_tools(project, user_paths, tool_type='synthesis'):
                     + ' Update .chiptoolsconfig or your PATH variable'
                 )
             tools[toolname] = inst
-        except:
+        except Exception:
             # Error instancing this tool.
             log.error(
                 'Encountered an error when loading tool wrapper: ' + toolname

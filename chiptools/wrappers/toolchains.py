@@ -12,6 +12,8 @@ import os
 import sys
 import logging
 
+from shlex import split
+
 from chiptools.common.utils import execute
 
 log = logging.getLogger(__name__)
@@ -136,6 +138,6 @@ class ToolchainBase(object):
             )
         )
         command = executable
-        command += ' ' + args
+        command += split(args)
         ret, stdout, stderr = execute(command, path=cwd, quiet=quiet)
         return (ret, stdout, stderr)

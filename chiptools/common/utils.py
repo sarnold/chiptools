@@ -6,7 +6,7 @@ import time
 import copy
 
 if __name__ == '__main__':
-    import exceptions
+    import exceptions  # type: ignore
 else:
     from chiptools.common import exceptions
 
@@ -63,7 +63,7 @@ def topological_sort(graph):
     ...    3 : set()
     ... }
     >>> topological_sort(graph)
-    [3, 5, 7, 8, 11, 2, 9, 10]
+    [3, 7, 5, 8, 11, 2, 9, 10]
     """
     # Kahn's Algorithm (https://en.wikipedia.org/wiki/Topological_sorting)
     # L ← Empty list that will contain the sorted elements
@@ -78,18 +78,19 @@ def topological_sort(graph):
     # if graph has edges then
     #     return error (graph has at least one cycle)
     # else
-    #     return L (a topologically sorted order
+    #     return L (a topologically sorted order)
     # Construct a local shallow copy as we directly manipulate graph values
     graph = dict((k, copy.copy(graph[k])) for k in graph.keys())
-    l = []
-    s = set([node for node in graph if len(graph[node]) == 0])
+    l = []  # noqa
+    # using type set() for S breaks ordering between python versions
+    s = list([node for node in graph if len(graph[node]) == 0])
     while len(s) > 0:
         n = s.pop()
         l.append(n)
         for m in list(filter(lambda x: n in graph[x], graph.keys())):
             graph[m].remove(n)
             if len(graph[m]) == 0:
-                s.add(m)
+                s.insert(0, m)
     if any(len(graph[n]) > 0 for n in graph.keys()):
         raise ValueError('Graph contains at least one cycle')
     else:
@@ -181,11 +182,11 @@ def seconds_to_timestring(duration):
     return str(duration * 1e9) + 'ns'
 
 
-def execute(command, path=None, shell=True, quiet=False):
+def execute(command, path=None, shell=False, quiet=False):
     return popen_throws_ex(command, path, quiet)
 
 
-def call(command, path=None, shell=True):
+def call(command, path=None, shell=False):
     """
     Call the executable in the given path, any messages the program generates
     will be routed to stdout and stderr.
