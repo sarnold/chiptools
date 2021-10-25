@@ -7,6 +7,8 @@ import logging
 import datetime
 import time
 
+from typing import Any, Dict
+
 from chiptools.common import utils
 
 log = logging.getLogger(__name__)
@@ -33,7 +35,7 @@ class FileCache:
     cache_file_name = '_compilation.cache'
     field_id_files = 'FILES'
     field_id_libraries = 'LIBRARIES'
-    blank_cache_element = {
+    blank_cache_element: Dict[str, Any] = {
         field_id_libraries: set(),
         field_id_files: {},
     }

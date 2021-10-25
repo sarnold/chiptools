@@ -3,6 +3,9 @@ import logging
 import traceback
 import os
 import sys
+
+from typing import Any, Dict
+
 from chiptools.common import utils
 from chiptools.core.project import Project
 
@@ -62,7 +65,7 @@ class ChipToolsTest(unittest.TestCase):
     10ms set duration to 10e-3
     """
 
-    generics = {}
+    generics: Dict[str, Any] = {}
     """
     The *generics* attribute is a dictionary of parameter/generic names and
     associated values.  These key, value pairs will be passed to the simulator

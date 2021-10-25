@@ -15,6 +15,8 @@ import hashlib
 from collections import OrderedDict
 from os.path import expanduser
 
+from typing import Dict
+
 from chiptools.common.exceptions import FileNotFoundError
 
 log = logging.getLogger(__name__)
@@ -38,7 +40,7 @@ class Options:
     the CONFIG_DEFAULTS as a base.
     """
 
-    CONFIG_DEFAULTS = OrderedDict(
+    CONFIG_DEFAULTS: Dict[str, Dict] = OrderedDict(
         [
             ('modelsim simulation libraries', OrderedDict([])),
             ('vivado simulation libraries', OrderedDict([])),

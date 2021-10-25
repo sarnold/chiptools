@@ -13,6 +13,7 @@ import sys
 import logging
 
 from shlex import split
+from typing import List
 
 from chiptools.common.utils import execute
 
@@ -21,7 +22,7 @@ log = logging.getLogger(__name__)
 
 class ToolchainBase(object):
 
-    executables = []
+    executables: List[str] = []
 
     def __init__(self, project, executables, user_paths):
         self.installed = False
