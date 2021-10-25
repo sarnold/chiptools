@@ -16,14 +16,13 @@ else:
 log = logging.getLogger(__name__)
 
 
-def self_test():
+def self_test(modname='chiptools.__init__'):
     """
     Basic sanity check using mod import.
     """
     print('Python version:', sys.version)
     print('-' * 80)
 
-    modname = 'chiptools.__init__'
     try:
         mod = importlib.import_module(modname)
         print(mod.__doc__)

@@ -33,3 +33,8 @@ class SelfTest(unittest.TestCase):
         self_test()
         captured = self.capsys.readouterr()
         self.assertIn('PASSED', captured.out)
+
+    def test_self_check_failed(self):
+        self_test(modname='foop')
+        captured = self.capsys.readouterr()
+        self.assertIn('FAILED', captured.out)
