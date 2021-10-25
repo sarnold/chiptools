@@ -1,3 +1,7 @@
+"""
+ChipTools FPGA build and verification utility.
+"""
+
 import logging.config
 import chiptools.common.colourer as colourer
 

@@ -13,34 +13,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import logging
 import sys
 
 from chiptools import __version__
 from chiptools.core.cli import CommandLine
+from chiptools.common.utils import create_parser, self_test
 
 
 def main():
     """
     Launch the Framework application command line interface.
     """
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawTextHelpFormatter
-    )
-    parser.add_argument(
-        '-v', '--version', help='Display version info', action='store_true'
-    )
-
-    options = parser.parse_args()
+    options = create_parser().parse_args()
 
     if options.version:
         print('[chiptools {}]'.format(__version__))
         sys.exit(0)
+    if options.test:
+        self_test()
+        sys.exit(0)
 
     main = CommandLine()
-    main.cmdloop()
-    logging.shutdown()
+    try:
+        main.cmdloop()
+    except (KeyboardInterrupt, RuntimeError):
+        print('Shutting down')
+    except Exception as exc:
+        print('[ERROR] {}'.format(exc))
+    finally:
+        logging.shutdown()
 
 
 if __name__ == '__main__':

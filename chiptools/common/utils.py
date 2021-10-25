@@ -1,5 +1,8 @@
+import argparse
+import importlib
 import subprocess
 import os
+import sys
 import logging
 import threading
 import time
@@ -11,6 +14,42 @@ else:
     from chiptools.common import exceptions
 
 log = logging.getLogger(__name__)
+
+
+def self_test():
+    """
+    Basic sanity check using mod import.
+    """
+    print('Python version:', sys.version)
+    print('-' * 80)
+
+    modname = 'chiptools.__init__'
+    try:
+        mod = importlib.import_module(modname)
+        print(mod.__doc__)
+        print('Self check: PASSED')
+
+    except Exception as exc:
+        print('FAILED:', repr(exc))
+
+    print('-' * 80)
+
+
+def create_parser():
+    """
+    Create parser for basic help and version args.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '-t', '--test', help='Run sanity checks', action='store_true'
+    )
+    parser.add_argument(
+        '-v', '--version', help='Display version info', action='store_true'
+    )
+
+    return parser
 
 
 def subgraph(graph, root):

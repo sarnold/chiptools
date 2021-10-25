@@ -11,7 +11,7 @@ from chiptools.core.project import Project
 from chiptools.common import exceptions
 from chiptools.common import utils
 from chiptools.common import colourer as term
-from chiptools.core import _version
+from chiptools import __version__
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class CommandLine(cmd.Cmd, object):
                         fg='yellow',
                     )
                 self.intro = INTRO_TEMPL % dict(
-                    version=_version.__version__,
+                    version=__version__,
                     projects=prj,
                 )
             except exceptions.ProjectFileException:
@@ -106,7 +106,7 @@ class CommandLine(cmd.Cmd, object):
                 + ' test(s).'
             )
             self.intro = INTRO_TEMPL % dict(
-                version=_version.__version__,
+                version=__version__,
                 projects=prj,
             )
 

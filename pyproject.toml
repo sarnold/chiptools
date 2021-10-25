@@ -18,6 +18,7 @@ source = ["chiptools"]
 omit = [
     "tests",
     ".tox",
+    "chiptools/chiptools_main.py",
 ]
 
 [tool.coverage.paths]
