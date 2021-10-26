@@ -9,6 +9,7 @@ Contents
    max_hold
    project_format
    testing
+   reference/modules
 
 
 Indices and tables
