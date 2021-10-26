@@ -1,10 +1,10 @@
+import importlib
 import logging
 import glob
 import os
 import traceback
 import re
 import unittest
-import sys
 
 from chiptools.common import exceptions
 from chiptools.common import utils
@@ -17,12 +17,11 @@ from chiptools.core import reporter
 from chiptools.core.cache import FileCache
 from chiptools.parsers import options
 from chiptools.parsers import xml_project
+from chiptools.parsers import callgraph
+
+# from chiptools.testing import testloader
 from chiptools.testing.custom_runners import HTMLTestRunner
 from chiptools.wrappers.wrapper import ToolWrapper
-if sys.version_info < (3, 0, 0):
-    import imp
-else:
-    import importlib.machinery
 
 
 log = logging.getLogger(__name__)
@@ -39,30 +38,20 @@ def load_tests(path, simulation_path):
 
     try:
         test_loader = unittest.TestLoader()
-        # Load modules with support for Python 2 or 3
-        if sys.version_info < (3, 0, 0):
-            module = imp.load_source(
-                'chiptools_tests_' + os.path.basename(path).split('.')[0],
-                path
-            )
-            suite = test_loader.loadTestsFromModule(module)
-        else:
-            module_loader = importlib.machinery.SourceFileLoader(
-                'chiptools_tests_' + os.path.basename(path).split('.')[0],
-                path
-            )
-            suite = test_loader.loadTestsFromModule(
-                module_loader.load_module()
-            )
-    except:
+        module_loader = importlib.machinery.SourceFileLoader(
+            'chiptools_tests_' + os.path.basename(path).split('.')[0], path
+        )
+        suite = test_loader.loadTestsFromModule(module_loader.load_module())
+    except Exception:
         log.error(
-            'The module could not be imported due to the ' +
-            ' following error:'
+            'The module could not be imported due to the '
+            + ' following error:'
         )
         log.error(traceback.format_exc())
         return None
 
     return suite
+
 
 class Project:
     def __init__(self, root=os.getcwd()):
@@ -71,8 +60,7 @@ class Project:
     def initialise(self, root=os.getcwd()):
         self.options = options.Options()
         self.tool_wrapper = ToolWrapper(
-            self,
-            self.options.get_user_tool_paths()
+            self, self.options.get_user_tool_paths()
         )
 
         self.config = {}
@@ -83,6 +71,42 @@ class Project:
         self.file_list = []
         self.project_data = {}
         self.tests = []
+
+    def write_designtree_png(self, path, root):
+
+        # Get root object
+        for file_object in self.get_files():
+            if os.path.splitext(os.path.basename(file_object.path))[0] == root:
+                root = file_object
+                # Continue with drawing the graph
+                cg = callgraph.CallGraph(self.get_files())
+                root = cg.parsed_files[self.get_files().index(root)]
+                graph = callgraph.CallGraph.get_design_hierarchy(
+                    callgraph.CallGraph.get_definition_map(cg.parsed_files),
+                    callgraph.CallGraph.get_reference_map(cg.parsed_files),
+                )
+
+                # Get changed files:
+                changed_files = []
+                for idx, file_object in enumerate(self.get_files()):
+                    if self.cache.is_file_changed(
+                        file_object, 'modelsim'
+                    ):  # TODO
+                        changed_files.append(cg.parsed_files[idx])
+
+                # Using the list of changed files, obtain a new list of files
+                # that must be recompiled by inspecting the callgraph.
+                callchain = callgraph.CallGraph.get_callchain(
+                    utils.subgraph(graph, root), changed_files
+                )
+
+                # Draw the callgraph
+                callgraph.CallGraph.write_graph_png(
+                    utils.subgraph(graph, root),
+                    show_unresolved=True,
+                    highlight_nodes=callchain,
+                )
+                return
 
     def load_project(self, path):
         """Initialise this project instance using the project file supplied
@@ -151,27 +175,26 @@ class Project:
         Add a configuration key, value mapping for the project.
         """
         value = ProjectAttributes.get_processed_attribute(
-            value,
-            self.root,
-            name
+            value, self.root, name
         )
         if self.config.get(name, None) is not None and not force:
             log.warning(
-                'Ignoring duplicate configuration attribute ' +
-                'found in project file, ' +
-                str(name) +
-                ' set to ' +
-                str(value) + ' ' +
-                'but already defined as ' +
-                str(self.config[name])
+                'Ignoring duplicate configuration attribute '
+                + 'found in project file, '
+                + str(name)
+                + ' set to '
+                + str(value)
+                + ' '
+                + 'but already defined as '
+                + str(self.config[name])
             )
         else:
             log.debug(
-                'Set project configuration \'' +
-                str(name) +
-                '\' to \'' +
-                str(value) +
-                '\''
+                "Set project configuration '"
+                + str(name)
+                + "' to '"
+                + str(value)
+                + "'"
             )
             self.config[name] = value
 
@@ -245,9 +268,7 @@ class Project:
         return re.sub(
             ' +',
             ' ',
-            self.config.get(
-                'args_{0}_{1}'.format(tool_name, flow_name), ''
-            )
+            self.config.get('args_{0}_{1}'.format(tool_name, flow_name), ''),
         )
 
     def get_all_tool_argument_keys(self, tool_name):
@@ -259,7 +280,7 @@ class Project:
         return list(
             filter(
                 lambda x: x.startswith('args_{0}'.format(tool_name)),
-                list(self.config.keys())
+                list(self.config.keys()),
             )
         )
 
@@ -308,8 +329,8 @@ class Project:
                 if libName not in result:
                     result[libName] = []
                 # Only include files that are registered for synthesis
-                result[libName] += (list(
-                    filter(lambda x: x.synthesise, library))
+                result[libName] += list(
+                    filter(lambda x: x.synthesise, library)
                 )
         return result
 
@@ -358,13 +379,12 @@ class Project:
             # Preprocess the file if it has a preprocessor
             if file_object.preprocessor:
                 if Preprocessor.process(
-                    file_object.path,
-                    file_object.preprocessor
+                    file_object.path, file_object.preprocessor
                 ):
                     log.info(
                         'Executed preprocessor {0} on file {1}'.format(
                             os.path.basename(file_object.preprocessor),
-                            file_object.path
+                            file_object.path,
                         )
                     )
 
@@ -384,18 +404,15 @@ class Project:
 
     def _get_tool(self, tool_name=None, tool_type='simulation'):
         tool = self.tool_wrapper.get_tool(
-            tool_type=tool_type,
-            tool_name=tool_name
+            tool_type=tool_type, tool_name=tool_name
         )
         if tool is None:
             raise EnvironmentError(
-                "Operation aborted, no {0} tool is available".format(tool_type)
+                'Operation aborted, no {0} tool is available'.format(tool_type)
             )
         if not tool.installed:
             raise EnvironmentError(
-                "Operation aborted, {0} is not available.".format(
-                    tool.name
-                )
+                'Operation aborted, {0} is not available.'.format(tool.name)
             )
         return tool
 
@@ -412,9 +429,7 @@ class Project:
             simulation_tool.name
         )
         # Do a compilation of the design to ensure the libraries are up to date
-        simulation_tool.compile_project(
-            includes=includes
-        )
+        simulation_tool.compile_project(includes=includes)
         includes.update(kwargs.get('includes', {}))
         kwargs.update(
             {
@@ -434,18 +449,14 @@ class Project:
         # Run the preprocessors prior to build.
         self.run_preprocessors()
         synthesis_tool = self._get_tool(tool_name, tool_type='synthesis')
-        log.info(
-            'Synthesising entity ' + entity + ' in library ' + library
-        )
+        log.info('Synthesising entity ' + entity + ' in library ' + library)
         synthesis_tool.synthesise(library, entity, fpga_part)
 
     def get_tests(self):
         """
         Return a list of files implementing TestSuite objects.
         """
-        files_with_tests = list(
-            filter(lambda x: x.testsuite, self.tests)
-        )
+        files_with_tests = list(filter(lambda x: x.testsuite, self.tests))
         return files_with_tests
 
     def run_tests(self, ids=None, tool_name=None):
@@ -492,9 +503,7 @@ class Project:
         for id in ids:
             if id < len(tests):
                 fileName, test = tests[id]
-                log.info(
-                    str(test.id())
-                )
+                log.info(str(test.id()))
                 suite.addTest(test)
                 log.info('Added ' + str(test) + ' to testsuite')
 
@@ -502,14 +511,12 @@ class Project:
         # TODO: Allow HTML or Console selection
         if True:
             with open(
-                os.path.join(
-                    self.get_simulation_directory(), 'report.html'
-                ), 'w'
+                os.path.join(self.get_simulation_directory(), 'report.html'),
+                'w',
             ) as report:
-                HTMLTestRunner.HTMLTestRunner(
-                    verbosity=2,
-                    stream=report
-                ).run(suite)
+                HTMLTestRunner.HTMLTestRunner(verbosity=2, stream=report).run(
+                    suite
+                )
         else:
             unittest.TextTestRunner(verbosity=2).run(suite)
         log.info('...done')

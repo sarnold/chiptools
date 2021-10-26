@@ -19,7 +19,7 @@
         <file path='pkg_max_hold.vhd'/>
     </library>
     <library name='lib_tb_max_hold'>
-        <file 
+        <file
             path='tb_max_hold.vhd'
             synthesise='false'
         />

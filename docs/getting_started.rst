@@ -19,7 +19,7 @@ Installation
 ChipTools should work on any platform that can run Python 3 and your preferred
 FPGA simulation and synthesis tools.
 
-Clone the ChipTools repository to your system (or download the `latest tag <https://github.com/pabennett/chiptools/tags>` or master tarball from github):
+Clone the ChipTools repository to your system (or download the `latest tag <https://github.com/pabennett/chiptools/tags>`_ or master tarball from github):
 
 .. code-block:: bash
 
@@ -98,7 +98,7 @@ directly:
     # Add constraints
     project.add_constraints('path/to/synthesis_constraints.sdc')
     # Add source files
-    project.add_file('path/to/my_top.vhd', library='top')    
+    project.add_file('path/to/my_top.vhd', library='top')
     # Synthesise the project (library and entity)
     project.synthesise('top', 'my_top')
 
@@ -132,4 +132,3 @@ The XML file can be loaded into the ChipTools command line interface and operate
     $ chiptools
     (cmd) load_project my_project.xml
     (cmd) synthesise top.my_top
-

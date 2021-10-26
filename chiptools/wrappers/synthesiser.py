@@ -29,19 +29,20 @@ def throws_synthesis_exception(fn):
             log.error(
                 'The directory {0} could not be found, '.format(
                     args[0].synthesisRoot
-                ) +
-                'check the synthesis paths in the project and options file.'
+                )
+                + 'check the synthesis paths in the project and options file.'
             )
             raise exceptions.SynthesisException(e)
         except FileNotFoundError as e:
             log.error(traceback.format_exc())
             log.error(
-                'The executable could not be found, check the executable ' +
-                'paths in the options file.'
+                'The executable could not be found, check the executable '
+                + 'paths in the options file.'
             )
             raise exceptions.SynthesisException(e)
-        except:
+        except Exception:
             raise
+
     return wrapper
 
 
@@ -51,19 +52,15 @@ class Synthesiser(ToolchainBase):
     implementations. Common functions used by all synthesis tool wrappers are
     implemented in this class.
     """
+
     def __init__(self, project, executables, user_paths):
-        super(Synthesiser, self).__init__(
-            project,
-            executables,
-            user_paths
-        )
+        super(Synthesiser, self).__init__(project, executables, user_paths)
 
     def synthesise(self, library, entity, fpga_part=None):
         """
         Synthesise the target entity in the given library for the currently
         loaded project.
         """
-        pass
 
     def storeOutputs(self, workingDirectory, archiveName):
         """

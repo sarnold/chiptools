@@ -9,7 +9,7 @@ Contents
    max_hold
    project_format
    testing
-   
+
 
 Indices and tables
 ==================

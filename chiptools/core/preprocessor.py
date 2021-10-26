@@ -1,15 +1,14 @@
 import logging
 import traceback
-import imp
+import importlib
 import inspect
 import sys
 import os
 
 from chiptools.common.exceptions import FileNotFoundError
 
+
 log = logging.getLogger(__name__)
-
-
 preprocessor_temporary_module = 'chiptools_preprocessor_temporary_module'
 
 
@@ -30,23 +29,18 @@ def get_preprocessor(path):
         log.error('File not found, aborting preprocessor load: ' + str(path))
         return
     try:
-        if sys.version_info < (3, 0, 0):
-            # imp.load_source in Python2 will try to use a matching .pyc if 
-            # found. We do not want this behavior so delete the .pyc:
-            base = os.path.basename(path)
-            root = os.path.dirname(path)
-            name, ext = os.path.splitext(base)
-            pyc_path = os.path.join(root, name + '.pyc')
-            if os.path.exists(pyc_path):
-                os.remove(pyc_path)
         # We are loading unchecked user code here, the import stage is
         # exception checked.
-        imp.load_source(preprocessor_temporary_module, path)
-        import chiptools_preprocessor_temporary_module
-    except:
+        importlib.machinery.SourceFileLoader(
+            preprocessor_temporary_module,
+            path,
+        ).load_module()
+        import chiptools_preprocessor_temporary_module  # type: ignore
+
+    except Exception:
         log.error(
-            'The module could not be imported due to the ' +
-            ' following error:'
+            'The module could not be imported due to the '
+            + ' following error:'
         )
         log.error(traceback.format_exc())
         return None
@@ -63,6 +57,7 @@ def get_preprocessor(path):
 
 class Preprocessor:
     """Preprocessor class to handle file preprocessor execution."""
+
     def __init__(self):
         super(Preprocessor, self).__init__()
 
@@ -82,10 +77,10 @@ class Preprocessor:
             return False
         try:
             data = processor(data, path)
-        except:
+        except Exception:
             log.error(
-                'The preprocessor caused an exception, ' +
-                'no modifications were made'
+                'The preprocessor caused an exception, '
+                + 'no modifications were made'
             )
             log.error(traceback.format_exc())
             return False

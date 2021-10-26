@@ -56,13 +56,14 @@ class Isim(Simulator):
         generics={},
         includes={},
         args=[],
-        duration=None
+        duration=None,
     ):
         cwd = self.project.get_simulation_directory()
         # Execute FUSE on the design files:
         fuse_args = [
             library + '.' + entity,
-            '-o', self.sim_exe_name,
+            '-o',
+            self.sim_exe_name,
         ]
         # Set simulator generics
         for name, binding in generics.items():
@@ -89,7 +90,7 @@ class Isim(Simulator):
             os.path.join(cwd, self.sim_exe_name),
             sim_args,
             cwd=self.project.get_simulation_directory(),
-            quiet=False
+            quiet=False,
         )
 
         return ret, stdout, stderr
@@ -107,7 +108,7 @@ class Isim(Simulator):
             '-incremental',
             '-work',
             file_object.library + '=' + file_object.library,
-            file_object.path
+            file_object.path,
         ]
         if file_object.fileType == FileType.VHDL:
             Isim._call(self.vhpcomp, args, cwd=cwd)
@@ -117,8 +118,8 @@ class Isim(Simulator):
             Isim._call(self.vlogcomp, args, cwd=cwd)
         else:
             log.warning(
-                'ISIM wrapper skipping file with unknown type: ' +
-                file_object.path
+                'ISIM wrapper skipping file with unknown type: '
+                + file_object.path
             )
 
     def library_exists(self, libname, workdir):

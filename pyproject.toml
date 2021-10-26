@@ -9,14 +9,17 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = [
-    "tests",
-]
+testpaths = ["tests",]
+log_cli =  false
 
 [tool.coverage.run]
 branch = true
 source = ["chiptools"]
-omit = ["tests", ".tox"]
+omit = [
+    "tests",
+    ".tox",
+    "chiptools/chiptools_main.py",
+]
 
 [tool.coverage.paths]
 source = ["chiptools"]

@@ -1,15 +1,138 @@
+import argparse
+import importlib
 import subprocess
 import os
+import sys
 import logging
 import threading
 import time
+import copy
 
 if __name__ == '__main__':
-    import exceptions
+    import exceptions  # type: ignore
 else:
     from chiptools.common import exceptions
 
 log = logging.getLogger(__name__)
+
+
+def self_test(modname='chiptools.__init__'):
+    """
+    Basic sanity check using mod import.
+    """
+    print('Python version:', sys.version)
+    print('-' * 80)
+
+    try:
+        mod = importlib.import_module(modname)
+        print(mod.__doc__)
+        print('Self check: PASSED')
+
+    except Exception as exc:
+        print('FAILED:', repr(exc))
+
+    print('-' * 80)
+
+
+def create_parser():
+    """
+    Create parser for basic help and version args.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '-t', '--test', help='Run sanity checks', action='store_true'
+    )
+    parser.add_argument(
+        '-v', '--version', help='Display version info', action='store_true'
+    )
+
+    return parser
+
+
+def subgraph(graph, root):
+    """
+    Given a graph represented by a dictionary of key (node) and value (set of
+    child nodes) and a root node, return a new graph representing the root node
+    and its hierarchy.
+    >>> graph = {
+    ...    2 : set([11]),
+    ...    9 : set([11, 8]),
+    ...    10 : set([11, 3]),
+    ...    11 : set([5, 7]),
+    ...    8 : set([7, 3]),
+    ...    5 : set(),
+    ...    7 : set(),
+    ...    3 : set([5])
+    ... }
+    >>> subgraph(graph, 8)
+    {8: {3, 7}, 3: {5}, 5: set(), 7: set()}
+    """
+
+    def subgraph_recurse(graph, root, top=False, new_graph=None):
+        if top:
+            new_graph = {root: graph[root]}
+        if root not in new_graph:
+            new_graph[root] = set()
+        if root not in graph:
+            return new_graph
+        for child in graph[root]:
+            new_graph[root].add(child)
+            subgraph_recurse(graph, child, new_graph=new_graph)
+        return new_graph
+
+    return subgraph_recurse(graph, root, top=True)
+
+
+def topological_sort(graph):
+    """
+    Perform a topological sort on the graph and return a list of sorted nodes.
+    The graph is represented as a dictionary where each key is a node and
+    the value is a list/set of connected child nodes.
+    >>> graph = {
+    ...    2 : set([11]),
+    ...    9 : set([11, 8]),
+    ...    10 : set([11, 3]),
+    ...    11 : set([5, 7]),
+    ...    8 : set([7, 3]),
+    ...    5 : set(),
+    ...    7 : set(),
+    ...    3 : set()
+    ... }
+    >>> topological_sort(graph)
+    [3, 7, 5, 8, 11, 2, 9, 10]
+    """
+    # Kahn's Algorithm (https://en.wikipedia.org/wiki/Topological_sorting)
+    # L ← Empty list that will contain the sorted elements
+    # S ← Set of all nodes with no incoming edges
+    # while S is non-empty do
+    #     remove a node n from S
+    #     add n to tail of L
+    #     for each node m with an edge e from n to m do
+    #         remove edge e from the graph
+    #         if m has no other incoming edges then
+    #             insert m into S
+    # if graph has edges then
+    #     return error (graph has at least one cycle)
+    # else
+    #     return L (a topologically sorted order)
+    # Construct a local shallow copy as we directly manipulate graph values
+    graph = dict((k, copy.copy(graph[k])) for k in graph.keys())
+    l = []  # noqa
+    # using type set() for S breaks ordering between python versions
+    s = list([node for node in graph if len(graph[node]) == 0])
+    while len(s) > 0:
+        n = s.pop()
+        l.append(n)
+        for m in list(filter(lambda x: n in graph[x], graph.keys())):
+            graph[m].remove(n)
+            if len(graph[m]) == 0:
+                s.insert(0, m)
+    if any(len(graph[n]) > 0 for n in graph.keys()):
+        raise ValueError('Graph contains at least one cycle')
+    else:
+        return l
 
 
 def iterate_tests(test_suite_or_case):
@@ -44,7 +167,7 @@ def parse_range(astr):
     result = set()
     for part in astr.split(','):
         x = part.split('-')
-        result.update(range(int(x[0]), int(x[-1])+1))
+        result.update(range(int(x[0]), int(x[-1]) + 1))
     return sorted(result)
 
 
@@ -66,7 +189,7 @@ def time_delta_string(start_time, end_time):
     >>> time_delta_string(50e-3, 100e-3)
     '50.0ms'
     """
-    return str(seconds_to_timestring(end_time-start_time))
+    return str(seconds_to_timestring(end_time - start_time))
 
 
 def seconds_to_timestring(duration):
@@ -89,29 +212,27 @@ def seconds_to_timestring(duration):
     '0.1ns'
     """
     if duration >= 1000e-3:
-        return str(duration) + "s"
+        return str(duration) + 's'
     if duration >= 1000e-6:
-        return str(duration * 1e3) + "ms"
+        return str(duration * 1e3) + 'ms'
     if duration >= 1000e-9:
-        return str(duration * 1e6) + "us"
-    return str(duration * 1e9) + "ns"
+        return str(duration * 1e6) + 'us'
+    return str(duration * 1e9) + 'ns'
 
 
-def execute(command, path=None, shell=True, quiet=False):
+def execute(command, path=None, shell=False, quiet=False):
     return popen_throws_ex(command, path, quiet)
 
 
-def call(command, path=None, shell=True):
-    '''
+def call(command, path=None, shell=False):
+    """
     Call the executable in the given path, any messages the program generates
     will be routed to stdout and stderr.
-    '''
+    """
     return_val = 0
     if path:
         return_val = subprocess.call(
-            command,
-            shell=shell,
-            cwd=os.path.expandvars(path)
+            command, shell=shell, cwd=os.path.expandvars(path)
         )
     else:
         return_val = subprocess.call(command, shell=shell)
@@ -120,11 +241,11 @@ def call(command, path=None, shell=True):
 
 
 def popen_throws_ex(command, path=None, quiet=False):
-    '''
+    """
     Call the executable in the given path, hiding standard output unless the
     return value is an error. If the return value is an error raise an
     exception for the caller to handle.
-    '''
+    """
 
     if quiet:
         returnVal, stdout, stderr = popen_quiet(command, path)
@@ -146,6 +267,7 @@ def tee(infile, *files):
     """
     Print `infile` to `files` in a separate thread.
     """
+
     def fanout(infile, *files):
         while True:
             line = infile.readline().decode('utf-8')
@@ -155,7 +277,8 @@ def tee(infile, *files):
             else:
                 break
         infile.close()
-    t = threading.Thread(target=fanout, args=(infile,)+files)
+
+    t = threading.Thread(target=fanout, args=(infile,) + files)
     t.daemon = True
     t.start()
     return t
@@ -164,6 +287,7 @@ def tee(infile, *files):
 class LogWrapper:
     """Simple class to provide a file interface using a logger
     message function"""
+
     def __init__(self, logfn):
         self.logfn = logfn
 
@@ -192,6 +316,7 @@ def teed_call(cmd_args, **kwargs):
 
 def popen(command, path=None):
     from io import StringIO
+
     fout, ferr = StringIO(), StringIO()
     exitcode = teed_call(command, cwd=path, stdout=fout, stderr=ferr)
     stdout = fout.getvalue()
@@ -200,28 +325,21 @@ def popen(command, path=None):
 
 
 def popen_quiet(command, path=None):
-    '''
+    """
     Call the executable in the given path and return the standard output and
     error streams.
-    '''
+    """
     returnVal = 0
     stdout = ''
     stderr = ''
     if path:
-        process = subprocess.Popen(
-            command,
-            cwd=path,
-            stdout=subprocess.PIPE
-        )
+        process = subprocess.Popen(command, cwd=path, stdout=subprocess.PIPE)
         # execute it, get stdout and stderr
         stdout, stderr = process.communicate()
         # when finished, get the exit code
         returnVal = process.wait()
     else:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE
-        )
+        process = subprocess.Popen(command, stdout=subprocess.PIPE)
         # execute it, get stdout and stderr
         stdout, stderr = process.communicate()
         # when finished, get the exit code
@@ -234,6 +352,8 @@ def popen_quiet(command, path=None):
 
     return returnVal, stdout, stderr
 
+
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+
+    doctest.testmod(verbose=True)

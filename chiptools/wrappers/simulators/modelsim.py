@@ -38,7 +38,7 @@ class Modelsim(Simulator):
         generics={},
         includes={},
         args=[],
-        duration=None
+        duration=None,
     ):
         """
         Invoke the simulator and target the given *entity* in the given
@@ -84,7 +84,7 @@ class Modelsim(Simulator):
             self.vsim,
             arguments,
             cwd=self.project.get_simulation_directory(),
-            quiet=False
+            quiet=False,
         )
         return ret, stdout, stderr
 
@@ -102,50 +102,42 @@ class Modelsim(Simulator):
         args += [file_object.path]
         if file_object.fileType == FileType.VHDL:
             Modelsim._call(
-                self.vcom,
-                args,
-                cwd=self.project.get_simulation_directory()
+                self.vcom, args, cwd=self.project.get_simulation_directory()
             )
         elif file_object.fileType == FileType.Verilog:
             Modelsim._call(
-                self.vlog,
-                args,
-                cwd=self.project.get_simulation_directory()
+                self.vlog, args, cwd=self.project.get_simulation_directory()
             )
         elif file_object.fileType == FileType.SystemVerilog:
             Modelsim._call(
-                self.vlog,
-                args,
-                cwd=self.project.get_simulation_directory()
+                self.vlog, args, cwd=self.project.get_simulation_directory()
             )
         else:
             log.warning(
-                'Simulator ignoring file with unsupported extension: ' +
-                file_object.path
+                'Simulator ignoring file with unsupported extension: '
+                + file_object.path
             )
 
     def set_working_library(self, library, cwd=None):
         Modelsim._call(
             self.vmap,
             ['work', library],
-            cwd=self.project.get_simulation_directory()
+            cwd=self.project.get_simulation_directory(),
         )
 
     def set_library_path(self, library, path, cwd=None):
         Modelsim._call(
             self.vmap,
             [library, path],
-            cwd=self.project.get_simulation_directory()
+            cwd=self.project.get_simulation_directory(),
         )
 
     def add_library(self, library):
         Modelsim._call(
-            self.vlib,
-            [library],
-            cwd=self.project.get_simulation_directory()
+            self.vlib, [library], cwd=self.project.get_simulation_directory()
         )
         Modelsim._call(
             self.vmap,
             [library, library],
-            cwd=self.project.get_simulation_directory()
+            cwd=self.project.get_simulation_directory(),
         )

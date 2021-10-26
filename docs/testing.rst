@@ -41,7 +41,7 @@ given below:
 
 Using ChipToolsTest
 ===================
-    
+
 Assertion Based Tests
 ---------------------
 
@@ -170,7 +170,7 @@ the implementation is correct:
             expected = np.fft.fft(values)
 
             # (compare our actual and expected values)
-            self.compare_fft_response(actual, expected) 
+            self.compare_fft_response(actual, expected)
 
 The example above demonstrates how you might check a common signal processing
 application using a Fast Fourier Transform. By using this approach a large

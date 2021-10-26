@@ -2,12 +2,14 @@
 This script provides an example of how to use the ChipTools scripted flow.
 """
 import os
+
 try:
     # Import the Project class from chiptools.core.project
     from chiptools.core.project import Project
 except ImportError:
     import sys
-    print("ChipTools is not installed on your system.")
+
+    print('ChipTools is not installed on your system.')
     sys.exit(1)
 
 project_root = os.path.dirname(__file__)
@@ -57,9 +59,7 @@ project.add_file('pkg_max_hold.vhd', library='lib_max_hold')
 # to 'False', this tells the synthesis tool not to try to synthesise this file.
 # If not specified, 'synthesise' will default to 'True'
 project.add_file(
-    'tb_max_hold.vhd',
-    library='lib_tb_max_hold',
-    synthesise=False
+    'tb_max_hold.vhd', library='lib_tb_max_hold', synthesise=False
 )
 
 if __name__ == '__main__':
@@ -74,13 +74,12 @@ if __name__ == '__main__':
         # CommandLine constructor. Launch the ChipTools command line with the
         # project we just configured:
         from chiptools.core.cli import CommandLine
+
         CommandLine(project).cmdloop()
     else:
         # Run the automated unit tests on the project:
         project.run_tests(tool_name='ghdl')
         # Synthesise the project:
         project.synthesise(
-            library='lib_max_hold',
-            entity='max_hold',
-            tool_name='vivado'
+            library='lib_max_hold', entity='max_hold', tool_name='vivado'
         )

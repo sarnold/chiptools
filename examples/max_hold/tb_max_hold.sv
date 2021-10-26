@@ -2,10 +2,10 @@ module tb_max_hold #(parameter data_width = 3);
     /* ------------------------------------------------------------------------
     ** data_width will be overidden by chiptools.
     ** Icarus does not support Parameter overrides, but other tools do. We work
-    ** around this by providing a Parameter for tools that do support them and 
+    ** around this by providing a Parameter for tools that do support them and
     ** then create a `define for each parameter of the same name so that tools
     ** that do not support parameter overrides can overload the `define
-    ** instead. 
+    ** instead.
     ** ----------------------------------------------------------------------*/
     `ifndef data_width
         `define data_width data_width
@@ -38,7 +38,7 @@ module tb_max_hold #(parameter data_width = 3);
     end
 
     /* ------------------------------------------------------------------------
-    ** Waveform File Dump 
+    ** Waveform File Dump
     ** ----------------------------------------------------------------------*/
     initial begin
         $dumpfile("test.vcd");

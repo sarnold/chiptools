@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - develop
 
 jobs:
   tests:
@@ -33,7 +34,7 @@ jobs:
     - name: Install Ubuntu tool deps
       run: |
         sudo apt-get -qq update
-        sudo apt-get install -qq -y iverilog ghdl
+        sudo apt-get install -qq -y iverilog ghdl graphviz
 
     - uses: actions/setup-python@v2
       with:

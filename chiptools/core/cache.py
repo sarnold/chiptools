@@ -7,6 +7,8 @@ import logging
 import datetime
 import time
 
+from typing import Any, Dict
+
 from chiptools.common import utils
 
 log = logging.getLogger(__name__)
@@ -29,10 +31,11 @@ class FileCache:
         * FILES : A dictionary of file path / file md5 sum pairs
         of files added using *add_file*
     """
+
     cache_file_name = '_compilation.cache'
     field_id_files = 'FILES'
     field_id_libraries = 'LIBRARIES'
-    blank_cache_element = {
+    blank_cache_element: Dict[str, Any] = {
         field_id_libraries: set(),
         field_id_files: {},
     }
@@ -59,15 +62,13 @@ class FileCache:
             # design
             with open(self.cache_path, 'rb') as pickeFile:
                 self.cache = pickle.load(pickeFile)
-        except:
+        except Exception:
             log.warning('The cache file was corrupted, re-initialising...')
             log.debug(traceback.format_exc())
             self.initialise_cache()
         log.debug(
-            'Cache loaded in ' + utils.time_delta_string(
-                start_time,
-                time.time()
-            )
+            'Cache loaded in '
+            + utils.time_delta_string(start_time, time.time())
         )
 
     def initialise_cache(self):
@@ -102,9 +103,9 @@ class FileCache:
             return False
 
         if tool_name in self.cache:
-            cached_md5 = self.cache[tool_name][
-                self.field_id_files
-            ].get(path, None)
+            cached_md5 = self.cache[tool_name][self.field_id_files].get(
+                path, None
+            )
             with open(path, 'rb') as f:
                 md5 = hashlib.md5(f.read()).hexdigest()
             if cached_md5 == md5:
@@ -159,17 +160,17 @@ class FileCache:
         with open(fileObject.path, 'rb') as f:
             md5 = hashlib.md5(f.read()).hexdigest()
         fileObject.compile_time = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
+            '%Y-%m-%d %H:%M:%S'
         )
         fileObject.md5 = md5
-        self.cache[tool_name][self.field_id_files][fileObject.path] = (
-            fileObject.md5
-        )
+        self.cache[tool_name][self.field_id_files][
+            fileObject.path
+        ] = fileObject.md5
         log.debug(
-            'File added to cache: ' +
-            os.path.basename(fileObject.path) +
-            ' MD5: ' +
-            md5
+            'File added to cache: '
+            + os.path.basename(fileObject.path)
+            + ' MD5: '
+            + md5
         )
 
     def remove_file(self, fileObject, tool_name):
@@ -182,8 +183,7 @@ class FileCache:
         if fileObject.path in self.cache[tool_name][self.field_id_files]:
             del self.cache[tool_name][self.field_id_files][fileObject.path]
             log.debug(
-                'File removed from cache: ' +
-                os.path.basename(fileObject.path)
+                'File removed from cache: ' + os.path.basename(fileObject.path)
             )
 
     def delete(self):

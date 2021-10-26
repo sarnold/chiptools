@@ -1,3 +1,7 @@
+"""
+ChipTools FPGA build and verification utility.
+"""
+
 import logging.config
 import chiptools.common.colourer as colourer
 
@@ -13,23 +17,18 @@ LOG_CONFIG = {
             'stream': 'ext://sys.stdout',
             'class': handler_name,
             'level': 'INFO',
-            'formatter': 'simple'
+            'formatter': 'simple',
         },
     },
     'disable_existing_loggers': False,
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG'
-    },
+    'root': {'handlers': ['console'], 'level': 'DEBUG'},
     'formatters': {
         'verbose': {
             'format': '[%(asctime)s - %(module)s - %(levelname)s] %(message)s'
         },
-        'simple': {
-            'format': '[%(levelname)s] %(message)s'
-        }
+        'simple': {'format': '[%(levelname)s] %(message)s'},
     },
-    'version': 1
+    'version': 1,
 }
 
 logging.config.dictConfig(LOG_CONFIG)

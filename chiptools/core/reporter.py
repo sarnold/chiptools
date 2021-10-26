@@ -4,12 +4,15 @@ tools used by the wrapper objects. Reporters are created for each tool and are
 set up to search for specific messages to report back to the user. Reporters
 can also be set up to search for user defined strings.
 """
-import os
 import logging
-import inspect
-import imp
-import sys
 import traceback
+import importlib
+import inspect
+import sys
+import os
+
+from chiptools.common.exceptions import FileNotFoundError
+
 
 log = logging.getLogger(__name__)
 reporter_temporary_module = 'chiptools_reporter_temporary_module'
@@ -33,31 +36,25 @@ def get_reporter(path):
         log.error('File not found, aborting module load: ' + str(path))
         return
     try:
-        if sys.version_info < (3, 0, 0):
-            # imp.load_source in Python2 will try to use a matching .pyc if 
-            # found. We do not want this behavior so delete the .pyc:
-            base = os.path.basename(path)
-            root = os.path.dirname(path)
-            name, ext = os.path.splitext(base)
-            pyc_path = os.path.join(root, name + '.pyc')
-            if os.path.exists(pyc_path):
-                os.remove(pyc_path)
         # We are loading unchecked user code here, the import stage is
         # exception checked.
-        imp.load_source(reporter_temporary_module, path)
-        import chiptools_reporter_temporary_module
-    except:
+        importlib.machinery.SourceFileLoader(
+            reporter_temporary_module,
+            path,
+        ).load_module()
+        import chiptools_reporter_temporary_module  # type: ignore
+
+    except Exception:
         log.error(
-            'The module could not be imported due to the ' +
-            ' following error:'
+            'The module could not be imported due to the '
+            + ' following error:'
         )
         log.error(traceback.format_exc())
         return None
+
     # Search the module members until a function with the name 'report' is
     # found. If no function can be found return None
-    for name, obj in inspect.getmembers(
-        chiptools_reporter_temporary_module
-    ):
+    for name, obj in inspect.getmembers(chiptools_reporter_temporary_module):
         if hasattr(obj, '__name__'):
             if obj.__name__ == 'report' and callable(obj):
                 return obj

@@ -12,6 +12,9 @@ import os
 import sys
 import logging
 
+from shlex import split
+from typing import List
+
 from chiptools.common.utils import execute
 
 log = logging.getLogger(__name__)
@@ -19,7 +22,7 @@ log = logging.getLogger(__name__)
 
 class ToolchainBase(object):
 
-    executables = []
+    executables: List[str] = []
 
     def __init__(self, project, executables, user_paths):
         self.installed = False
@@ -33,13 +36,10 @@ class ToolchainBase(object):
             else:
                 log.error(
                     (
-                        'Invalid path {0} for the {1} toolchain ' +
-                        'in the system configuration file. Auto-discovery ' +
-                        'for this tool will be used instead.'
-                    ).format(
-                        path,
-                        self.name.capitalize()
-                    )
+                        'Invalid path {0} for the {1} toolchain '
+                        + 'in the system configuration file. Auto-discovery '
+                        + 'for this tool will be used instead.'
+                    ).format(path, self.name.capitalize())
                 )
         else:
             log.debug(
@@ -78,7 +78,7 @@ class ToolchainBase(object):
         files = list(
             filter(
                 lambda x: os.path.isfile(x),
-                [os.path.join(p, executable) for p in paths]
+                [os.path.join(p, executable) for p in paths],
             )
         )
         return files
@@ -91,13 +91,10 @@ class ToolchainBase(object):
         """
         allRoots = [
             [
-                os.path.dirname(
-                    path
-                ) for path in ToolchainBase.find_executable(
-                    exe,
-                    paths
-                )
-            ] for exe in executables
+                os.path.dirname(path)
+                for path in ToolchainBase.find_executable(exe, paths)
+            ]
+            for exe in executables
         ]
         # Iterate across each root path in the first root list and return the
         # root path if it is present in all other root lists.
@@ -124,11 +121,11 @@ class ToolchainBase(object):
 
     @staticmethod
     def _call(executable, args=[], cwd=None, quiet=True):
-        log.debug('executing {0} in dir {1} with args {2}'.format(
-            executable,
-            cwd,
-            args
-        ))
+        log.debug(
+            'executing {0} in dir {1} with args {2}'.format(
+                executable, cwd, args
+            )
+        )
         command = [executable]
         command += args
         ret, stdout, stderr = execute(command, path=cwd, quiet=quiet)
@@ -136,12 +133,12 @@ class ToolchainBase(object):
 
     @staticmethod
     def _call_str_args(executable, args='', cwd=None, quiet=True):
-        log.debug('executing {0} in dir {1} with args {2}'.format(
-            executable,
-            cwd,
-            args
-        ))
+        log.debug(
+            'executing {0} in dir {1} with args {2}'.format(
+                executable, cwd, args
+            )
+        )
         command = executable
-        command += (' ' + args)
+        command += split(args)
         ret, stdout, stderr = execute(command, path=cwd, quiet=quiet)
         return (ret, stdout, stderr)

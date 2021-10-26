@@ -14,7 +14,7 @@ from chiptools.wrappers import synthesiser
 log = logging.getLogger(__name__)
 
 # Options file to be used by XFLOW
-XST_MIXED_OPT = '''
+XST_MIXED_OPT = """
 FLOWTYPE = FPGA_SYNTHESIS;
 Program xst
 -ifn <design>_xst.scr;       # input XST script file
@@ -31,7 +31,7 @@ ParamFile: <design>_xst.scr
 "-p <partname>";             # Target Device
 End ParamFile
 End Program xst
-'''
+"""
 
 
 class Ise(synthesiser.Synthesiser):
@@ -54,6 +54,7 @@ class Ise(synthesiser.Synthesiser):
     timestamp.
 
     """
+
     name = 'ise'
 
     executables = [
@@ -64,7 +65,7 @@ class Ise(synthesiser.Synthesiser):
         'par',
         'ngdbuild',
         'bitgen',
-        'xflow'
+        'xflow',
     ]
 
     def __init__(self, project, user_paths, mode='manual'):
@@ -124,22 +125,22 @@ class Ise(synthesiser.Synthesiser):
                     elif fileObject.fileType == FileType.NGCNetlist:
                         base = os.path.dirname(projectFilePath)
                         newPath = os.path.join(
-                            base,
-                            os.path.basename(fileObject.path)
+                            base, os.path.basename(fileObject.path)
                         )
                         if os.path.exists(newPath):
                             log.warning(
-                                'File already exists: ' + str(newPath) +
-                                ' and will be overwritten by: ' +
-                                str(fileObject.path)
+                                'File already exists: '
+                                + str(newPath)
+                                + ' and will be overwritten by: '
+                                + str(fileObject.path)
                             )
                         # Copy the NGC into the local directory
                         shutil.copyfile(fileObject.path, newPath)
                         continue
                     else:
                         raise exceptions.SynthesisException(
-                            'Unknown file type for synthesis tool: ' +
-                            fileObject.fileType
+                            'Unknown file type for synthesis tool: '
+                            + fileObject.fileType
                         )
                     projectFileString += fileObject.library + ' '
                     projectFileString += fileObject.path + '\n'
@@ -150,7 +151,7 @@ class Ise(synthesiser.Synthesiser):
         log.debug('Writing: ' + projectFilePath)
         with open(projectFilePath, 'w') as f:
             f.write(projectFileString)
-        log.info("...done")
+        log.info('...done')
 
     @synthesiser.throws_synthesis_exception
     def synthesise(self, library, entity, fpga_part=None):
@@ -172,17 +173,17 @@ class Ise(synthesiser.Synthesiser):
         startTime = datetime.datetime.now()
 
         log.info(
-            'Turning Xilinx WebTalk off as it may prevent the removal of ' +
-            'temporary directories'
+            'Turning Xilinx WebTalk off as it may prevent the removal of '
+            + 'temporary directories'
         )
         try:
             self.ise_webtalk_off()
-        except:
+        except Exception:
             log.debug(traceback.format_exc())
             log.warning(
-                'Could not disable WebTalk, ' +
-                'you may encounter PermissionErrors ' +
-                'during temporary directory removal'
+                'Could not disable WebTalk, '
+                + 'you may encounter PermissionErrors '
+                + 'during temporary directory removal'
             )
         with tempfile.TemporaryDirectory(
             dir=self.project.get_synthesis_directory()
@@ -191,9 +192,7 @@ class Ise(synthesiser.Synthesiser):
                 'Created temporary synthesis directory: ' + workingDirectory
             )
             synthName = (
-                entity +
-                '_synth_' +
-                startTime.strftime('%d%m%y_%H%M%S')
+                entity + '_synth_' + startTime.strftime('%d%m%y_%H%M%S')
             )
             archiveName = synthName + '.tar'
             synthesisDirectory = os.path.join(workingDirectory, synthName)
@@ -202,9 +201,7 @@ class Ise(synthesiser.Synthesiser):
                 fpga_part = self.project.get_fpga_part()
             generics = self.project.get_generics().items()
             generics = (
-                '{' +
-                ' '.join(k + '=' + str(v) for k, v in generics) +
-                '}'
+                '{' + ' '.join(k + '=' + str(v) for k, v in generics) + '}'
             )
             projectFilePath = os.path.join(synthesisDirectory, entity + '.prj')
             exportDirectory = os.path.join(synthesisDirectory, 'output')
@@ -222,10 +219,10 @@ class Ise(synthesiser.Synthesiser):
                         generics,
                         synthesisDirectory,
                         reportDirectory,
-                        exportDirectory
+                        exportDirectory,
                     )
                     self.generate_programming_files(entity, synthesisDirectory)
-                except:
+                except Exception:
                     # Archive the outputs
                     log.error(
                         'Synthesis error, storing output in error directory...'
@@ -242,10 +239,10 @@ class Ise(synthesiser.Synthesiser):
                         generics,
                         synthesisDirectory,
                         reportDirectory,
-                        exportDirectory
+                        exportDirectory,
                     )
                     self.generate_programming_files(entity, synthesisDirectory)
-                except:
+                except Exception:
                     # Archive the outputs
                     log.error(
                         'Synthesis error, storing output in error directory...'
@@ -262,10 +259,10 @@ class Ise(synthesiser.Synthesiser):
             try:
                 if reporter_fn is not None:
                     reporter_fn(synthesisDirectory)
-            except:
+            except Exception:
                 log.error(
-                    'The post-synthesis reporter script caused an error:\n' +
-                    traceback.format_exc()
+                    'The post-synthesis reporter script caused an error:\n'
+                    + traceback.format_exc()
                 )
             # Archive the outputs
             log.info('Synthesis completed, saving output to archive...')
@@ -300,16 +297,13 @@ class Ise(synthesiser.Synthesiser):
                     entity + '.bit',
                     entity + '.' + mode,
                     working_directory,
-                    mode=mode
+                    mode=mode,
                 )
 
         # Always ensure that an MCS file is created.
         if 'args_{0}_promgen_mcs'.format(self.name) not in arg_keys:
             self.ise_make_prom_file(
-                entity + '.bit',
-                entity + '.mcs',
-                working_directory,
-                mode='mcs'
+                entity + '.bit', entity + '.mcs', working_directory, mode='mcs'
             )
 
     @synthesiser.throws_synthesis_exception
@@ -394,18 +388,20 @@ class Ise(synthesiser.Synthesiser):
         xstargs = re.sub(' -', '\n-', xstargs)
         # Write XST file
         xst_scr = (
-            'run\n' +
-            '-ifn %(entity)s.prj\n' +
-            '-ofn %(entity)s.ngc\n' +
-            '-ofmt NGC\n' +
-            '-p %(part)s\n' +
-            '-top %(entity)s\n' +
-            '-generics %(synthesis_generics)s\n' +
-            xstargs + '\n'
+            'run\n'
+            + '-ifn %(entity)s.prj\n'
+            + '-ofn %(entity)s.ngc\n'
+            + '-ofmt NGC\n'
+            + '-p %(part)s\n'
+            + '-top %(entity)s\n'
+            + '-generics %(synthesis_generics)s\n'
+            + xstargs
+            + '\n'
         )
         with open(os.path.join(working_directory, entity + '.xst'), 'w') as f:
             f.write(
-                xst_scr % dict(
+                xst_scr
+                % dict(
                     entity=entity,
                     part=part,
                     synthesis_generics=generics,
@@ -414,12 +410,7 @@ class Ise(synthesiser.Synthesiser):
 
         args = ['-ifn', entity + '.xst']
         args += ['-ofn', entity + '.log']
-        Ise._call(
-            self.xst,
-            args,
-            cwd=working_directory,
-            quiet=False
-        )
+        Ise._call(self.xst, args, cwd=working_directory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_map(self, part, entity, working_directory):
@@ -444,12 +435,7 @@ class Ise(synthesiser.Synthesiser):
         # PCF Output name
         args += [entity + '.pcf']
 
-        Ise._call(
-            self.map,
-            args,
-            cwd=working_directory,
-            quiet=False
-        )
+        Ise._call(self.map, args, cwd=working_directory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_par(self, entity, working_directory):
@@ -478,12 +464,7 @@ class Ise(synthesiser.Synthesiser):
         # Physical Constraints File (auto generated)
         args += [entity + '.pcf']
 
-        Ise._call(
-            self.par,
-            args,
-            cwd=working_directory,
-            quiet=False
-        )
+        Ise._call(self.par, args, cwd=working_directory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_ngdbuild(self, part, entity, working_directory):
@@ -516,12 +497,7 @@ class Ise(synthesiser.Synthesiser):
         # Output NGD file
         args += [entity + '.ngd']
 
-        Ise._call(
-            self.ngdbuild,
-            args,
-            cwd=working_directory,
-            quiet=False
-        )
+        Ise._call(self.ngdbuild, args, cwd=working_directory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_bitgen(self, part, entity, working_directory):
@@ -545,12 +521,7 @@ class Ise(synthesiser.Synthesiser):
         # Output file
         args += [entity + '.bit']
 
-        Ise._call(
-            self.bitgen,
-            args,
-            cwd=working_directory,
-            quiet=False
-        )
+        Ise._call(self.bitgen, args, cwd=working_directory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_xflow(
@@ -561,7 +532,7 @@ class Ise(synthesiser.Synthesiser):
         generics,
         workingDirectory,
         reportDirectory,
-        exportDirectory
+        exportDirectory,
     ):
         """
 
@@ -608,9 +579,9 @@ class Ise(synthesiser.Synthesiser):
         # be used if more control of the stages is required.
         if len(self.project.get_tool_arguments(self.name, 'xflow')) > 0:
             log.warning(
-                'The ISE wrapper does not allow additional arguments' +
-                ' to be passed to XFLOW. Use the XST flow if fine control' +
-                ' of the synthesis stages is required.'
+                'The ISE wrapper does not allow additional arguments'
+                + ' to be passed to XFLOW. Use the XST flow if fine control'
+                + ' of the synthesis stages is required.'
             )
         # Write the auto-generated options file
         with open(os.path.join(workingDirectory, 'xst_custom.opt'), 'w') as f:
@@ -625,12 +596,7 @@ class Ise(synthesiser.Synthesiser):
         args += ['-rd', reportDirectory]
         args += [projectFilePath]
 
-        Ise._call(
-            self.xflow,
-            args,
-            cwd=workingDirectory,
-            quiet=False
-        )
+        Ise._call(self.xflow, args, cwd=workingDirectory, quiet=False)
 
     @synthesiser.throws_synthesis_exception
     def ise_manual_flow(
@@ -641,7 +607,7 @@ class Ise(synthesiser.Synthesiser):
         generics,
         workingDirectory,
         reportDirectory,
-        exportDirectory
+        exportDirectory,
     ):
         """
         Execute the manual ISE tool flow in the following order:
