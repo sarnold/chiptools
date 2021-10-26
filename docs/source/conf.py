@@ -13,6 +13,8 @@
 import os
 import sys
 
+from chiptools import __version__ as version
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 
@@ -26,7 +28,7 @@ copyright = '2015, Peter Bennett'
 author = 'Peter Bennett'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
+release = version
 
 
 # -- General configuration ---------------------------------------------------
