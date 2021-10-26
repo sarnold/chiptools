@@ -1,0 +1,7 @@
+chiptools.wrappers.synthesisers.quartus module
+==============================================
+
+.. automodule:: chiptools.wrappers.synthesisers.quartus
+   :members:
+   :undoc-members:
+   :show-inheritance:

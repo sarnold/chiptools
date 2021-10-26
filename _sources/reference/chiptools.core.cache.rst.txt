@@ -1,0 +1,7 @@
+chiptools.core.cache module
+===========================
+
+.. automodule:: chiptools.core.cache
+   :members:
+   :undoc-members:
+   :show-inheritance:

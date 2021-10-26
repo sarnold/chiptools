@@ -1,0 +1,7 @@
+chiptools.wrappers.simulators.isim module
+=========================================
+
+.. automodule:: chiptools.wrappers.simulators.isim
+   :members:
+   :undoc-members:
+   :show-inheritance:

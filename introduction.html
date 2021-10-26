@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="Contents" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-chiptools">What is ChipTools?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-can-it-do">What can it do?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-features">Key features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-tools">Supported Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simulation-tools">Simulation Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synthesis-tools">Synthesis Tools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
+<section id="what-is-chiptools">
+<h2>What is ChipTools?<a class="headerlink" href="#what-is-chiptools" title="Permalink to this headline"></a></h2>
+<p>ChipTools is a build and verification framework for FPGA designs.</p>
+</section>
+<section id="what-can-it-do">
+<h2>What can it do?<a class="headerlink" href="#what-can-it-do" title="Permalink to this headline"></a></h2>
+<p>ChipTools aims to simplify the process of building and testing FPGA designs by
+providing a consistent interface to vendor applications and automating simulation and synthesis flows.</p>
+<section id="key-features">
+<h3>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Seamlessly switch between vendor applications without modifying build scripts or project files.</p></li>
+<li><p>Enhance testbenches with Python based stimulus generation and checking.</p></li>
+<li><p>Automate test execution and reporting using the Python Unittest framework.</p></li>
+<li><p>Automatically check and archive build outputs.</p></li>
+<li><p>Preprocess and update files before synthesis to automate tasks such as updating version registers.</p></li>
+<li><p>Free and open source under the <a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="supported-tools">
+<h2>Supported Tools<a class="headerlink" href="#supported-tools" title="Permalink to this headline"></a></h2>
+<p>The following tools are currently supported, support for additional tools
+will be added in the future.</p>
+<section id="simulation-tools">
+<h3>Simulation Tools<a class="headerlink" href="#simulation-tools" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Modelsim (tested with 10.3)</p></li>
+<li><p>ISIM (tested with 14.7)</p></li>
+<li><p>GHDL (tested with 0.31)</p></li>
+<li><p>Vivado (tested with 2015.4)</p></li>
+<li><p>Icarus (tested with 0.9.7)</p></li>
+</ul>
+</section>
+<section id="synthesis-tools">
+<h3>Synthesis Tools<a class="headerlink" href="#synthesis-tools" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Xilinx ISE (tested with 14.7)</p></li>
+<li><p>Quartus (tested with 13.1)</p></li>
+<li><p>Vivado (tested with 2015.4)</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Contents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

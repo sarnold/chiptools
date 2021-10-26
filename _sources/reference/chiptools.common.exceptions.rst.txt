@@ -1,0 +1,7 @@
+chiptools.common.exceptions module
+==================================
+
+.. automodule:: chiptools.common.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:

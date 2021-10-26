@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.cache &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.core.cache</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.core.cache</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FileCache"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache">[docs]</a><span class="k">class</span> <span class="nc">FileCache</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A FileCache instance can be used to create and maintain a cache of</span>
+<span class="sd">    fileObjects so that file changes can be detected to allow intelligent</span>
+<span class="sd">    recompilation. The FileCache accepts a project file path during creation,</span>
+<span class="sd">    the cache file will be generated in the same directory as the Project file</span>
+<span class="sd">    and will use a name derived from the Project file name. File objects can</span>
+<span class="sd">    be added to the cache and the is_file_changed method can be used to</span>
+<span class="sd">    determine if a given File object has been modified since it was last added</span>
+<span class="sd">    to the cache.</span>
+
+<span class="sd">    Internally the cache file is stored as a Pickled dictionary of two items:</span>
+
+<span class="sd">      * LIBRARIES : A set of libraries that were added to the cache using</span>
+<span class="sd">        *add_library*</span>
+<span class="sd">      * FILES : A dictionary of file path / file md5 sum pairs</span>
+<span class="sd">        of files added using *add_file*</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cache_file_name</span> <span class="o">=</span> <span class="s1">&#39;_compilation.cache&#39;</span>
+    <span class="n">field_id_files</span> <span class="o">=</span> <span class="s1">&#39;FILES&#39;</span>
+    <span class="n">field_id_libraries</span> <span class="o">=</span> <span class="s1">&#39;LIBRARIES&#39;</span>
+    <span class="n">blank_cache_element</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">field_id_libraries</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span>
+        <span class="n">field_id_files</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a FileCache instance using the *projectPath* as the basis for</span>
+<span class="sd">        the cache file name and root directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">cache_path</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_file_name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_cache</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialise_cache</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FileCache.load_cache"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.load_cache">[docs]</a>    <span class="k">def</span> <span class="nf">load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the cache file pointed to by this FileCache instance. If no cache</span>
+<span class="sd">        file is present a new one will be created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Load the cache file so we know the compilation state of the</span>
+            <span class="c1"># design</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pickeFile</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pickeFile</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;The cache file was corrupted, re-initialising...&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialise_cache</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s1">&#39;Cache loaded in &#39;</span>
+            <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_delta_string</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileCache.initialise_cache"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.initialise_cache">[docs]</a>    <span class="k">def</span> <span class="nf">initialise_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the FileCache by generating a new cache file and clearing</span>
+<span class="sd">        the local cache dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Clearing cache...&#39;</span><span class="p">)</span>
+        <span class="c1"># The cache file doesn&#39;t exist, so we will create a new one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_cache</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FileCache.save_cache"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.save_cache">[docs]</a>    <span class="k">def</span> <span class="nf">save_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store the local cache dictionary into the linked cache file so that it</span>
+<span class="sd">        can be retrieved later.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saving cache...&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cache_file</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">cache_file</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileCache.is_file_changed"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.is_file_changed">[docs]</a>    <span class="k">def</span> <span class="nf">is_file_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare the given md5 with the given file path from the cache, if</span>
+<span class="sd">        the match return True or return False if the hashes do not match or</span>
+<span class="sd">        the file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File does not exist: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="n">cached_md5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_files</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">path</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cached_md5</span> <span class="o">==</span> <span class="n">md5</span><span class="p">:</span>
+                <span class="c1"># File is not changed</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># File was changed</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="c1"># File is not in cache</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FileCache.library_in_cache"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.library_in_cache">[docs]</a>    <span class="k">def</span> <span class="nf">library_in_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the given *libname* library name is present in the</span>
+<span class="sd">        local cache dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">libname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_libraries</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FileCache.get_libraries"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.get_libraries">[docs]</a>    <span class="k">def</span> <span class="nf">get_libraries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the local cache dictionary library name set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_libraries</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FileCache.get_tool_names"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.get_tool_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_tool_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="FileCache.add_library"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.add_library">[docs]</a>    <span class="k">def</span> <span class="nf">add_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the given *library* name to the local cache dictionary library</span>
+<span class="sd">        name set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blank_cache_element</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_libraries</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">library</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Library added to cache: &#39;</span> <span class="o">+</span> <span class="n">library</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileCache.add_file"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.add_file">[docs]</a>    <span class="k">def</span> <span class="nf">add_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileObject</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the given *fileObject* to the local cache file/md5 dictionary. The</span>
+<span class="sd">        FileObject MD5 and compilation time are updated by this method before</span>
+<span class="sd">        it is added to the cache.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blank_cache_element</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">fileObject</span><span class="o">.</span><span class="n">compile_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+            <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span>
+        <span class="p">)</span>
+        <span class="n">fileObject</span><span class="o">.</span><span class="n">md5</span> <span class="o">=</span> <span class="n">md5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_files</span><span class="p">][</span>
+            <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">md5</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s1">&#39;File added to cache: &#39;</span>
+            <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39; MD5: &#39;</span>
+            <span class="o">+</span> <span class="n">md5</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileCache.remove_file"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.remove_file">[docs]</a>    <span class="k">def</span> <span class="nf">remove_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileObject</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the given *fileObject* from the local cache file/md5 dictionary</span>
+<span class="sd">        if it is present.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blank_cache_element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_files</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">tool_name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id_files</span><span class="p">][</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;File removed from cache: &#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileCache.delete"><a class="viewcode-back" href="../../../reference/chiptools.core.cache.html#chiptools.core.cache.FileCache.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete the cache file pointed to by this FileCache instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.cache module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.core.cli module" href="chiptools.core.cli.html" />
+    <link rel="prev" title="chiptools.core package" href="chiptools.core.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.core.html">chiptools.core package</a> &raquo;</li>
+      <li>chiptools.core.cache module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.core.cache.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.core.cache">
+<span id="chiptools-core-cache-module"></span><h1>chiptools.core.cache module<a class="headerlink" href="#module-chiptools.core.cache" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.core.cache.</span></span><span class="sig-name descname"><span class="pre">FileCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A FileCache instance can be used to create and maintain a cache of
+fileObjects so that file changes can be detected to allow intelligent
+recompilation. The FileCache accepts a project file path during creation,
+the cache file will be generated in the same directory as the Project file
+and will use a name derived from the Project file name. File objects can
+be added to the cache and the is_file_changed method can be used to
+determine if a given File object has been modified since it was last added
+to the cache.</p>
+<p>Internally the cache file is stored as a Pickled dictionary of two items:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>LIBRARIES : A set of libraries that were added to the cache using
+<em>add_library</em></p></li>
+<li><p>FILES : A dictionary of file path / file md5 sum pairs
+of files added using <em>add_file</em></p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.add_file">
+<span class="sig-name descname"><span class="pre">add_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.add_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.add_file" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given <em>fileObject</em> to the local cache file/md5 dictionary. The
+FileObject MD5 and compilation time are updated by this method before
+it is added to the cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.add_library">
+<span class="sig-name descname"><span class="pre">add_library</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.add_library"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.add_library" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given <em>library</em> name to the local cache dictionary library
+name set.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.blank_cache_element">
+<span class="sig-name descname"><span class="pre">blank_cache_element</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">{'FILES':</span> <span class="pre">{},</span> <span class="pre">'LIBRARIES':</span> <span class="pre">{}}</span></em><a class="headerlink" href="#chiptools.core.cache.FileCache.blank_cache_element" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.cache_file_name">
+<span class="sig-name descname"><span class="pre">cache_file_name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'_compilation.cache'</span></em><a class="headerlink" href="#chiptools.core.cache.FileCache.cache_file_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete the cache file pointed to by this FileCache instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.field_id_files">
+<span class="sig-name descname"><span class="pre">field_id_files</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'FILES'</span></em><a class="headerlink" href="#chiptools.core.cache.FileCache.field_id_files" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.field_id_libraries">
+<span class="sig-name descname"><span class="pre">field_id_libraries</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'LIBRARIES'</span></em><a class="headerlink" href="#chiptools.core.cache.FileCache.field_id_libraries" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.get_libraries">
+<span class="sig-name descname"><span class="pre">get_libraries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.get_libraries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.get_libraries" title="Permalink to this definition"></a></dt>
+<dd><p>Return the local cache dictionary library name set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.get_tool_names">
+<span class="sig-name descname"><span class="pre">get_tool_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.get_tool_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.get_tool_names" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.initialise_cache">
+<span class="sig-name descname"><span class="pre">initialise_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.initialise_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.initialise_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise the FileCache by generating a new cache file and clearing
+the local cache dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.is_file_changed">
+<span class="sig-name descname"><span class="pre">is_file_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.is_file_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.is_file_changed" title="Permalink to this definition"></a></dt>
+<dd><p>Compare the given md5 with the given file path from the cache, if
+the match return True or return False if the hashes do not match or
+the file does not exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.library_in_cache">
+<span class="sig-name descname"><span class="pre">library_in_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.library_in_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.library_in_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Return True if the given <em>libname</em> library name is present in the
+local cache dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.load_cache">
+<span class="sig-name descname"><span class="pre">load_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.load_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.load_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Load the cache file pointed to by this FileCache instance. If no cache
+file is present a new one will be created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.remove_file">
+<span class="sig-name descname"><span class="pre">remove_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.remove_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.remove_file" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the given <em>fileObject</em> from the local cache file/md5 dictionary
+if it is present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cache.FileCache.save_cache">
+<span class="sig-name descname"><span class="pre">save_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cache.html#FileCache.save_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cache.FileCache.save_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Store the local cache dictionary into the linked cache file so that it
+can be retrieved later.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.core.html" class="btn btn-neutral float-left" title="chiptools.core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.core.cli.html" class="btn btn-neutral float-right" title="chiptools.core.cli module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

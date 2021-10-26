@@ -1,0 +1,7 @@
+chiptools.wrappers.synthesisers.ise module
+==========================================
+
+.. automodule:: chiptools.wrappers.synthesisers.ise
+   :members:
+   :undoc-members:
+   :show-inheritance:

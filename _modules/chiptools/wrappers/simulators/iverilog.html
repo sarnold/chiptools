@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.simulators.iverilog &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.simulators.iverilog</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.simulators.iverilog</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.wrappers.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.exceptions</span> <span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Iverilog"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.iverilog.html#chiptools.wrappers.simulators.iverilog.Iverilog">[docs]</a><span class="k">class</span> <span class="nc">Iverilog</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;iverilog&#39;</span>
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;iverilog&#39;</span><span class="p">,</span> <span class="s1">&#39;vvp&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Iverilog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iverilog</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;iverilog&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vvp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vvp&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filetypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">,</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Iverilog.compile_project"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.iverilog.html#chiptools.wrappers.simulators.iverilog.Iverilog.compile_project">[docs]</a>    <span class="k">def</span> <span class="nf">compile_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method stages files for compilation as we cannot perform</span>
+<span class="sd">        compilation until additional runtime information such as generic</span>
+<span class="sd">        assignments and the desired top-level entity are known. Incremental</span>
+<span class="sd">        compilation is not supported by Icarus so the cache and library</span>
+<span class="sd">        tracking are not used at all.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_files</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filetypes</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_object</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s1">&#39;Icarus ignoring file with unsupported &#39;</span>
+                        <span class="o">+</span> <span class="s1">&#39;extension: &#39;</span>
+                        <span class="o">+</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                    <span class="s1">&#39;File could not be found: &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, operation aborted.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;Deferring compilation of </span><span class="si">{0}</span><span class="s1"> file(s) until simulation &#39;</span>
+                <span class="s1">&#39;is called.&#39;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iverilog.simulate"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.iverilog.html#chiptools.wrappers.simulators.iverilog.Iverilog.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">library</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+        <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">generics</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">includes</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile and simulate the design.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Specify the output name</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;icarus_sim&#39;</span><span class="p">]</span>
+        <span class="c1"># Get the files</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="c1"># TODO: Add additional custom compile args for each file.</span>
+        <span class="c1"># Define the top level</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="n">entity</span><span class="p">]</span>
+        <span class="c1"># Define top level parameters</span>
+        <span class="c1"># TODO: Icarus does not seem to support parameter/generic overrides</span>
+        <span class="c1"># in the latest version so `define overrides need to be used instead.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">generics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Icarus parameter overrides via the -P flag are not &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;supported. Parameter overrides will be translated into &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;`define overrides via the -D command line switch.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">generics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span>
+        <span class="c1"># Add custom library paths (the library name is ignored)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">includes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-y&#39;</span> <span class="o">+</span> <span class="n">v</span><span class="p">]</span>
+        <span class="c1"># Call the Iverilog compilation stage</span>
+        <span class="n">Iverilog</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iverilog</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">))</span>
+            <span class="o">+</span> <span class="s1">&#39; file(s) processed in &#39;</span>
+            <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_delta_string</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="p">)</span>
+        <span class="c1">######################################################################</span>
+        <span class="c1"># Invoke simulation</span>
+        <span class="c1"># $ vvp [flags] foo.vvp [extended args]</span>
+        <span class="c1"># Extended Args:</span>
+        <span class="c1">#   -none/-vcd-none/-vcd-off/-fst-none</span>
+        <span class="c1">#   -fst</span>
+        <span class="c1">#   -lxt/lxt2</span>
+        <span class="c1">#   -sdf-warn</span>
+        <span class="c1">#   -sdf-info</span>
+        <span class="c1">#   -sdf-verbose</span>
+        <span class="n">extended_args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;-none&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-vcd-none&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-vcd-off&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-fst-none&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-fst&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-lxt&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-lxt2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-sdf-warn&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-sdf-info&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;-sdf-verbose&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="c1">######################################################################</span>
+        <span class="c1"># Get user specified args</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;simulate&#39;</span><span class="p">)</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extended_args</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+        <span class="n">extended</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">extended_args</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">flags</span>
+        <span class="c1"># Target application</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;icarus_sim&#39;</span><span class="p">]</span>
+        <span class="c1"># Extended Args</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="n">extended</span>
+        <span class="c1"># Run the simulation</span>
+        <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">Iverilog</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vvp</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

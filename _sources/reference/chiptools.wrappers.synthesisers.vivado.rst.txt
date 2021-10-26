@@ -1,0 +1,7 @@
+chiptools.wrappers.synthesisers.vivado module
+=============================================
+
+.. automodule:: chiptools.wrappers.synthesisers.vivado
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+chiptools.testing.custom\_runners.HTMLTestRunner module
+=======================================================
+
+.. automodule:: chiptools.testing.custom_runners.HTMLTestRunner
+   :members:
+   :undoc-members:
+   :show-inheritance:

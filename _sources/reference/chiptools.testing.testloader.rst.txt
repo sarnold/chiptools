@@ -1,0 +1,7 @@
+chiptools.testing.testloader module
+===================================
+
+.. automodule:: chiptools.testing.testloader
+   :members:
+   :undoc-members:
+   :show-inheritance:

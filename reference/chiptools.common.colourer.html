@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.common.colourer module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.common.exceptions module" href="chiptools.common.exceptions.html" />
+    <link rel="prev" title="chiptools.common package" href="chiptools.common.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.common.html">chiptools.common package</a> &raquo;</li>
+      <li>chiptools.common.colourer module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.common.colourer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.common.colourer">
+<span id="chiptools-common-colourer-module"></span><h1>chiptools.common.colourer module<a class="headerlink" href="#module-chiptools.common.colourer" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.colourer.ColouredStreamHandler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">ColouredStreamHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#ColouredStreamHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.ColouredStreamHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.StreamHandler</span></code></p>
+<p>Use this class in place of a logging.StreamHandler if coloured log
+output is desired. The ColouredStreamHandler will not output coloured text
+on Windows platforms if colorama is not installed</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.colourer.ColouredStreamHandler.add_colour">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_colour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levelname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#ColouredStreamHandler.add_colour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.ColouredStreamHandler.add_colour" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.colourer.ColouredStreamHandler.emit">
+<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#ColouredStreamHandler.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.ColouredStreamHandler.emit" title="Permalink to this definition"></a></dt>
+<dd><p>Emit a record.</p>
+<p>If a formatter is specified, it is used to format the record.
+The record is then written to the stream with a trailing newline.  If
+exception information is present, it is formatted using
+traceback.print_exception and appended to the stream.  If the stream
+has an ‘encoding’ attribute, it is used to determine how to do the
+output to the stream.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgblack">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgblack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgblack" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgblue">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgblue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgblue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgbrown">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgbrown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgbrown" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgdarkblue">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgdarkblue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgdarkblue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgdarkgray">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgdarkgray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgdarkgray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgdarkgreen">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgdarkgreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgdarkgreen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgdarkred">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgdarkred</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgdarkred" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgfuchsia">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgfuchsia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgfuchsia" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bggreen">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bggreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bggreen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bglightgray">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bglightgray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bglightgray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgpurple">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgpurple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgpurple" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgred">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgred</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgred" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgteal">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgteal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgteal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgturquoise">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgturquoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgturquoise" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgwhite">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgwhite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgwhite" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bgyellow">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bgyellow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bgyellow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.black">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">black</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.black" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.blink">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.blink" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.blue">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">blue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.blue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.bold">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">bold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.bold" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.brown">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">brown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.brown" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.colour_terminal">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">colour_terminal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#colour_terminal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.colour_terminal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.colourise">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">colourise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#colourise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.colourise" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.create_named_functions">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">create_named_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/colourer.html#create_named_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.colourer.create_named_functions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.darkblue">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">darkblue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.darkblue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.darkgray">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">darkgray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.darkgray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.darkgreen">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">darkgreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.darkgreen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.darkred">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">darkred</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.darkred" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.faint">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">faint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.faint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.fuchsia">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">fuchsia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.fuchsia" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.green">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">green</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.green" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.lightgray">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">lightgray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.lightgray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.purple">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">purple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.purple" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.red">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">red</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.red" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.reset">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.reset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.standout">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">standout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.standout" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.teal">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">teal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.teal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.turquoise">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">turquoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.turquoise" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.underline">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">underline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.underline" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.white">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">white</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.white" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.colourer.yellow">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.colourer.</span></span><span class="sig-name descname"><span class="pre">yellow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.colourer.yellow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.common.html" class="btn btn-neutral float-left" title="chiptools.common package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.common.exceptions.html" class="btn btn-neutral float-right" title="chiptools.common.exceptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

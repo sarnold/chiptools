@@ -1,0 +1,26 @@
+chiptools.testing package
+=========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.testing.custom_runners
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.testing.testloader
+
+Module contents
+---------------
+
+.. automodule:: chiptools.testing
+   :members:
+   :undoc-members:
+   :show-inheritance:

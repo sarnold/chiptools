@@ -1,0 +1,7 @@
+chiptools.common.colourer module
+================================
+
+.. automodule:: chiptools.common.colourer
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.simulators.ghdl &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.simulators.ghdl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.simulators.ghdl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.wrappers.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Ghdl"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl">[docs]</a><span class="k">class</span> <span class="nc">Ghdl</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ghdl&#39;</span>
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ghdl&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ghdl</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ghdl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;ghdl&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Ghdl.simulate"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">library</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+        <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">generics</span><span class="o">=</span><span class="n">types</span><span class="o">.</span><span class="n">MappingProxyType</span><span class="p">({}),</span>
+        <span class="n">includes</span><span class="o">=</span><span class="n">types</span><span class="o">.</span><span class="n">MappingProxyType</span><span class="p">({}),</span>
+        <span class="n">args</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(),</span>
+        <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># Elaborate</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;-e&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;--work=&#39;</span> <span class="o">+</span> <span class="n">library</span><span class="p">,</span>
+            <span class="n">entity</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">Ghdl</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ghdl</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="c1"># Run command</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;-r&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;--work=&#39;</span> <span class="o">+</span> <span class="n">library</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="c1"># Primary Unit</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span><span class="p">]</span>
+        <span class="c1"># Map any generics</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">generics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-g</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">binding</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="s1">&#39;--stop-time=&#39;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">seconds_to_timestring</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+                <span class="p">]</span>
+        <span class="c1"># Run the simulation</span>
+        <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">Ghdl</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ghdl</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span></div>
+
+<div class="viewcode-block" id="Ghdl.compile"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;compile&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;compile&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--work=&#39;</span> <span class="o">+</span> <span class="n">file_object</span><span class="o">.</span><span class="n">library</span><span class="p">,</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">:</span>
+            <span class="n">Ghdl</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ghdl</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Simulator ignoring file with unsupported extension: &#39;</span>
+                <span class="o">+</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ghdl.library_exists"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.library_exists">[docs]</a>    <span class="k">def</span> <span class="nf">library_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="n">workdir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the given libname exists in the workdir.</span>
+<span class="sd">        GHDL doesn&#39;t create a folder for each library so we have to check for</span>
+<span class="sd">        compiled units directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.cf&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Ghdl.set_working_library"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.set_working_library">[docs]</a>    <span class="k">def</span> <span class="nf">set_working_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Ghdl.set_library_path"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.set_library_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_library_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Ghdl.add_library"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.ghdl.html#chiptools.wrappers.simulators.ghdl.Ghdl.add_library">[docs]</a>    <span class="k">def</span> <span class="nf">add_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

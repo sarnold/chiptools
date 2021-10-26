@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.synthesisers.ise module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.wrappers.synthesisers.quartus module" href="chiptools.wrappers.synthesisers.quartus.html" />
+    <link rel="prev" title="chiptools.wrappers.synthesisers package" href="chiptools.wrappers.synthesisers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.wrappers.html">chiptools.wrappers package</a> &raquo;</li>
+          <li><a href="chiptools.wrappers.synthesisers.html">chiptools.wrappers.synthesisers package</a> &raquo;</li>
+      <li>chiptools.wrappers.synthesisers.ise module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.wrappers.synthesisers.ise.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.wrappers.synthesisers.ise">
+<span id="chiptools-wrappers-synthesisers-ise-module"></span><h1>chiptools.wrappers.synthesisers.ise module<a class="headerlink" href="#module-chiptools.wrappers.synthesisers.ise" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.wrappers.synthesisers.ise.</span></span><span class="sig-name descname"><span class="pre">Ise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'manual'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="chiptools.wrappers.synthesiser.html#chiptools.wrappers.synthesiser.Synthesiser" title="chiptools.wrappers.synthesiser.Synthesiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">chiptools.wrappers.synthesiser.Synthesiser</span></code></a></p>
+<p>A ISE Synthesiser instance can be used to synthesise the files in the
+given Project using the XFLOW utility or individual Xst, Map, Par,
+Ngdbuild, Bitgen and Promgen tools provided in a base Xilinx ISE
+installation. The ISE synthesis flow can be set to either <em>‘manual’</em> flow
+where the individual ISE binaries are called in sequence or <em>‘xflow’</em>
+where the XFLOW utility is called (effectively the same thing).
+To use the ISE class it must be instanced with a Project and Options
+object passed as arguments, the <em>‘synthesise’</em> method may then be called
+to initiate the synthesis flow.
+In addition to running the synthesis flow, the ISE Synthesiser instance
+also uses a Reporter instance to filter the synthesis log messages for
+important information relating to the build.</p>
+<p>When complete, the output files from synthesis will be stored in an
+archive bearing the name of the entity that was synthesised and a unique
+timestamp.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.addConstraints">
+<span class="sig-name descname"><span class="pre">addConstraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthesisDirectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.addConstraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.addConstraints" title="Permalink to this definition"></a></dt>
+<dd><p>Load the user constraints file path from the Project instance and
+generate a UCF file in the supplied <em>synthesisDirectory</em> directory
+where the synthesis tools are invoked.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.executables">
+<span class="sig-name descname"><span class="pre">executables</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">['xwebtalk',</span> <span class="pre">'promgen',</span> <span class="pre">'xst',</span> <span class="pre">'map',</span> <span class="pre">'par',</span> <span class="pre">'ngdbuild',</span> <span class="pre">'bitgen',</span> <span class="pre">'xflow']</span></em><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.executables" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.generate_programming_files">
+<span class="sig-name descname"><span class="pre">generate_programming_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.generate_programming_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.generate_programming_files" title="Permalink to this definition"></a></dt>
+<dd><p>Generate programming files using the output bitfile from the synthesis
+run. An MCS file is always generated, but additional files can be
+generated by adding ‘args_ise_promgen_&lt;format&gt;’ configuration items
+with the tool arguments to apply when calling promgen for that output
+format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_bitgen">
+<span class="sig-name descname"><span class="pre">ise_bitgen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_bitgen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_bitgen" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>BITGEN</em> binary, which accepts the following arguments:</p>
+<p>Usage: bitgen [-d] [-j] [-b] [-w] [-l] [-m] [-t] [-n] [-u] [-a] [-r
+&lt;bitFile&gt;] [-intstyle ise|xflow|silent|pa] [-ise
+&lt;projectrepositoryfile&gt;] {-bd &lt;BRAM_data_file&gt; [tag &lt;tagname&gt;]} {-g
+&lt;setting_value&gt;} [-filter &lt;filter_file[.filter]&gt;] &lt;infile[.ncd]&gt;
+[&lt;outfile&gt;] [&lt;pcffile[.pcf]&gt;]</p>
+<ul class="simple">
+<li><p><em>entity</em> is used to generate input and output file names</p></li>
+<li><p><em>workingDirectory</em> is the working directory where the tool is invoked</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_make_prom_file">
+<span class="sig-name descname"><span class="pre">ise_make_prom_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mcs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_make_prom_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_make_prom_file" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a programming file using the promgen tool, the user can
+supply arguments to this flow stage with args_ise_promgen_&lt;mode&gt;.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_manual_flow">
+<span class="sig-name descname"><span class="pre">ise_manual_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projectFilePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workingDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reportDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exportDirectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_manual_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_manual_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Execute the manual ISE tool flow in the following order:
+#. XST
+#. NGDBUILD
+#. MAP
+#. PAR
+#. BITGEN</p>
+<p>Refer to the individual documentation for these tools for more
+information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_map">
+<span class="sig-name descname"><span class="pre">ise_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_map" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>MAP</em> binary, which accepts the following arguments:</p>
+<p>map [-h] [-p partname] (infile[.ngd]) [-o (outfile[.ncd])]
+<a class="reference external" href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx14_1/devref.pdf">http://www.xilinx.com/support/documentation/sw_manuals/xilinx14_1/devref.pdf</a></p>
+<ul class="simple">
+<li><p><em>part</em> is passed to the <em>-p</em> input parameter</p></li>
+<li><p><em>entity</em> is used to generate output file names</p></li>
+<li><p><em>workingDirectory</em> is the working directory where the tool is invoked</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_ngdbuild">
+<span class="sig-name descname"><span class="pre">ise_ngdbuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_ngdbuild"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_ngdbuild" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>NGDBUILD</em> binary, which accepts the following arguments:</p>
+<p>Usage: ngdbuild [-p &lt;partname&gt;] {-sd &lt;source_dir&gt;} {-l &lt;library&gt;} [-ur
+&lt;rules_file[.urf]&gt;] [-dd &lt;output_dir&gt;] [-r] [-a] [-u] [-nt
+timestamp|on|off] [-uc &lt;ucf_file[.ucf]&gt;] [-aul] [-aut] [-bm
+&lt;bmm_file[.bmm]&gt;] [-i] [-intstyle ise|xflow|silent] [-quiet]
+[-verbose] [-insert_keep_hierarchy] [-filter &lt;filter_file[.filter]&gt;]
+&lt;design_name&gt; [&lt;ngd_file[.ngd]&gt;]</p>
+<ul class="simple">
+<li><p><em>entity</em> is used to generate input and output file names</p></li>
+<li><p><em>-sd</em> is set to <em>workingDirectory</em></p></li>
+<li><p><em>-p</em> is set to <em>part</em></p></li>
+<li><p><em>workingDirectory</em> is the working directory where the tool is invoked</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_par">
+<span class="sig-name descname"><span class="pre">ise_par</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_par"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_par" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>PAR</em> binary, which accepts the following arguments:</p>
+<p>par [-ol std|high] [-pl std|high] [-rl std|high] [-xe n|c] [-mt
+on|off|1| 2|3|4] [-t &lt;costtable:1,100&gt;] [-p] [-k]
+[-r] [-w] [-smartguide &lt;guidefile[.ncd]&gt;] [-x] [-nopad] [-power
+on|off|xe] [-act ivityfile &lt;activityfile[.vcd|.saif]&gt;]
+[-ntd] [-intstyle ise|xflow|silent|pa] [-ise &lt;projectrepositoryfile&gt;]
+[-filter &lt; filter_file[.filter]&gt;] &lt;infile[.ncd]&gt;</p>
+<p>&lt;outfile&gt; [&lt;constraintsfile[.pcf]&gt;]</p>
+<ul class="simple">
+<li><p><em>entity</em> is used to generate output file names</p></li>
+<li><p><em>workingDirectory</em> is the working directory where the tool is invoked</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_promgen">
+<span class="sig-name descname"><span class="pre">ise_promgen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_promgen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_promgen" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>promgen</em> binary, which accepts the following arguments:</p>
+<p>Usage: promgen [-b] [-spi] [-p mcs|exo|tek|hex|bin|ieee1532|ufp] [-o
+&lt;outfile&gt; {&lt;outfile&gt;}] [-s &lt;size&gt; {&lt;size&gt;}] [-x &lt;xilinx_prom&gt;
+{&lt;xilinx_prom&gt;}] [-c [&lt;hexbyte&gt;]] [-l] [-w] [-bpi_dc serial|parallel]
+[-intstyle ise|xflow|silent] [-t &lt;templatefile[.pft]&gt;] [-z
+[&lt;version:0,3&gt;]] [-i &lt;version:0,3&gt;] [-data_width 8|16|32]
+[-config_mode selectmap8|selectmap16|selectmap32] {-ver &lt;version:0,3&gt;
+&lt;file&gt; {&lt;file&gt;}} {-u &lt;hexaddr&gt; &lt;file&gt; {&lt;file&gt;}} {-d &lt;hexaddr&gt; &lt;file&gt;
+{&lt;file&gt;}} {-n &lt;file&gt; {&lt;file&gt;}} {-bd &lt;file&gt; [start &lt;hexaddr&gt;] [tag
+&lt;tagname&gt; {&lt;tagname&gt;}]} {-bm &lt;file&gt;} {-data_file up|down &lt;hexaddr&gt;
+&lt;file&gt; {&lt;file&gt;}} [-r &lt;promfile&gt;]</p>
+<ul class="simple">
+<li><p><em>fin</em> is passed to the <em>&lt;file&gt;</em> input parameter</p></li>
+<li><p><em>fout</em> is passed to the <em>-o</em> input parameter</p></li>
+<li><p><em>workingDirectory</em> is the working directory where the tool is invoked</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_webtalk_off">
+<span class="sig-name descname"><span class="pre">ise_webtalk_off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_webtalk_off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_webtalk_off" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>xwebtalk</em> binary with the <em>-user off</em> switch to disable
+WebTalk</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_xflow">
+<span class="sig-name descname"><span class="pre">ise_xflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projectFilePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workingDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reportDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exportDirectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_xflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_xflow" title="Permalink to this definition"></a></dt>
+<dd><p>Call the <em>XFLOW</em> binary, which accepts the following arguments:</p>
+<p>xflow [-p partname] [flow type] [options file[.opt]] [xflow options]
+design_name</p>
+<dl>
+<dt>XFLOW Flow Types:</dt><dd><p>Create a bitstream for FPGA device configuration using a routed
+design.
+-config option_file</p>
+<p>Create a file that can be used for formal verification of an FPGA
+design.
+-ecn option_file</p>
+<p>Incorporate logic from the design into physical macrocell locations
+in a CPLD
+-fit option_file</p>
+<p>Generate a file that can be used for functional simulation of an
+FPGA or CPLD design
+-fsim option_file</p>
+<p>Implement the design and output a routed NCD file
+-implement option_file[fast_runtime.opt, balanced.opt,
+high_effort.opt]</p>
+<p>Create a file that can be used to perform static timing analysis
+of an FPGA design
+-sta option_file</p>
+<p>Synthesise the design for implementation in an FPGA, for fitting
+in a CPLD or for
+compiling for functional simulation.
+-syth option_file[xst_vhdl.opt/xst_verilog.opt/xst_mixed.opt]</p>
+<p>Generate a file that can be used for timing simulation of an FPGA
+or CPLD design.
+-tsim option_file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.ise_xst">
+<span class="sig-name descname"><span class="pre">ise_xst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.ise_xst"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.ise_xst" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an XST settings file and call the <em>XST</em> binary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.makeProject">
+<span class="sig-name descname"><span class="pre">makeProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projectFilePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileFormat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mixed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.makeProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.makeProject" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a Xilinx ISE project file listing source files with their
+filetypes and libraries.
+ISE requires a project file to be written using the following format:</p>
+<p>Where <em>hdl_language</em> specifies whether the designated HDL source file
+is written in VHDL or Verilog, <em>compilation_library</em> specifies the
+library where the HDL is compiled and <em>source_file</em> specifies the path
+to the source file.
+This method generates an appropriate file from the project data that
+has been loaded into the ISE Synthesiser instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'ise'</span></em><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.synthesisers.ise.Ise.synthesise">
+<span class="sig-name descname"><span class="pre">synthesise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpga_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/synthesisers/ise.html#Ise.synthesise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.synthesisers.ise.Ise.synthesise" title="Permalink to this definition"></a></dt>
+<dd><p>Synthesise the target entity in the given library for the currently
+loaded project. The following steps are performed during synthesis:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Create synthesis directories</p></li>
+<li><p>Generate an ISE project file</p></li>
+<li><p>Generate an ISE UCF constraints file</p></li>
+<li><p>Invoke XFLOW or the flow tools individually with appropriate command
+line arguments</p></li>
+<li><p>Generate reports</p></li>
+<li><p>Archive the outputs of the synthesis flow</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.wrappers.synthesisers.html" class="btn btn-neutral float-left" title="chiptools.wrappers.synthesisers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.wrappers.synthesisers.quartus.html" class="btn btn-neutral float-right" title="chiptools.wrappers.synthesisers.quartus module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

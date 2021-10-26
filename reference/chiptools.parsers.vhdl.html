@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.parsers.vhdl module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.parsers.xml_project module" href="chiptools.parsers.xml_project.html" />
+    <link rel="prev" title="chiptools.parsers.options module" href="chiptools.parsers.options.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.parsers.html">chiptools.parsers package</a> &raquo;</li>
+      <li>chiptools.parsers.vhdl module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.parsers.vhdl.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.parsers.vhdl">
+<span id="chiptools-parsers-vhdl-module"></span><h1>chiptools.parsers.vhdl module<a class="headerlink" href="#module-chiptools.parsers.vhdl" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Component">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Component" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Component.COMPONENT_RE">
+<span class="sig-name descname"><span class="pre">COMPONENT_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">component</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Component</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Optional</span> <span class="pre">whitepsace\n</span>&#160; <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Component.COMPONENT_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Component.INSTANCE_RE">
+<span class="sig-name descname"><span class="pre">INSTANCE_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;ident&gt;\\w+)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Identifier\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Optional</span> <span class="pre">whitespace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Component.INSTANCE_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Component.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Component.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Component.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Component.get_all_references">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binding_indications</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Component.get_all_references"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Component.get_all_references" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Configuration">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Configuration" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Configuration.CONFIGURATION_RE">
+<span class="sig-name descname"><span class="pre">CONFIGURATION_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">configuration</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Component</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">At</span> <span class="pre">least</span> <span class="pre">one</span> <span class="pre">whitespace,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Configuration.CONFIGURATION_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Configuration.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Configuration.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Configuration.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Entity">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Entity" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Entity.ENTITY_START_RE">
+<span class="sig-name descname"><span class="pre">ENTITY_START_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">entity</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">'Entity'</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">1</span> <span class="pre">or</span> <span class="pre">more</span> <span class="pre">whitespace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;ident&gt;\\w+)</span>&#160; <span class="pre">#</span> <span class="pre">Mandatory</span> <span class="pre">identifier\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+</span> <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Entity.ENTITY_START_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Entity.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Entity.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Entity.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Entity.get_all_references">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libraries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Entity.get_all_references"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Entity.get_all_references" title="Permalink to this definition"></a></dt>
+<dd><p>Entity references are made by direct instantiation or by a component
+instantiation via a component definition. Embedded configurations can
+be used to make a component instantiation reference a entity directly.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Function">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Function" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Function.REGEX">
+<span class="sig-name descname"><span class="pre">REGEX</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile('\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">function\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;ident&gt;\\w+)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?:\\([^;]*)?\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">return\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?:\\w+)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">is\n</span> <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Function.REGEX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Function.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Function.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Function.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Package">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Package" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Package.PACKAGE_START_RE">
+<span class="sig-name descname"><span class="pre">PACKAGE_START_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">package</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">'Package'</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">1</span> <span class="pre">or</span> <span class="pre">more</span> <span class="pre">whitespace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;ident&gt;\\w+)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Ma,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Package.PACKAGE_START_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Package.PACKAGE_USE_CLAUSES">
+<span class="sig-name descname"><span class="pre">PACKAGE_USE_CLAUSES</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">use</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">use</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Optional</span> <span class="pre">whitepsace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">%(library)s</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Dynamic</span> <span class="pre">library</span> <span class="pre">name\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">'.'</span> <span class="pre">separator\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;module&gt;\\w+)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Module</span> <span class="pre">name\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">'.'</span> <span class="pre">separator\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;unit&gt;all|\\w+)</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Part</span> <span class="pre">name</span> <span class="pre">('all'</span> <span class="pre">or</span> <span class="pre">custom</span> <span class="pre">name)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Optional</span> <span class="pre">whitespace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">;</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Terminator\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Package.PACKAGE_USE_CLAUSES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Package.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Package.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Package.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Package.get_all_references">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libraries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Package.get_all_references"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Package.get_all_references" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.ParsedVhdlFile">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">ParsedVhdlFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#ParsedVhdlFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.ParsedVhdlFile" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The ParsedVhdlFile class provides a high level wrapper for a source Vhdl
+file and provides convenient access to the design units referenced and
+declared by a file.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.ParsedVhdlFile.BINDING_INDICATION_RE">
+<span class="sig-name descname"><span class="pre">BINDING_INDICATION_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile(&quot;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">for</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">'for'</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">At</span> <span class="pre">least</span> <span class="pre">one</span> <span class="pre">wh,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.ParsedVhdlFile.BINDING_INDICATION_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.ParsedVhdlFile.LIBRARY_RE">
+<span class="sig-name descname"><span class="pre">LIBRARY_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile('\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\b</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Word</span> <span class="pre">boundary\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">library</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Library</span> <span class="pre">keyword\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Optional</span> <span class="pre">whitespace\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;library&gt;\\w+)</span>&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Library</span> <span class="pre">name\n</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.ParsedVhdlFile.LIBRARY_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Procedure">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">Procedure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Procedure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Procedure" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Procedure.REGEX">
+<span class="sig-name descname"><span class="pre">REGEX</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile('\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">procedure\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?P&lt;id&gt;\\w+)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?:\\([^;]*)?\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">return\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s*\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(?:\\w+)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\\s+\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">is\n</span>&#160;&#160; <span class="pre">,</span> <span class="pre">re.IGNORECASE|re.VERBOSE)</span></em><a class="headerlink" href="#chiptools.parsers.vhdl.Procedure.REGEX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.Procedure.get_all_definitions">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_all_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#Procedure.get_all_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.Procedure.get_all_definitions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.parsers.vhdl.remove_comments">
+<span class="sig-prename descclassname"><span class="pre">chiptools.parsers.vhdl.</span></span><span class="sig-name descname"><span class="pre">remove_comments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/parsers/vhdl.html#remove_comments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.parsers.vhdl.remove_comments" title="Permalink to this definition"></a></dt>
+<dd><p>Return the supplied VHDL file data string, <em>data</em>, with all comments
+removed.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.parsers.options.html" class="btn btn-neutral float-left" title="chiptools.parsers.options module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.parsers.xml_project.html" class="btn btn-neutral float-right" title="chiptools.parsers.xml_project module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

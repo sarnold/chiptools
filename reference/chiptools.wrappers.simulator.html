@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.simulator module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.wrappers.synthesiser module" href="chiptools.wrappers.synthesiser.html" />
+    <link rel="prev" title="chiptools.wrappers.synthesisers.vivado module" href="chiptools.wrappers.synthesisers.vivado.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.wrappers.html">chiptools.wrappers package</a> &raquo;</li>
+      <li>chiptools.wrappers.simulator module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.wrappers.simulator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.wrappers.simulator">
+<span id="chiptools-wrappers-simulator-module"></span><h1>chiptools.wrappers.simulator module<a class="headerlink" href="#module-chiptools.wrappers.simulator" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.wrappers.simulator.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="chiptools.wrappers.toolchains.html#chiptools.wrappers.toolchains.ToolchainBase" title="chiptools.wrappers.toolchains.ToolchainBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">chiptools.wrappers.toolchains.ToolchainBase</span></code></a></p>
+<p>The Simulator class provides a base class for all simulator tool wrapper
+implementations.
+Common functions used by all simulator tool wrappers are implemented in
+this class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.add_library">
+<span class="sig-name descname"><span class="pre">add_library</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.add_library"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.add_library" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new source file library for compiling design files into.
+For example on ModelSim this would invoke the <em>vlib</em> command with the
+supplied <em>library</em> name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.compile" title="Permalink to this definition"></a></dt>
+<dd><p>Compile the supplied <em>file_object</em> into the current working library.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.compile_project">
+<span class="sig-name descname"><span class="pre">compile_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">includes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.compile_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.compile_project" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.library_exists">
+<span class="sig-name descname"><span class="pre">library_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.library_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.library_exists" title="Permalink to this definition"></a></dt>
+<dd><p>Return True if the given libname exists in the workdir.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.set_working_library">
+<span class="sig-name descname"><span class="pre">set_working_library</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.set_working_library"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.set_working_library" title="Permalink to this definition"></a></dt>
+<dd><p>Set the current working library where source files are to be compiled
+to when using the ‘compile’ method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.wrappers.simulator.Simulator.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/wrappers/simulator.html#Simulator.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.wrappers.simulator.Simulator.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Invoke the simulator and target the given <em>entity</em> in the given
+<em>library</em>.
+If the optional argument <em>gui</em> is set to False the simulator will
+execute as a console application (where supported) otherwise it will
+run as a GUI. This function is blocking and will only continue when
+the simulator terminates.
+The optional argument <em>generics</em> provides a dictionary of <em>generic
+name</em>/<em>generic value</em> key, value pairs that are passed to the
+simulator as a command line argument. This allows you to set generics
+present on the entity being simulated.
+The optional argument <em>do</em> can be used to supply a string argument to
+be interpreted by the simulator as a script to execute after loading.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.wrappers.synthesisers.vivado.html" class="btn btn-neutral float-left" title="chiptools.wrappers.synthesisers.vivado module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.wrappers.synthesiser.html" class="btn btn-neutral float-right" title="chiptools.wrappers.synthesiser module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

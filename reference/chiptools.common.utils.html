@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.common.utils module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.core package" href="chiptools.core.html" />
+    <link rel="prev" title="chiptools.common.filetypes module" href="chiptools.common.filetypes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.common.html">chiptools.common package</a> &raquo;</li>
+      <li>chiptools.common.utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.common.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.common.utils">
+<span id="chiptools-common-utils-module"></span><h1>chiptools.common.utils module<a class="headerlink" href="#module-chiptools.common.utils" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.utils.LogWrapper">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">LogWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logfn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#LogWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.LogWrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple class to provide a file interface using a logger
+message function</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.utils.LogWrapper.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#LogWrapper.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.LogWrapper.write" title="Permalink to this definition"></a></dt>
+<dd><p>Use the logfunction to print the message, strip off any line ends</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.call">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.call" title="Permalink to this definition"></a></dt>
+<dd><p>Call the executable in the given path, any messages the program generates
+will be routed to stdout and stderr.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.create_parser">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">create_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#create_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.create_parser" title="Permalink to this definition"></a></dt>
+<dd><p>Create parser for basic help and version args.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.execute">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.execute" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.get_date_string">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">get_date_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#get_date_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.get_date_string" title="Permalink to this definition"></a></dt>
+<dd><p>Return a pretty formatted date string to indicate the time of an event.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.iterate_tests">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">iterate_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_suite_or_case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#iterate_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.iterate_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate through all of the test cases in ‘test_suite_or_case’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.parse_range">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">parse_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">astr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#parse_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.parse_range" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the input string numeric range and return a set of numbers.
+&gt;&gt;&gt; parse_range(‘1-3, 5, 8, 10’)
+[1, 2, 3, 5, 8, 10]
+&gt;&gt;&gt; parse_range(‘1, 2, 3, 4, 5’)
+[1, 2, 3, 4, 5]
+&gt;&gt;&gt; parse_range(‘1-5, 9-5’) # Negative ranges are ignored
+[1, 2, 3, 4, 5]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.popen">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">popen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#popen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.popen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.popen_quiet">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">popen_quiet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#popen_quiet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.popen_quiet" title="Permalink to this definition"></a></dt>
+<dd><p>Call the executable in the given path and return the standard output and
+error streams.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.popen_throws_ex">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">popen_throws_ex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#popen_throws_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.popen_throws_ex" title="Permalink to this definition"></a></dt>
+<dd><p>Call the executable in the given path, hiding standard output unless the
+return value is an error. If the return value is an error raise an
+exception for the caller to handle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.relative_path_to_abs">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">relative_path_to_abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/nerdboy/src/chiptools/docs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#relative_path_to_abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.relative_path_to_abs" title="Permalink to this definition"></a></dt>
+<dd><p>If the path is relative convert it into an absolute path.  This is the same
+as calling os.path.abspath(path), but with an option to override the
+default root of os.getcwd() and with normalisation and expansion of
+environment variables on the input path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.seconds_to_timestring">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">seconds_to_timestring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#seconds_to_timestring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.seconds_to_timestring" title="Permalink to this definition"></a></dt>
+<dd><p>Return a formatted time-string for the given duration in seconds.
+Provides auto-rescale/formatting for values down to ns resolution
+&gt;&gt;&gt; seconds_to_timestring(1.0)
+‘1.0s’
+&gt;&gt;&gt; seconds_to_timestring(100e-3)
+‘100.0ms’
+&gt;&gt;&gt; seconds_to_timestring(500e-6)
+‘500.0us’
+&gt;&gt;&gt; seconds_to_timestring(20000.0)
+‘20000.0s’
+&gt;&gt;&gt; seconds_to_timestring(453e-9)
+‘453.0ns’
+&gt;&gt;&gt; seconds_to_timestring(3000e-9)
+‘3.0us’
+&gt;&gt;&gt; seconds_to_timestring(100e-12)
+‘0.1ns’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.self_test">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">self_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chiptools.__init__'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#self_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.self_test" title="Permalink to this definition"></a></dt>
+<dd><p>Basic sanity check using mod import.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.subgraph">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">subgraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#subgraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.subgraph" title="Permalink to this definition"></a></dt>
+<dd><p>Given a graph represented by a dictionary of key (node) and value (set of
+child nodes) and a root node, return a new graph representing the root node
+and its hierarchy.
+&gt;&gt;&gt; graph = {
+…    2 : set([11]),
+…    9 : set([11, 8]),
+…    10 : set([11, 3]),
+…    11 : set([5, 7]),
+…    8 : set([7, 3]),
+…    5 : set(),
+…    7 : set(),
+…    3 : set([5])
+… }
+&gt;&gt;&gt; subgraph(graph, 8)
+{8: {3, 7}, 3: {5}, 5: set(), 7: set()}</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.tee">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">tee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#tee"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.tee" title="Permalink to this definition"></a></dt>
+<dd><p>Print <cite>infile</cite> to <cite>files</cite> in a separate thread.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.teed_call">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">teed_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#teed_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.teed_call" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.time_delta_string">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">time_delta_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#time_delta_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.time_delta_string" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representing the time delta in ms
+&gt;&gt;&gt; time_delta_string(50e-3, 100e-3)
+‘50.0ms’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.common.utils.topological_sort">
+<span class="sig-prename descclassname"><span class="pre">chiptools.common.utils.</span></span><span class="sig-name descname"><span class="pre">topological_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/utils.html#topological_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.utils.topological_sort" title="Permalink to this definition"></a></dt>
+<dd><p>Perform a topological sort on the graph and return a list of sorted nodes.
+The graph is represented as a dictionary where each key is a node and
+the value is a list/set of connected child nodes.
+&gt;&gt;&gt; graph = {
+…    2 : set([11]),
+…    9 : set([11, 8]),
+…    10 : set([11, 3]),
+…    11 : set([5, 7]),
+…    8 : set([7, 3]),
+…    5 : set(),
+…    7 : set(),
+…    3 : set()
+… }
+&gt;&gt;&gt; topological_sort(graph)
+[3, 7, 5, 8, 11, 2, 9, 10]</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.common.filetypes.html" class="btn btn-neutral float-left" title="chiptools.common.filetypes module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.core.html" class="btn btn-neutral float-right" title="chiptools.core package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

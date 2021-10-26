@@ -1,0 +1,30 @@
+chiptools package
+=================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.common
+   chiptools.core
+   chiptools.parsers
+   chiptools.testing
+   chiptools.wrappers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.chiptools_main
+
+Module contents
+---------------
+
+.. automodule:: chiptools
+   :members:
+   :undoc-members:
+   :show-inheritance:

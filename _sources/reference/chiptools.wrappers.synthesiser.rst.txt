@@ -1,0 +1,7 @@
+chiptools.wrappers.synthesiser module
+=====================================
+
+.. automodule:: chiptools.wrappers.synthesiser
+   :members:
+   :undoc-members:
+   :show-inheritance:

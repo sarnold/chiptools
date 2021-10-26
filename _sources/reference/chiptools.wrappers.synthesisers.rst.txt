@@ -1,0 +1,20 @@
+chiptools.wrappers.synthesisers package
+=======================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.wrappers.synthesisers.ise
+   chiptools.wrappers.synthesisers.quartus
+   chiptools.wrappers.synthesisers.vivado
+
+Module contents
+---------------
+
+.. automodule:: chiptools.wrappers.synthesisers
+   :members:
+   :undoc-members:
+   :show-inheritance:

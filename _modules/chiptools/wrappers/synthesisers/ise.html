@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.synthesisers.ise &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.synthesisers.ise</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.synthesisers.ise</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.exceptions</span> <span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+<span class="kn">from</span> <span class="nn">chiptools.wrappers</span> <span class="kn">import</span> <span class="n">synthesiser</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Options file to be used by XFLOW</span>
+<span class="n">XST_MIXED_OPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">FLOWTYPE = FPGA_SYNTHESIS;</span>
+<span class="s2">Program xst</span>
+<span class="s2">-ifn &lt;design&gt;_xst.scr;       # input XST script file</span>
+<span class="s2">-ofn &lt;design&gt;_xst.log;       # output XST log file</span>
+<span class="s2">-intstyle xflow;             # Message Reporting Style: ise, xflow, or silent</span>
+<span class="s2">ParamFile: &lt;design&gt;_xst.scr</span>
+<span class="s2">&quot;run&quot;;</span>
+<span class="s2">&quot;-ifn &lt;synthdesign&gt;&quot;;        # Input/Project File Name</span>
+<span class="s2">&quot;-ifmt mixed&quot;;               # Input Format</span>
+<span class="s2">&quot;-ofn &lt;design&gt;&quot;;             # Output File Name</span>
+<span class="s2">&quot;-ofmt ngc&quot;;                 # Output File Format</span>
+<span class="s2">&quot;-top &lt;design&gt;&quot;;             # Top Design Name</span>
+<span class="s2">&quot;-generics </span><span class="si">%(generics)s</span><span class="s2">&quot;;</span>
+<span class="s2">&quot;-p &lt;partname&gt;&quot;;             # Target Device</span>
+<span class="s2">End ParamFile</span>
+<span class="s2">End Program xst</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Ise"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise">[docs]</a><span class="k">class</span> <span class="nc">Ise</span><span class="p">(</span><span class="n">synthesiser</span><span class="o">.</span><span class="n">Synthesiser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A ISE Synthesiser instance can be used to synthesise the files in the</span>
+<span class="sd">    given Project using the XFLOW utility or individual Xst, Map, Par,</span>
+<span class="sd">    Ngdbuild, Bitgen and Promgen tools provided in a base Xilinx ISE</span>
+<span class="sd">    installation. The ISE synthesis flow can be set to either *&#39;manual&#39;* flow</span>
+<span class="sd">    where the individual ISE binaries are called in sequence or *&#39;xflow&#39;*</span>
+<span class="sd">    where the XFLOW utility is called (effectively the same thing).</span>
+<span class="sd">    To use the ISE class it must be instanced with a Project and Options</span>
+<span class="sd">    object passed as arguments, the *&#39;synthesise&#39;* method may then be called</span>
+<span class="sd">    to initiate the synthesis flow.</span>
+<span class="sd">    In addition to running the synthesis flow, the ISE Synthesiser instance</span>
+<span class="sd">    also uses a Reporter instance to filter the synthesis log messages for</span>
+<span class="sd">    important information relating to the build.</span>
+
+<span class="sd">    When complete, the output files from synthesis will be stored in an</span>
+<span class="sd">    archive bearing the name of the entity that was synthesised and a unique</span>
+<span class="sd">    timestamp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ise&#39;</span>
+
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;xwebtalk&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;promgen&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;xst&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;map&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;par&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ngdbuild&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bitgen&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;xflow&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;manual&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new ISE Synthesiser instance using the supplied Project and</span>
+<span class="sd">        Options objects with the optionsal string parameter *mode* set to</span>
+<span class="sd">        either &#39;manual&#39; or &#39;xflow&#39; to determine which ISE tool flow to use</span>
+<span class="sd">        during synthesis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ise</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xwebtalk</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;xwebtalk&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">promgen</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;promgen&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;xst&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ngdbuild</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;ngdbuild&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bitgen</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;bitgen&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xflow</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;xflow&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Ise.makeProject"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.makeProject">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">makeProject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projectFilePath</span><span class="p">,</span> <span class="n">fileFormat</span><span class="o">=</span><span class="s1">&#39;mixed&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a Xilinx ISE project file listing source files with their</span>
+<span class="sd">        filetypes and libraries.</span>
+<span class="sd">        ISE requires a project file to be written using the following format:</span>
+
+<span class="sd">        .. code-block: xml</span>
+
+<span class="sd">            &lt;hdl_language&gt; &lt;compilation_library&gt; &lt;source_file&gt;</span>
+
+<span class="sd">        Where *hdl_language* specifies whether the designated HDL source file</span>
+<span class="sd">        is written in VHDL or Verilog, *compilation_library* specifies the</span>
+<span class="sd">        library where the HDL is compiled and *source_file* specifies the path</span>
+<span class="sd">        to the source file.</span>
+<span class="sd">        This method generates an appropriate file from the project data that</span>
+<span class="sd">        has been loaded into the ISE Synthesiser instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating project file for ISE...&#39;</span><span class="p">)</span>
+        <span class="n">projectFileString</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">fileSet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_fileset</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">libName</span><span class="p">,</span> <span class="n">fileList</span> <span class="ow">in</span> <span class="n">fileSet</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">fileObject</span> <span class="ow">in</span> <span class="n">fileList</span><span class="p">:</span>
+                <span class="c1"># We could leave it to the synthesis tool to report missing</span>
+                <span class="c1"># files, but handling them here means we can abort the process</span>
+                <span class="c1"># early and notify the user.</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">fileFormat</span> <span class="o">==</span> <span class="s1">&#39;mixed&#39;</span><span class="p">:</span>
+                            <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;vhdl &#39;</span>
+                    <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">fileFormat</span> <span class="o">==</span> <span class="s1">&#39;mixed&#39;</span><span class="p">:</span>
+                            <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;verilog &#39;</span>
+                    <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">fileFormat</span> <span class="o">==</span> <span class="s1">&#39;mixed&#39;</span><span class="p">:</span>
+                            <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;verilog &#39;</span>
+                    <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">NGCNetlist</span><span class="p">:</span>
+                        <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">projectFilePath</span><span class="p">)</span>
+                        <span class="n">newPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">base</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">newPath</span><span class="p">):</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="s1">&#39;File already exists: &#39;</span>
+                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">newPath</span><span class="p">)</span>
+                                <span class="o">+</span> <span class="s1">&#39; and will be overwritten by: &#39;</span>
+                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="c1"># Copy the NGC into the local directory</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">newPath</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SynthesisException</span><span class="p">(</span>
+                            <span class="s1">&#39;Unknown file type for synthesis tool: &#39;</span>
+                            <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span>
+                        <span class="p">)</span>
+                    <span class="n">projectFileString</span> <span class="o">+=</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">library</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                    <span class="n">projectFileString</span> <span class="o">+=</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Write out the synthesis project file</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Writing: &#39;</span> <span class="o">+</span> <span class="n">projectFilePath</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">projectFilePath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">projectFileString</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.synthesise"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.synthesise">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">synthesise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Synthesise the target entity in the given library for the currently</span>
+<span class="sd">        loaded project. The following steps are performed during synthesis:</span>
+
+<span class="sd">          * Create synthesis directories</span>
+<span class="sd">          * Generate an ISE project file</span>
+<span class="sd">          * Generate an ISE UCF constraints file</span>
+<span class="sd">          * Invoke XFLOW or the flow tools individually with appropriate command</span>
+<span class="sd">            line arguments</span>
+<span class="sd">          * Generate reports</span>
+<span class="sd">          * Archive the outputs of the synthesis flow</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ise</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="p">)</span>
+        <span class="c1"># make a temporary working directory for the synth tool</span>
+        <span class="kn">import</span> <span class="nn">tempfile</span>
+
+        <span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;Turning Xilinx WebTalk off as it may prevent the removal of &#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;temporary directories&#39;</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ise_webtalk_off</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Could not disable WebTalk, &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;you may encounter PermissionErrors &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;during temporary directory removal&#39;</span>
+            <span class="p">)</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_directory</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">workingDirectory</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Created temporary synthesis directory: &#39;</span> <span class="o">+</span> <span class="n">workingDirectory</span>
+            <span class="p">)</span>
+            <span class="n">synthName</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_synth_&#39;</span> <span class="o">+</span> <span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%m%y_%H%M%S&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">archiveName</span> <span class="o">=</span> <span class="n">synthName</span> <span class="o">+</span> <span class="s1">&#39;.tar&#39;</span>
+            <span class="n">synthesisDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">synthName</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fpga_part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fpga_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_fpga_part</span><span class="p">()</span>
+            <span class="n">generics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_generics</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="n">generics</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">generics</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span>
+            <span class="p">)</span>
+            <span class="n">projectFilePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.prj&#39;</span><span class="p">)</span>
+            <span class="n">exportDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span>
+            <span class="n">reportDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">,</span> <span class="s1">&#39;reports&#39;</span><span class="p">)</span>
+            <span class="c1"># Add user constraints and other source files</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addConstraints</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">makeProject</span><span class="p">(</span><span class="n">projectFilePath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;xflow&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Run the flow</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ise_xflow</span><span class="p">(</span>
+                        <span class="n">projectFilePath</span><span class="p">,</span>
+                        <span class="n">fpga_part</span><span class="p">,</span>
+                        <span class="n">entity</span><span class="p">,</span>
+                        <span class="n">generics</span><span class="p">,</span>
+                        <span class="n">synthesisDirectory</span><span class="p">,</span>
+                        <span class="n">reportDirectory</span><span class="p">,</span>
+                        <span class="n">exportDirectory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_programming_files</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">synthesisDirectory</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># Archive the outputs</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s1">&#39;Synthesis error, storing output in error directory...&#39;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="s1">&#39;ERROR_&#39;</span> <span class="o">+</span> <span class="n">archiveName</span><span class="p">)</span>
+                    <span class="k">raise</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;manual&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Run the flow</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ise_manual_flow</span><span class="p">(</span>
+                        <span class="n">projectFilePath</span><span class="p">,</span>
+                        <span class="n">fpga_part</span><span class="p">,</span>
+                        <span class="n">entity</span><span class="p">,</span>
+                        <span class="n">generics</span><span class="p">,</span>
+                        <span class="n">synthesisDirectory</span><span class="p">,</span>
+                        <span class="n">reportDirectory</span><span class="p">,</span>
+                        <span class="n">exportDirectory</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_programming_files</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">synthesisDirectory</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># Archive the outputs</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s1">&#39;Synthesis error, storing output in error directory...&#39;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="s1">&#39;ERROR_&#39;</span> <span class="o">+</span> <span class="n">archiveName</span><span class="p">)</span>
+                    <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SynthesisException</span><span class="p">(</span>
+                    <span class="s1">&#39;Invalid flow type: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
+                <span class="p">)</span>
+
+            <span class="c1">#  Check the report</span>
+            <span class="n">reporter_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_reporter</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">reporter_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">reporter_fn</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;The post-synthesis reporter script caused an error:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="c1"># Archive the outputs</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Synthesis completed, saving output to archive...&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">archiveName</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.generate_programming_files"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.generate_programming_files">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">generate_programming_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate programming files using the output bitfile from the synthesis</span>
+<span class="sd">        run. An MCS file is always generated, but additional files can be</span>
+<span class="sd">        generated by adding &#39;args_ise_promgen_&lt;format&gt;&#39; configuration items</span>
+<span class="sd">        with the tool arguments to apply when calling promgen for that output</span>
+<span class="sd">        format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all ISE tool arguments for the PROMGEN stage:</span>
+        <span class="n">arg_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_all_tool_argument_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">filter_args_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;args_</span><span class="si">{0}</span><span class="s1">_promgen&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="n">arg_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">filter_args_fn</span><span class="p">,</span> <span class="n">arg_keys</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;promgen&#39;</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;Generating PROM file using user defined &#39;</span>
+                    <span class="s1">&#39;arguments from configuration item: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="c1"># Run promgen using the mode recovered from the config key</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ise_make_prom_file</span><span class="p">(</span>
+                    <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.bit&#39;</span><span class="p">,</span>
+                    <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">mode</span><span class="p">,</span>
+                    <span class="n">working_directory</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Always ensure that an MCS file is created.</span>
+        <span class="k">if</span> <span class="s1">&#39;args_</span><span class="si">{0}</span><span class="s1">_promgen_mcs&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ise_make_prom_file</span><span class="p">(</span>
+                <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.bit&#39;</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.mcs&#39;</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mcs&#39;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_webtalk_off"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_webtalk_off">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_webtalk_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *xwebtalk* binary with the *-user off* switch to disable</span>
+<span class="sd">        WebTalk</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xwebtalk</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;-user&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">],</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_directory</span><span class="p">(),</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_promgen"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_promgen">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_promgen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fin</span><span class="p">,</span> <span class="n">fout</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *promgen* binary, which accepts the following arguments:</span>
+
+<span class="sd">        Usage: promgen [-b] [-spi] [-p mcs|exo|tek|hex|bin|ieee1532|ufp] [-o</span>
+<span class="sd">        &lt;outfile&gt; {&lt;outfile&gt;}] [-s &lt;size&gt; {&lt;size&gt;}] [-x &lt;xilinx_prom&gt;</span>
+<span class="sd">        {&lt;xilinx_prom&gt;}] [-c [&lt;hexbyte&gt;]] [-l] [-w] [-bpi_dc serial|parallel]</span>
+<span class="sd">        [-intstyle ise|xflow|silent] [-t &lt;templatefile[.pft]&gt;] [-z</span>
+<span class="sd">        [&lt;version:0,3&gt;]] [-i &lt;version:0,3&gt;] [-data_width 8|16|32]</span>
+<span class="sd">        [-config_mode selectmap8|selectmap16|selectmap32] {-ver &lt;version:0,3&gt;</span>
+<span class="sd">        &lt;file&gt; {&lt;file&gt;}} {-u &lt;hexaddr&gt; &lt;file&gt; {&lt;file&gt;}} {-d &lt;hexaddr&gt; &lt;file&gt;</span>
+<span class="sd">        {&lt;file&gt;}} {-n &lt;file&gt; {&lt;file&gt;}} {-bd &lt;file&gt; [start &lt;hexaddr&gt;] [tag</span>
+<span class="sd">        &lt;tagname&gt; {&lt;tagname&gt;}]} {-bm &lt;file&gt;} {-data_file up|down &lt;hexaddr&gt;</span>
+<span class="sd">        &lt;file&gt; {&lt;file&gt;}} [-r &lt;promfile&gt;]</span>
+
+<span class="sd">        * *fin* is passed to the *&lt;file&gt;* input parameter</span>
+<span class="sd">        * *fout* is passed to the *-o* input parameter</span>
+<span class="sd">        * *workingDirectory* is the working directory where the tool is invoked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage if this method was</span>
+        <span class="c1"># not called with existing arguments.</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;promgen&#39;</span><span class="p">)</span>
+        <span class="c1"># Allow the user to override PROM loading of bitfiles</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">k</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;-ver&#39;</span><span class="p">]]):</span>
+            <span class="c1"># Default to upward loading from address 0</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">fin</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># User provided custom PROM loading argument which we will honour</span>
+            <span class="k">pass</span>
+        <span class="c1"># Check that the user has supplied a mode</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">k</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;mcs&#39;</span><span class="p">]]):</span>
+            <span class="c1"># Default to MCS if the user did not specify a mode</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;mcs&#39;</span><span class="p">]</span>
+        <span class="c1"># Always overwrite existing files</span>
+        <span class="k">if</span> <span class="s1">&#39;-w&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-w&#39;</span><span class="p">]</span>
+        <span class="c1"># Allow the user to override the output file name</span>
+        <span class="k">if</span> <span class="s1">&#39;-o&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">fout</span><span class="p">]</span>
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">promgen</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_make_prom_file"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_make_prom_file">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_make_prom_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fin</span><span class="p">,</span> <span class="n">fout</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mcs&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a programming file using the promgen tool, the user can</span>
+<span class="sd">        supply arguments to this flow stage with args_ise_promgen_&lt;mode&gt;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;promgen_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">k</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">]]):</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_promgen</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="n">fout</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_xst"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_xst">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_xst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">generics</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an XST settings file and call the *XST* binary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">xstargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;xst&#39;</span><span class="p">)</span>
+        <span class="c1"># Format the args as XST expects</span>
+        <span class="n">xstargs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39; -&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">-&#39;</span><span class="p">,</span> <span class="n">xstargs</span><span class="p">)</span>
+        <span class="c1"># Write XST file</span>
+        <span class="n">xst_scr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;run</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-ifn </span><span class="si">%(entity)s</span><span class="s1">.prj</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-ofn </span><span class="si">%(entity)s</span><span class="s1">.ngc</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-ofmt NGC</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-p </span><span class="si">%(part)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-top </span><span class="si">%(entity)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-generics </span><span class="si">%(synthesis_generics)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">xstargs</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.xst&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="n">xst_scr</span>
+                <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">entity</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span>
+                    <span class="n">part</span><span class="o">=</span><span class="n">part</span><span class="p">,</span>
+                    <span class="n">synthesis_generics</span><span class="o">=</span><span class="n">generics</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-ifn&#39;</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.xst&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-ofn&#39;</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.log&#39;</span><span class="p">]</span>
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xst</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_map"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_map">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *MAP* binary, which accepts the following arguments:</span>
+
+<span class="sd">        map [-h] [-p partname] (infile[.ngd]) [-o (outfile[.ncd])]</span>
+<span class="sd">        http://www.xilinx.com/support/documentation/sw_manuals/xilinx14_1/devref.pdf</span>
+
+<span class="sd">        * *part* is passed to the *-p* input parameter</span>
+<span class="sd">        * *entity* is used to generate output file names</span>
+<span class="sd">        * *workingDirectory* is the working directory where the tool is invoked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="c1"># Part name</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span>
+        <span class="c1"># Output file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_map.ncd&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ngd&#39;</span><span class="p">]</span>
+        <span class="c1"># PCF Output name</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.pcf&#39;</span><span class="p">]</span>
+
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_par"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_par">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_par</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *PAR* binary, which accepts the following arguments:</span>
+
+<span class="sd">        par [-ol std|high] [-pl std|high] [-rl std|high] [-xe n|c] [-mt</span>
+<span class="sd">        on|off|1| 2|3|4] [-t &lt;costtable:1,100&gt;] [-p] [-k]</span>
+<span class="sd">        [-r] [-w] [-smartguide &lt;guidefile[.ncd]&gt;] [-x] [-nopad] [-power</span>
+<span class="sd">        on|off|xe] [-act ivityfile &lt;activityfile[.vcd|.saif]&gt;]</span>
+<span class="sd">        [-ntd] [-intstyle ise|xflow|silent|pa] [-ise &lt;projectrepositoryfile&gt;]</span>
+<span class="sd">        [-filter &lt; filter_file[.filter]&gt;] &lt;infile[.ncd]&gt;</span>
+
+<span class="sd">        &lt;outfile&gt; [&lt;constraintsfile[.pcf]&gt;]</span>
+
+<span class="sd">        * *entity* is used to generate output file names</span>
+<span class="sd">        * *workingDirectory* is the working directory where the tool is invoked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="c1"># Infile</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_map.ncd&#39;</span><span class="p">]</span>
+        <span class="c1"># Output file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ncd&#39;</span><span class="p">]</span>
+        <span class="c1"># Physical Constraints File (auto generated)</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.pcf&#39;</span><span class="p">]</span>
+
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">par</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_ngdbuild"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_ngdbuild">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_ngdbuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *NGDBUILD* binary, which accepts the following arguments:</span>
+
+<span class="sd">        Usage: ngdbuild [-p &lt;partname&gt;] {-sd &lt;source_dir&gt;} {-l &lt;library&gt;} [-ur</span>
+<span class="sd">        &lt;rules_file[.urf]&gt;] [-dd &lt;output_dir&gt;] [-r] [-a] [-u] [-nt</span>
+<span class="sd">        timestamp|on|off] [-uc &lt;ucf_file[.ucf]&gt;] [-aul] [-aut] [-bm</span>
+<span class="sd">        &lt;bmm_file[.bmm]&gt;] [-i] [-intstyle ise|xflow|silent] [-quiet]</span>
+<span class="sd">        [-verbose] [-insert_keep_hierarchy] [-filter &lt;filter_file[.filter]&gt;]</span>
+<span class="sd">        &lt;design_name&gt; [&lt;ngd_file[.ngd]&gt;]</span>
+
+<span class="sd">        * *entity* is used to generate input and output file names</span>
+<span class="sd">        * *-sd* is set to *workingDirectory*</span>
+<span class="sd">        * *-p* is set to *part*</span>
+<span class="sd">        * *workingDirectory* is the working directory where the tool is invoked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;ngdbuild&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="c1"># Constraints</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-uc&#39;</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ucf&#39;</span><span class="p">]</span>
+        <span class="c1"># Search directory</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-sd&#39;</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">]</span>
+        <span class="c1"># Part name</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span>
+        <span class="c1"># Input design file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ngc&#39;</span><span class="p">]</span>
+        <span class="c1"># Output NGD file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ngd&#39;</span><span class="p">]</span>
+
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ngdbuild</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_bitgen"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_bitgen">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_bitgen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the *BITGEN* binary, which accepts the following arguments:</span>
+
+<span class="sd">        Usage: bitgen [-d] [-j] [-b] [-w] [-l] [-m] [-t] [-n] [-u] [-a] [-r</span>
+<span class="sd">        &lt;bitFile&gt;] [-intstyle ise|xflow|silent|pa] [-ise</span>
+<span class="sd">        &lt;projectrepositoryfile&gt;] {-bd &lt;BRAM_data_file&gt; [tag &lt;tagname&gt;]} {-g</span>
+<span class="sd">        &lt;setting_value&gt;} [-filter &lt;filter_file[.filter]&gt;] &lt;infile[.ncd]&gt;</span>
+<span class="sd">        [&lt;outfile&gt;] [&lt;pcffile[.pcf]&gt;]</span>
+
+<span class="sd">        * *entity* is used to generate input and output file names</span>
+<span class="sd">        * *workingDirectory* is the working directory where the tool is invoked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;bitgen&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="c1"># Input file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ncd&#39;</span><span class="p">]</span>
+        <span class="c1"># Output file</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.bit&#39;</span><span class="p">]</span>
+
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bitgen</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_xflow"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_xflow">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_xflow</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">projectFilePath</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+        <span class="n">generics</span><span class="p">,</span>
+        <span class="n">workingDirectory</span><span class="p">,</span>
+        <span class="n">reportDirectory</span><span class="p">,</span>
+        <span class="n">exportDirectory</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Call the *XFLOW* binary, which accepts the following arguments:</span>
+
+<span class="sd">        xflow [-p partname] [flow type] [options file[.opt]] [xflow options]</span>
+<span class="sd">        design_name</span>
+
+<span class="sd">        XFLOW Flow Types:</span>
+<span class="sd">            Create a bitstream for FPGA device configuration using a routed</span>
+<span class="sd">            design.</span>
+<span class="sd">            -config option_file</span>
+
+<span class="sd">            Create a file that can be used for formal verification of an FPGA</span>
+<span class="sd">            design.</span>
+<span class="sd">            -ecn option_file</span>
+
+<span class="sd">            Incorporate logic from the design into physical macrocell locations</span>
+<span class="sd">            in a CPLD</span>
+<span class="sd">            -fit option_file</span>
+
+<span class="sd">            Generate a file that can be used for functional simulation of an</span>
+<span class="sd">            FPGA or CPLD design</span>
+<span class="sd">            -fsim option_file</span>
+
+<span class="sd">            Implement the design and output a routed NCD file</span>
+<span class="sd">            -implement option_file[fast_runtime.opt, balanced.opt,</span>
+<span class="sd">            high_effort.opt]</span>
+
+<span class="sd">            Create a file that can be used to perform static timing analysis</span>
+<span class="sd">            of an FPGA design</span>
+<span class="sd">            -sta option_file</span>
+
+<span class="sd">            Synthesise the design for implementation in an FPGA, for fitting</span>
+<span class="sd">            in a CPLD or for</span>
+<span class="sd">            compiling for functional simulation.</span>
+<span class="sd">            -syth option_file[xst_vhdl.opt/xst_verilog.opt/xst_mixed.opt]</span>
+
+<span class="sd">            Generate a file that can be used for timing simulation of an FPGA</span>
+<span class="sd">            or CPLD design.</span>
+<span class="sd">            -tsim option_file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Additional arguments are not supported for XFLOW, the XST flow should</span>
+        <span class="c1"># be used if more control of the stages is required.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;xflow&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;The ISE wrapper does not allow additional arguments&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39; to be passed to XFLOW. Use the XST flow if fine control&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39; of the synthesis stages is required.&#39;</span>
+            <span class="p">)</span>
+        <span class="c1"># Write the auto-generated options file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="s1">&#39;xst_custom.opt&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">XST_MIXED_OPT</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">generics</span><span class="o">=</span><span class="n">generics</span><span class="p">))</span>
+        <span class="c1"># Call the flow</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-synth&#39;</span><span class="p">,</span> <span class="s1">&#39;xst_custom.opt&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-implement&#39;</span><span class="p">,</span> <span class="s1">&#39;balanced.opt&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-config&#39;</span><span class="p">,</span> <span class="s1">&#39;bitgen.opt&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-wd&#39;</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-ed&#39;</span><span class="p">,</span> <span class="n">exportDirectory</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-rd&#39;</span><span class="p">,</span> <span class="n">reportDirectory</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">projectFilePath</span><span class="p">]</span>
+
+        <span class="n">Ise</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xflow</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.ise_manual_flow"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.ise_manual_flow">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">ise_manual_flow</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">projectFilePath</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+        <span class="n">generics</span><span class="p">,</span>
+        <span class="n">workingDirectory</span><span class="p">,</span>
+        <span class="n">reportDirectory</span><span class="p">,</span>
+        <span class="n">exportDirectory</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the manual ISE tool flow in the following order:</span>
+<span class="sd">        #. XST</span>
+<span class="sd">        #. NGDBUILD</span>
+<span class="sd">        #. MAP</span>
+<span class="sd">        #. PAR</span>
+<span class="sd">        #. BITGEN</span>
+
+<span class="sd">        Refer to the individual documentation for these tools for more</span>
+<span class="sd">        information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># XST &gt; NGDBUILD &gt; MAP &gt; PAR &gt; BitGen &gt; PromGen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_xst</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">generics</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_ngdbuild</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_map</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_par</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ise_bitgen</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">workingDirectory</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ise.addConstraints"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.ise.html#chiptools.wrappers.synthesisers.ise.Ise.addConstraints">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">addConstraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">synthesisDirectory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the user constraints file path from the Project instance and</span>
+<span class="sd">        generate a UCF file in the supplied *synthesisDirectory* directory</span>
+<span class="sd">        where the synthesis tools are invoked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add user constraints and other source files</span>
+        <span class="n">constraintsFiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()</span>
+        <span class="n">constraintsData</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">filesProcessed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fileObject</span> <span class="ow">in</span> <span class="n">constraintsFiles</span><span class="p">:</span>
+            <span class="c1"># Avoid duplicates</span>
+            <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filesProcessed</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">flow</span> <span class="o">==</span> <span class="s1">&#39;ise&#39;</span> <span class="ow">or</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">flow</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">UCF</span><span class="p">:</span>
+                        <span class="c1"># Copy the UCF data into the string var</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">constraintsFile</span><span class="p">:</span>
+                            <span class="n">constraintsData</span> <span class="o">+=</span> <span class="n">constraintsFile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                                <span class="s1">&#39;Added constraints file: &#39;</span> <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span>
+                            <span class="p">)</span>
+                <span class="n">filesProcessed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># Write the string var to a single file if we have data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraintsData</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">newPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.ucf&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">newPath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outFile</span><span class="p">:</span>
+                <span class="n">outFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">constraintsData</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Wrote: &#39;</span> <span class="o">+</span> <span class="n">newPath</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

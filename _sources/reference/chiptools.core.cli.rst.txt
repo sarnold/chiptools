@@ -1,0 +1,7 @@
+chiptools.core.cli module
+=========================
+
+.. automodule:: chiptools.core.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:

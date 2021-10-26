@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.common.filetypes module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.common.utils module" href="chiptools.common.utils.html" />
+    <link rel="prev" title="chiptools.common.exceptions module" href="chiptools.common.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.common.html">chiptools.common package</a> &raquo;</li>
+      <li>chiptools.common.filetypes module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.common.filetypes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.common.filetypes">
+<span id="chiptools-common-filetypes-module"></span><h1>chiptools.common.filetypes module<a class="headerlink" href="#module-chiptools.common.filetypes" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.Constraints">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.filetypes.</span></span><span class="sig-name descname"><span class="pre">Constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#Constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.Constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The constraints object provides a container for constraints files</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.File">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.filetypes.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#File"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.File" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The File object contains properties of a design source file that has been
+loaded from the project XML file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.File.get_tool_arguments">
+<span class="sig-name descname"><span class="pre">get_tool_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flowName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#File.get_tool_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.File.get_tool_arguments" title="Permalink to this definition"></a></dt>
+<dd><p>Return the optional tool arguments attached to this file for the given
+toolname and flowname. If the tool or flow are not present in the
+optional arguments then return an empty string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.filetypes.</span></span><span class="sig-name descname"><span class="pre">FileType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chiptools.common.filetypes.FileType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.NGCNetlist">
+<span class="sig-name descname"><span class="pre">NGCNetlist</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.NGCNetlist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.Python">
+<span class="sig-name descname"><span class="pre">Python</span></span><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.Python" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.SDC">
+<span class="sig-name descname"><span class="pre">SDC</span></span><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.SDC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.SystemVerilog">
+<span class="sig-name descname"><span class="pre">SystemVerilog</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.SystemVerilog" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.TCL">
+<span class="sig-name descname"><span class="pre">TCL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.TCL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.UCF">
+<span class="sig-name descname"><span class="pre">UCF</span></span><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.UCF" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.Unknown">
+<span class="sig-name descname"><span class="pre">Unknown</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.Unknown" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.VHDL">
+<span class="sig-name descname"><span class="pre">VHDL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.VHDL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.Verilog">
+<span class="sig-name descname"><span class="pre">Verilog</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.Verilog" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.VivadoIp">
+<span class="sig-name descname"><span class="pre">VivadoIp</span></span><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.VivadoIp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.FileType.VivadoXDC">
+<span class="sig-name descname"><span class="pre">VivadoXDC</span></span><em class="property"> <span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#chiptools.common.filetypes.FileType.VivadoXDC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.filetypes.</span></span><span class="sig-name descname"><span class="pre">ProjectAttributes</span></span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_FLOW">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_FLOW</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'flow'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_FLOW" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_LIBRARY">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_LIBRARY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'library'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_LIBRARY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_NAME">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_NAME</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'name'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_PATH">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_PATH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'path'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_PATH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_PREPROCESSOR">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_PREPROCESSOR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'preprocessor'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_PREPROCESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_REPORTER">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_REPORTER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'reporter'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_REPORTER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SIM_DIR">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SIM_DIR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'simulation_directory'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SIM_DIR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SIM_TOOL">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SIM_TOOL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'simulator'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SIM_TOOL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTHESIS">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SYNTHESIS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'synthesise'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTHESIS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_DIR">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SYNTH_DIR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'synthesis_directory'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_DIR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_PART">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SYNTH_PART</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'part'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_PART" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_TOOL">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_SYNTH_TOOL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'synthesiser'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.ATTRIBUTE_SYNTH_TOOL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.CONSTRAINTS_NODE_DEFAULTS">
+<span class="sig-name descname"><span class="pre">CONSTRAINTS_NODE_DEFAULTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'flow':</span> <span class="pre">None,</span> <span class="pre">'path':</span> <span class="pre">None}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.CONSTRAINTS_NODE_DEFAULTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.FILE_NODE_DEFAULTS">
+<span class="sig-name descname"><span class="pre">FILE_NODE_DEFAULTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'path':</span> <span class="pre">None,</span> <span class="pre">'preprocessor':</span> <span class="pre">None,</span> <span class="pre">'synthesise':</span> <span class="pre">None}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.FILE_NODE_DEFAULTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.LIBRARY_NODE_DEFAULTS">
+<span class="sig-name descname"><span class="pre">LIBRARY_NODE_DEFAULTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'name':</span> <span class="pre">None,</span> <span class="pre">'synthesise':</span> <span class="pre">None}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.LIBRARY_NODE_DEFAULTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.NODE_PROCESSOR">
+<span class="sig-name descname"><span class="pre">NODE_PROCESSOR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'library':</span> <span class="pre">&lt;function</span> <span class="pre">ProjectAttributes.string_tolower&gt;,</span> <span class="pre">'part':</span> <span class="pre">&lt;function</span> <span class="pre">ProjectAttributes.&lt;lambda&gt;&gt;,</span> <span class="pre">'path':</span> <span class="pre">&lt;function</span> <span class="pre">relative_path_to_abs&gt;,</span> <span class="pre">'preprocessor':</span> <span class="pre">&lt;function</span> <span class="pre">relative_path_to_abs&gt;,</span> <span class="pre">'reporter':</span> <span class="pre">&lt;function</span> <span class="pre">relative_path_to_abs&gt;,</span> <span class="pre">'simulation_directory':</span> <span class="pre">&lt;function</span> <span class="pre">relative_path_to_abs&gt;,</span> <span class="pre">'simulator':</span> <span class="pre">&lt;function</span> <span class="pre">ProjectAttributes.&lt;lambda&gt;&gt;,</span> <span class="pre">'synthesis_directory':</span> <span class="pre">&lt;function</span> <span class="pre">relative_path_to_abs&gt;,</span> <span class="pre">'synthesise':</span> <span class="pre">&lt;function</span> <span class="pre">ProjectAttributes.bool_processor&gt;,</span> <span class="pre">'synthesiser':</span> <span class="pre">&lt;function</span> <span class="pre">ProjectAttributes.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.NODE_PROCESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.PROJECT_NODE_DEFAULTS">
+<span class="sig-name descname"><span class="pre">PROJECT_NODE_DEFAULTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'path':</span> <span class="pre">None,</span> <span class="pre">'synthesise':</span> <span class="pre">None}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.PROJECT_NODE_DEFAULTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.UNITTEST_NODE_DEFAULTS">
+<span class="sig-name descname"><span class="pre">UNITTEST_NODE_DEFAULTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'path':</span> <span class="pre">None}</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.UNITTEST_NODE_DEFAULTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_ADDITIONAL_TOOL_ARGS_RE">
+<span class="sig-name descname"><span class="pre">XML_ADDITIONAL_TOOL_ARGS_RE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">re.compile('args_([A-Z,a-z]+)_([A-Z,a-z]+)')</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_ADDITIONAL_TOOL_ARGS_RE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_COMMENT">
+<span class="sig-name descname"><span class="pre">XML_NODE_COMMENT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'#comment'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_COMMENT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_CONFIG">
+<span class="sig-name descname"><span class="pre">XML_NODE_CONFIG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'config'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_CONFIG" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_CONSTRAINTS">
+<span class="sig-name descname"><span class="pre">XML_NODE_CONSTRAINTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'constraints'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_CONSTRAINTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_FILE">
+<span class="sig-name descname"><span class="pre">XML_NODE_FILE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'file'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_FILE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_GENERIC">
+<span class="sig-name descname"><span class="pre">XML_NODE_GENERIC</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'generic'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_GENERIC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_LIBRARY">
+<span class="sig-name descname"><span class="pre">XML_NODE_LIBRARY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'library'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_LIBRARY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_PROJECT">
+<span class="sig-name descname"><span class="pre">XML_NODE_PROJECT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'project'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_PROJECT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_TEXT">
+<span class="sig-name descname"><span class="pre">XML_NODE_TEXT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'#text'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_TEXT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.XML_NODE_UNITTEST">
+<span class="sig-name descname"><span class="pre">XML_NODE_UNITTEST</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'unittest'</span></em><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.XML_NODE_UNITTEST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.bool_processor">
+<span class="sig-name descname"><span class="pre">bool_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes.bool_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.bool_processor" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.cast_attributes_to_dict">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">cast_attributes_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes.cast_attributes_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.cast_attributes_to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Ensure that attributes is a dictionary. Casts None to an empty dict
+and casts an xml.dom.minidom.NamedNodeMap to a dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.get_processed_attribute">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_processed_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes.get_processed_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.get_processed_attribute" title="Permalink to this definition"></a></dt>
+<dd><p>Process the given attribute according to the functions in the
+NODE_PROCESSOR dictionary using the name as a key and the root as the
+project root. The original attribute is returned if no NODE_PROCESSOR
+function can be found that matches the name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.process_attributes">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">process_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes.process_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.process_attributes" title="Permalink to this definition"></a></dt>
+<dd><p>Process each of the attributes in the supplied dictionary or
+xml.dom.minidom.NamedNodeMap using the associated functions in the
+NODE_PROCESSOR dictionary and return an updated dictionary of the
+attribute name, value pairs.</p>
+<p>If the defaults dictionary is supplied, the returned dictionary will
+contain <em>at least</em> the keys and associated values present in the
+defaults dictionary.</p>
+<p>The root argument is passed to the NODE_PROCESSOR functions and it
+should be a string path pointing to the project root directory, this
+ensures any file paths can be cast to absolute paths correctly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.ProjectAttributes.string_tolower">
+<span class="sig-name descname"><span class="pre">string_tolower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#ProjectAttributes.string_tolower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.ProjectAttributes.string_tolower" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.common.filetypes.UnitTestFile">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.common.filetypes.</span></span><span class="sig-name descname"><span class="pre">UnitTestFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/common/filetypes.html#UnitTestFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.common.filetypes.UnitTestFile" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The UnitTestFile object provides a container for Python test shims.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.common.exceptions.html" class="btn btn-neutral float-left" title="chiptools.common.exceptions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.common.utils.html" class="btn btn-neutral float-right" title="chiptools.common.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

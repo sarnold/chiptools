@@ -1,0 +1,7 @@
+chiptools.parsers.options module
+================================
+
+.. automodule:: chiptools.parsers.options
+   :members:
+   :undoc-members:
+   :show-inheritance:

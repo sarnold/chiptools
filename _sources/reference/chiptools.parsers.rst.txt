@@ -1,0 +1,21 @@
+chiptools.parsers package
+=========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.parsers.callgraph
+   chiptools.parsers.options
+   chiptools.parsers.vhdl
+   chiptools.parsers.xml_project
+
+Module contents
+---------------
+
+.. automodule:: chiptools.parsers
+   :members:
+   :undoc-members:
+   :show-inheritance:

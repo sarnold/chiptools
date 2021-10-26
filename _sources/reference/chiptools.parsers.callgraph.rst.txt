@@ -1,0 +1,7 @@
+chiptools.parsers.callgraph module
+==================================
+
+.. automodule:: chiptools.parsers.callgraph
+   :members:
+   :undoc-members:
+   :show-inheritance:

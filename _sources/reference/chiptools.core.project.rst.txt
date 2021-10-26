@@ -1,0 +1,7 @@
+chiptools.core.project module
+=============================
+
+.. automodule:: chiptools.core.project
+   :members:
+   :undoc-members:
+   :show-inheritance:

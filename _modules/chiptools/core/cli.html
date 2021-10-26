@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.cli &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.core.cli</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.core.cli</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cmd</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.parsers.xml_project</span> <span class="kn">import</span> <span class="n">XmlProjectParser</span>
+<span class="kn">from</span> <span class="nn">chiptools.core.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">colourer</span> <span class="k">as</span> <span class="n">term</span>
+<span class="kn">from</span> <span class="nn">chiptools</span> <span class="kn">import</span> <span class="n">__version__</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="wraps_do_commands"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.wraps_do_commands">[docs]</a><span class="k">def</span> <span class="nf">wraps_do_commands</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;USER COMMAND: (&#39;</span> <span class="o">+</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;) &#39;</span> <span class="o">+</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Command failed due to error:&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="n">SEP</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">4</span>
+
+<span class="n">INTRO_TEMPL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">79</span>
+    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s1">&#39;ChipTools &#39;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="o">+</span> <span class="s1">&#39;(version: &#39;</span>
+    <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(version)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;teal&#39;</span><span class="p">)</span>
+    <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;Type &#39;</span>
+    <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s2">&quot;&#39;help&#39;&quot;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+    <span class="o">+</span> <span class="s1">&#39; to get started.</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%(projects)s</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">79</span>
+    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="CommandLine"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine">[docs]</a><span class="k">class</span> <span class="nc">CommandLine</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">Cmd</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CommandLine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">prj</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+                <span class="n">projects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locateProjects</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">prj</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;Type &#39;</span>
+                        <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s2">&quot;&#39;load_project &lt;path&gt;&#39;&quot;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s1">&#39; to load a project.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+                    <span class="n">prj</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s1">&#39;The current directory contains &#39;</span>
+                        <span class="o">+</span> <span class="s1">&#39;the following projects:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+                    <span class="n">prj</span> <span class="o">+=</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span>
+                        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="s1">&#39;</span><span class="se">\t</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span>
+                        <span class="p">),</span>
+                        <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">intro</span> <span class="o">=</span> <span class="n">INTRO_TEMPL</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
+                    <span class="n">projects</span><span class="o">=</span><span class="n">prj</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ProjectFileException</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;The project file contains errors, &#39;</span>
+                    <span class="o">+</span> <span class="s2">&quot;fix them and then type &#39;reload&#39;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;The software has to terminate due to the following error:&#39;</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+            <span class="n">prj</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Project contains &#39;</span>
+                <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_files</span><span class="p">())),</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span>
+                <span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39; file(s) and &#39;</span>
+                <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tests</span><span class="p">())),</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span>
+                <span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39; test(s).&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intro</span> <span class="o">=</span> <span class="n">INTRO_TEMPL</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
+                <span class="n">projects</span><span class="o">=</span><span class="n">prj</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CommandLine.locateProjects"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.locateProjects">[docs]</a>    <span class="k">def</span> <span class="nf">locateProjects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of projects found in the current path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;chiptools&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filePath</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">filePath</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xml&#39;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tempProject</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+                    <span class="c1"># Load the XML file</span>
+                    <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="n">filePath</span><span class="p">,</span> <span class="n">tempProject</span><span class="p">)</span>
+                    <span class="c1"># If the project contains files we can add it to our list</span>
+                    <span class="n">files</span> <span class="o">=</span> <span class="n">tempProject</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span>
+                    <span class="n">files</span> <span class="o">=</span> <span class="n">files</span> <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">projects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;chiptools&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">projects</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_load_project"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_load_project">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_load_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load the given project XML file: load_project &lt;path_to_project&gt;&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;Loading </span><span class="si">{0}</span><span class="s1"> in current working directory: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;The project could not be loaded due to an error:&#39;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File not found: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_exit"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_exit">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_graph"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_graph">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">write_designtree_png</span><span class="p">(</span><span class="s1">&#39;graph.png&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_compile"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_compile">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_show_synthesis_fileset"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_show_synthesis_fileset">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_show_synthesis_fileset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print out the synthesis file set&quot;&quot;&quot;</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_fileset</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;There are no synthesisable files loaded.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">libName</span><span class="p">,</span> <span class="n">fileList</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Library: &#39;</span> <span class="o">+</span> <span class="n">libName</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">fileList</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_synthesise"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_synthesise">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_synthesise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Synthesise the design using the chosen synthesis tool and report any</span>
+<span class="sd">        errors Example: (Cmd) simulate my_library.my_entity&quot;&quot;&quot;</span>
+        <span class="n">command_elems</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">fpga_part</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_elems</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">target</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">fpga_part</span> <span class="o">=</span> <span class="n">command_elems</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_elems</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">target</span><span class="p">,</span> <span class="n">tool_name</span> <span class="o">=</span> <span class="n">command_elems</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">command_elems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">library</span><span class="p">,</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Command &quot;&#39;</span> <span class="o">+</span> <span class="n">command</span> <span class="o">+</span> <span class="s1">&#39;&quot; not understood.&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Please specify a library and entity.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;Example: (Cmd) synthesise my_library.my_entity [tool_name]&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span>
+            <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">fpga_part</span><span class="o">=</span><span class="n">fpga_part</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_run_preprocessors"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_run_preprocessors">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_run_preprocessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;For each project file in the design run any associated</span>
+<span class="sd">        preprocessors. You can use this command to test that a preprocessor is</span>
+<span class="sd">        running on your file correctly. Preprocessors are called automatically</span>
+<span class="sd">        when you run synthesis&quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running preprocessors...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">run_preprocessors</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_simulate"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_simulate">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile the given entity in the given library using the chosen</span>
+<span class="sd">        simulator and invoke the simulator GUI.</span>
+<span class="sd">        Example: (Cmd) simulate my_library.my_entity&quot;&quot;&quot;</span>
+        <span class="n">command_elems</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_elems</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">target</span><span class="p">,</span> <span class="n">tool_name</span> <span class="o">=</span> <span class="n">command_elems</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">command_elems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">library</span><span class="p">,</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Command &quot;&#39;</span> <span class="o">+</span> <span class="n">command</span> <span class="o">+</span> <span class="s1">&#39;&quot; not understood.&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Please specify a library and entity.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;Example: (Cmd) simulate my_library.my_entity [tool_name]&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_clean"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_clean">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear the file cache&quot;&quot;&quot;</span>
+        <span class="c1"># Delete libraries from the simulation area</span>
+        <span class="n">simpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">simpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No simulation path is set, aborting operation.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Cleaning simulation folder: &#39;</span> <span class="o">+</span> <span class="n">simpath</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get_tool_names</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">libname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get_libraries</span><span class="p">(</span><span class="n">tool_name</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">simpath</span><span class="p">,</span> <span class="n">libname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Removing &#39;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">initialise_cache</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_pwd"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_pwd">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_pwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s1">&#39;Working directory: &#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">colourise</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_plugins"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_plugins">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="n">simulators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_available_simulators</span><span class="p">()</span>
+        <span class="n">synthesisers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_available_synthesisers</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plugin_registry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">simulators</span><span class="p">,</span> <span class="n">synthesisers</span><span class="p">]):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">([</span><span class="s1">&#39;Simulator Plugins:&#39;</span><span class="p">,</span> <span class="s1">&#39;Synthesis Plugins:&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">plugin_registry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">plugin_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="vm">__module__</span><span class="p">]</span><span class="o">.</span><span class="vm">__file__</span>
+                <span class="n">plugin_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">plugin_path</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">SEP</span> <span class="o">*</span> <span class="mi">1</span>
+                    <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">plugin_file</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: </span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s1">&#39;Plugin Path&#39;</span><span class="p">,</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="n">plugin_path</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: </span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                    <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: </span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s1">&#39;Tool Path&#39;</span><span class="p">,</span>
+                        <span class="p">[</span>
+                            <span class="n">term</span><span class="o">.</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;(not found) &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">path</span><span class="p">)),</span>
+                            <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">path</span><span class="p">)),</span>
+                        <span class="p">][</span><span class="n">inst</span><span class="o">.</span><span class="n">installed</span><span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_show_config"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_show_config">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print out the project settings&quot;&quot;&quot;</span>
+        <span class="n">available_simulator_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_available_simulators</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">available_simulator_string</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: &#39;</span>
+                <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;(not found) &#39;</span> <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="p">)][</span>
+                    <span class="n">inst</span><span class="o">.</span><span class="n">installed</span>
+                <span class="p">]</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">inst</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">available_synthesiser_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_available_synthesisers</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">available_synthesiser_string</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: &#39;</span>
+                <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;(not found) &#39;</span> <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="p">)][</span>
+                    <span class="n">inst</span><span class="o">.</span><span class="n">installed</span>
+                <span class="p">]</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">inst</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">simulation_libraries_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_available_simulators</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">libraries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">libraries</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">simulation_libraries_string</span> <span class="o">+=</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span>
+                    <span class="n">SEP</span> <span class="o">+</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;Simulation libraries:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">libname</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">libraries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">simulation_libraries_string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1">: &#39;</span> <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;35}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">libname</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">bold</span><span class="p">(</span><span class="s1">&#39;System Configuration: &#39;</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(options)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Working directory:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(working_directory)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Available simulators:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">available_simulator_string</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Available synthesisers:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">available_synthesiser_string</span>
+            <span class="o">+</span> <span class="n">simulation_libraries_string</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">bold</span><span class="p">(</span><span class="s1">&#39;Project Configuration: &#39;</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(project)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Simulation directory set to:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(simulation_directory)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Using the simulation tool:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(simulation_tool_name)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Synthesis directory set to:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(synthesis_directory)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Using the synthesis tool:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(synthesis_tool_name)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Targeting FPGA part:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(fpga_part)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="s1">&#39;Using synthesis generic binding:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(synthesis_generics)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">msg</span>
+            <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">working_directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+                <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_system_config_path</span><span class="p">(),</span>
+                <span class="n">simulation_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+                <span class="n">simulation_tool_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_tool_name</span><span class="p">(),</span>
+                <span class="n">synthesis_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_directory</span><span class="p">(),</span>
+                <span class="n">synthesis_tool_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_tool_name</span><span class="p">(),</span>
+                <span class="n">fpga_part</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_fpga_part</span><span class="p">(),</span>
+                <span class="n">modelsim_vsim_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span>
+                    <span class="s1">&#39;modelsim&#39;</span><span class="p">,</span> <span class="s1">&#39;simulate&#39;</span>
+                <span class="p">),</span>
+                <span class="n">project</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">synthesis_generics</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_generics</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_show_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_show_tests">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_show_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the tests available in the current project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tests</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;There are no tests available.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">testUniqueId</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">test_group</span> <span class="ow">in</span> <span class="n">file_object</span><span class="o">.</span><span class="n">testsuite</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">testId</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">iterate_tests</span><span class="p">(</span><span class="n">test_group</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">testId</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">SEP</span> <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)))</span>
+                    <span class="n">doc</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">shortDescription</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">doc</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">darkred</span><span class="p">(</span><span class="s1">&#39;No description&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">testUniqueId</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span>
+                            <span class="o">+</span> <span class="s1">&#39;[&#39;</span>
+                            <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">blue</span><span class="p">(</span>
+                                <span class="s1">&#39;ID &#39;</span>
+                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">testUniqueId</span><span class="p">)</span>
+                                <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                                <span class="o">+</span> <span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="p">)</span>
+                            <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">lightgray</span><span class="p">(</span>
+                            <span class="s1">&#39;ID &#39;</span>
+                            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">testUniqueId</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                            <span class="o">+</span> <span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">term</span><span class="o">.</span><span class="n">darkgray</span><span class="p">(</span>
+                            <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                                <span class="n">doc</span><span class="p">,</span>
+                                <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+                                <span class="n">initial_indent</span><span class="o">=</span><span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                                <span class="n">subsequent_indent</span><span class="o">=</span><span class="n">SEP</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">testUniqueId</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="CommandLine.show_test_selection"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.show_test_selection">[docs]</a>    <span class="k">def</span> <span class="nf">show_test_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the currently selected tests in the current project.</span>
+<span class="sd">        Add or remove tests using the</span>
+<span class="sd">        add_tests and remove_tests commands respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_set</span><span class="p">)</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tests</span><span class="p">():</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">test_group</span> <span class="ow">in</span> <span class="n">file_object</span><span class="o">.</span><span class="n">testsuite</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">testId</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">iterate_tests</span><span class="p">(</span><span class="n">test_group</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">testId</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">groupName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                    <span class="n">testName</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">file_name</span><span class="p">,</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">testName</span><span class="p">,</span> <span class="n">test</span><span class="p">))</span>
+
+        <span class="c1"># Filter out any invalid indices</span>
+        <span class="n">ids_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">),</span> <span class="n">ids_list</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">testName</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">tests</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ids_list</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">{:&lt;5}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ids_list</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;[&#39;</span>
+                <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">yellow</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;[&#39;</span>
+                <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">green</span><span class="p">(</span><span class="n">groupName</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;[&#39;</span>
+                <span class="o">+</span> <span class="n">term</span><span class="o">.</span><span class="n">blue</span><span class="p">(</span><span class="n">testName</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_add_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_add_tests">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_add_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the given tests to the test suite. Tests should be supplied as</span>
+<span class="sd">        comma separated numbers or numeric ranges, for example:</span>
+
+<span class="sd">        add_tests 1-3, 5, 6, 7</span>
+
+<span class="sd">        Would add tests 1, 2, 3, 5, 6, 7 to the test suite.</span>
+
+<span class="sd">        You can check which tests are available by issuing the show_tests</span>
+<span class="sd">        command or remove tests that have been added to the suite by issuing</span>
+<span class="sd">        the remove_tests command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid test range specified: &#39;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">testId</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">testId</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_test_selection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_remove_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_remove_tests">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_remove_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the given tests from the test suite. Tests should be supplied</span>
+<span class="sd">        as comma separated numbers or numeric ranges, for example:</span>
+
+<span class="sd">        remove_tests 1-3, 5, 6, 7</span>
+
+<span class="sd">        Would remove tests 1, 2, 3, 5, 6, 7 from the test suite.</span>
+
+<span class="sd">        You can check which tests are available by issuing the show_tests</span>
+<span class="sd">        command or add tests by issuing the add_tests command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid test range specified: &#39;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">testId</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testId</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_test_selection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandLine.do_run_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.cli.html#chiptools.core.cli.CommandLine.do_run_tests">[docs]</a>    <span class="nd">@wraps_do_commands</span>
+    <span class="k">def</span> <span class="nf">do_run_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the tests that were selected via the add_tests command and report</span>
+<span class="sd">        the results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_test_selection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">run_tests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_set</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

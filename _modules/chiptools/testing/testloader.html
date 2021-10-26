@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.testing.testloader &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.testing.testloader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.testing.testloader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">chiptools.core.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ChipToolsTest"><a class="viewcode-back" href="../../../testing.html#chiptools.testing.testloader.ChipToolsTest">[docs]</a><span class="k">class</span> <span class="nc">ChipToolsTest</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The *ChipToolsTest* class is derived from unittest.TestCase and provides a</span>
+<span class="sd">    base class for your unit tests to allow them to make full use of ChipTools.</span>
+
+<span class="sd">    When creating a unit test class you should override the *duration*,</span>
+<span class="sd">    *generics*, *library* and *entity* attributes to define the test</span>
+<span class="sd">    configuration for the simulator. Individual tests can redefine these</span>
+<span class="sd">    attributes at run-time to provide a powerful testing mechanism for covering</span>
+<span class="sd">    different configurations.</span>
+
+<span class="sd">    A brief example of a basic unit test case is given below:</span>
+
+<span class="sd">    &gt;&gt;&gt; from chiptools.testing.testloader import ChipToolsTest</span>
+<span class="sd">    &gt;&gt;&gt; class MyBasicTestCase(ChipToolsTest):</span>
+<span class="sd">    ...     duration = 0  # Run forever</span>
+<span class="sd">    ...     generics = {&#39;data_width&#39; : 3}  # Set data-width to 3</span>
+<span class="sd">    ...     library = &#39;lib_tb_max_hold&#39;  # Testbench library</span>
+<span class="sd">    ...     entity = &#39;tb_max_hold&#39;  # Entity to simulate</span>
+<span class="sd">    ...     # Defining a path to a project allows us to run this test case</span>
+<span class="sd">    ...     # with Nosetests etc. as well as through ChipTools.</span>
+<span class="sd">    ...     project = os.path.join(&#39;max_hold.xml&#39;)</span>
+<span class="sd">    ...     # The setUp method is called at the beginning of each test:</span>
+<span class="sd">    ...     def setUp(self):</span>
+<span class="sd">    ...         # Do individual test set-up here</span>
+<span class="sd">    ...         pass</span>
+<span class="sd">    ...     # Methods starting with &#39;test_&#39; are considered test cases:</span>
+<span class="sd">    ...     def test_max_hold(self):</span>
+<span class="sd">    ...         # Run the simulator</span>
+<span class="sd">    ...         return_code, stdout, stderr = self.simulate()</span>
+<span class="sd">    ...         self.assertEqual(return_code, 0)  # Check error code</span>
+<span class="sd">    ...         # More advanced checks could search stdout/stderr for</span>
+<span class="sd">    ...         # assertions, or read output files and compare the</span>
+<span class="sd">    ...         # response to a Python model.</span>
+<span class="sd">    ...         pass</span>
+<span class="sd">    ...     # The tearDown method is called at the end of each test:</span>
+<span class="sd">    ...     def tearDown(self):</span>
+<span class="sd">    ...         # Clean up after your tests here</span>
+<span class="sd">    ...         pass</span>
+
+<span class="sd">    For a complete example refer to the Max Hold example in the examples</span>
+<span class="sd">    folder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The duration attribute defines the time in seconds that the simulation</span>
+<span class="sd">    should run for if the chosen simulator supports this as an argument during</span>
+<span class="sd">    execution.  If a time of 0 is specified the simulation will run until it is</span>
+<span class="sd">    terminated automatically by the testbench.  e.g. To fix simulation time at</span>
+<span class="sd">    10ms set duration to 10e-3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">generics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The *generics* attribute is a dictionary of parameter/generic names and</span>
+<span class="sd">    associated values.  These key, value pairs will be passed to the simulator</span>
+<span class="sd">    to override top-level generics or parameters to customise the test</span>
+<span class="sd">    environment:</span>
+
+<span class="sd">    &gt;&gt;&gt; generics = {</span>
+<span class="sd">    ...     &#39;data_width&#39; : 3,</span>
+<span class="sd">    ...     &#39;invert_bits&#39;: True,</span>
+<span class="sd">    ...     &#39;test_string&#39;: &#39;hello&#39;,</span>
+<span class="sd">    ...     &#39;threshold&#39;: 0.33,</span>
+<span class="sd">    &gt;&gt;&gt; }</span>
+
+<span class="sd">    The *generics* attribute can also be used to dynamically specify parameters</span>
+<span class="sd">    for individual tests to check different configurations in your testbench:</span>
+
+<span class="sd">    &gt;&gt;&gt; def test_32_bit_bus(self):</span>
+<span class="sd">    ...     self.generics[&#39;data_width&#39;] = 32</span>
+<span class="sd">    ...     self.simulate()</span>
+<span class="sd">    &gt;&gt;&gt; def test_16_bit_bus(self):</span>
+<span class="sd">    ...     self.generics[&#39;data_width&#39;] = 16</span>
+<span class="sd">    ...     self.simulate()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">entity</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The *entity* attribute defines the name of the top level component to be</span>
+<span class="sd">    simulated when running this test. The entity should name a valid design</span>
+<span class="sd">    unit that has been compiled as part of the project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">library</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The *library* attribute defines the name of the library in which the top</span>
+<span class="sd">    level component to be simulated exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">project</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The *project* attribute is optional, but if used it should supply an</span>
+<span class="sd">    absolute path to a valid ChipTools Project XML file that defines the</span>
+<span class="sd">    libraries and source files that make up the design that this test case</span>
+<span class="sd">    belongs to.  This attribute is required when the test case is executed</span>
+<span class="sd">    directly by an external test runner instead of ChipTools, as it will be</span>
+<span class="sd">    used to prepare the simulation environment for the external test runner.</span>
+
+<span class="sd">    The following provides a convenient way of setting the project path so that</span>
+<span class="sd">    your test can be run from any directory:</span>
+
+<span class="sd">    &gt;&gt;&gt; from chiptools.testing.testloader import ChipToolsTest</span>
+<span class="sd">    &gt;&gt;&gt; class MyUnitTest(ChipToolsTest)</span>
+<span class="sd">    ...     base = os.path.dirname(__file__)</span>
+<span class="sd">    ...     # Now use os.path.join to build a relative path to the project.</span>
+<span class="sd">    ...     project = os.path.join(base, &#39;..&#39;, &#39;my_project.xml&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_environment_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_loaded_path</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ChipToolsTest.get_environment"><a class="viewcode-back" href="../../../testing.html#chiptools.testing.testloader.ChipToolsTest.get_environment">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_environment</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the simulation environment items from the supplied project</span>
+<span class="sd">        instance as a tuple of (simulator, simulation_root, libraries).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the simulation root directory</span>
+        <span class="n">simulation_root</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+        <span class="c1"># Get the simulator instance to allow compilation/simulation</span>
+        <span class="n">simulator</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">_get_tool</span><span class="p">(</span>
+            <span class="n">tool_name</span><span class="p">,</span>
+            <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span>
+        <span class="p">)</span>
+        <span class="c1"># Get the simulation library map so that external dependencies</span>
+        <span class="c1"># can be resolved.</span>
+        <span class="n">simulation_libraries</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span>
+                <span class="n">simulator</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">simulation_root</span><span class="p">,</span> <span class="n">simulation_libraries</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">simulation_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The *simulation_root* property is an absolute path to the directory</span>
+<span class="sd">        where the simulator is invoked when simulating the testbench. Any</span>
+<span class="sd">        inputs required by the testbench, such as stimulus files, should be</span>
+<span class="sd">        placed in this directory by your TestCase. Similarly, any outputs</span>
+<span class="sd">        produced by the testbench will be placed in this directory.</span>
+
+<span class="sd">        For example, to build paths to a testbench input and output file you</span>
+<span class="sd">        could do the following:</span>
+
+<span class="sd">        &gt;&gt;&gt; def setUp(self):</span>
+<span class="sd">        ...     self.tb_in = os.path.join(self.simulation_root, &#39;input.txt&#39;)</span>
+<span class="sd">        ...     self.tb_out = os.path.join(self.simulation_root, &#39;output.txt&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_root</span>
+
+<div class="viewcode-block" id="ChipToolsTest.setUpClass"><a class="viewcode-back" href="../../../testing.html#chiptools.testing.testloader.ChipToolsTest.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The *setUpClass* method prepares the ChipTools simulation environment</span>
+<span class="sd">        if it has not already been loaded.</span>
+
+<span class="sd">        If this test case is loaded via the ChipTools Project API it will be</span>
+<span class="sd">        initialised via a call to the *load_environment* method, which pulls</span>
+<span class="sd">        the simulation environment information from the parent Project</span>
+<span class="sd">        instance.</span>
+
+<span class="sd">        If this test case is loaded via an external tool such as Nosetests the</span>
+<span class="sd">        setUpClass method will attempt to load the project file pointed to by</span>
+<span class="sd">        the project path stored in the *project* attribute. When you create</span>
+<span class="sd">        your test case you can specify this attribute in your test class to</span>
+<span class="sd">        allow an external runner like Nosetests to call your test cases.</span>
+
+<span class="sd">        If the environment was not already initialised by ChipTools and a valid</span>
+<span class="sd">        project file path is not stored in the *project* attribute, this method</span>
+<span class="sd">        will raise an EnvironmentError and cause your test to fail.</span>
+
+<span class="sd">        This method overloads the unittest.TestCase.setUpClass classmethod,</span>
+<span class="sd">        which is called once when a TestCase class is instanced.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;setUpClass of </span><span class="si">{0}</span><span class="s1"> called...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="p">))</span>
+        <span class="c1"># Check to see if the environment that this class is initialised for</span>
+        <span class="c1"># matches the project path (if specified). If the environment was</span>
+        <span class="c1"># initialised by the ChipTools internal loaded then skip these steps.</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_environment_type</span> <span class="o">!=</span> <span class="s1">&#39;chiptools&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_loaded_path</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+                <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+                <span class="n">project</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+                <span class="c1"># Using external test runner (such as Nosetests) to execute this</span>
+                <span class="c1"># test. The test environment therefore needs to be loaded from</span>
+                <span class="c1"># the Project instance:</span>
+                <span class="n">simulator</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">libs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_environment</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_loaded_path</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">project</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_simulator</span> <span class="o">=</span> <span class="n">simulator</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_simulation_root</span> <span class="o">=</span> <span class="n">root</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_simulation_libraries</span> <span class="o">=</span> <span class="n">libs</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_environment_type</span> <span class="o">=</span> <span class="s1">&#39;external&#39;</span>
+                <span class="c1"># Compile the design if required (simulators with caching will</span>
+                <span class="c1"># perform this step once).</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">compile_project</span><span class="p">(</span>
+                    <span class="n">includes</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_simulation_libraries</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s1">&#39;...finished initialising environment for </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_environment_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span>
+                <span class="s1">&#39;The simulation environment for this TestCase is not &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;initialised so the test cases cannot be executed. &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;If you are running this test directly ensure that &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;the TestCase class has a &quot;project&quot; attribute which &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;holds a path to a valid ChipTools project file.&#39;</span>
+            <span class="p">)</span></div>
+<div class="viewcode-block" id="ChipToolsTest.load_environment"><a class="viewcode-back" href="../../../testing.html#chiptools.testing.testloader.ChipToolsTest.load_environment">[docs]</a>    <span class="k">def</span> <span class="nf">load_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the TestCase simulation environment using the supplied</span>
+<span class="sd">        Project reference so that the individual tests implemented in this</span>
+<span class="sd">        TestCase are able to compile and simulate the design.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment_type</span> <span class="o">==</span> <span class="s1">&#39;chiptools&#39;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;Environment for </span><span class="si">{0}</span><span class="s1"> is already initialised.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">simulator</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">libs</span> <span class="o">=</span> <span class="n">ChipToolsTest</span><span class="o">.</span><span class="n">get_environment</span><span class="p">(</span>
+            <span class="n">project</span><span class="p">,</span>
+            <span class="n">tool_name</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_loaded_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_simulator</span> <span class="o">=</span> <span class="n">simulator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_simulation_root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_simulation_libraries</span> <span class="o">=</span> <span class="n">libs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_environment_type</span> <span class="o">=</span> <span class="s1">&#39;chiptools&#39;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Finished load_environment call on </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ChipToolsTest.simulate"><a class="viewcode-back" href="../../../testing.html#chiptools.testing.testloader.ChipToolsTest.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch the simulation tool in console mode to execute the testbench.</span>
+
+<span class="sd">        The simulation tool used and the arguments passed during simulation are</span>
+<span class="sd">        defined by the test environment configured by the test case and the</span>
+<span class="sd">        *Project* settings. When the simulation is complete this method will</span>
+<span class="sd">        return a tuple of (*return_code*, *stdout*, *stderr*) which can be used</span>
+<span class="sd">        to determine if the test was a success or failure. For example your</span>
+<span class="sd">        testbench may use assertions to print messages during simulation, your</span>
+<span class="sd">        Python TestCase could use regex to match success of failure criteria in</span>
+<span class="sd">        the stdout string:</span>
+
+<span class="sd">        &gt;&gt;&gt; def test_stdout(self):</span>
+<span class="sd">        ...     return_code, stdout, stderr = self.simulate()</span>
+<span class="sd">        ...     # Use an assertion to check for a negative result on a search</span>
+<span class="sd">        ...     # for &#39;Error:&#39; in the simulator stdout string.</span>
+<span class="sd">        ...     self.assertIsNone(re.search(&#39;.*Error:.*&#39;, stdout))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simulate the testbench</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;No generics are supplied by this test case, if the &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;testbench uses generics&#39;</span> <span class="o">+</span>
+                <span class="s1">&#39; they will assume their default values.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">installed</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span>
+                <span class="s2">&quot;Test aborted, </span><span class="si">{0}</span><span class="s2"> is not available.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">name</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">ret_val</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+            <span class="n">library</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">,</span>
+            <span class="n">entity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span>
+            <span class="n">includes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulation_libraries</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">generics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generics</span><span class="p">,</span>
+            <span class="n">gui</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">ret_val</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.synthesisers.vivado &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.synthesisers.vivado</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.synthesisers.vivado</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.exceptions</span> <span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+<span class="kn">from</span> <span class="nn">chiptools.wrappers</span> <span class="kn">import</span> <span class="n">synthesiser</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Vivado"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado">[docs]</a><span class="k">class</span> <span class="nc">Vivado</span><span class="p">(</span><span class="n">synthesiser</span><span class="o">.</span><span class="n">Synthesiser</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;vivado&#39;</span>
+
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
+        <span class="n">vivado_name</span> <span class="o">=</span> <span class="s1">&#39;vivado.bat&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vivado_name</span> <span class="o">=</span> <span class="s1">&#39;vivado&#39;</span>
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span><span class="n">vivado_name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise a Quartus Synthesiser instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Vivado</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vivado</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vivado_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Vivado.synthesise"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.synthesise">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">synthesise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Vivado</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="p">)</span>
+        <span class="c1"># Make a temporary working directory for the synth tool</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_directory</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">working_directory</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Created temporary synthesis directory: &#39;</span> <span class="o">+</span> <span class="n">working_directory</span>
+            <span class="p">)</span>
+            <span class="c1"># Get project configuration</span>
+            <span class="k">if</span> <span class="n">fpga_part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fpga_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_fpga_part</span><span class="p">()</span>
+            <span class="n">generics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_generics</span><span class="p">()</span>
+            <span class="n">synthesis_name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_synth_&#39;</span> <span class="o">+</span> <span class="n">start_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%m%y_%H%M%S&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">archive_name</span> <span class="o">=</span> <span class="n">synthesis_name</span> <span class="o">+</span> <span class="s1">&#39;.tar&#39;</span>
+            <span class="n">tcl_name</span> <span class="o">=</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.tcl&#39;</span>
+            <span class="n">synthesis_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">synthesis_name</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">synthesis_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesis_dir</span><span class="p">,</span> <span class="n">tcl_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">)</span>
+
+            <span class="c1">###################################################################</span>
+            <span class="c1"># Generate a Vivado TCL script from the source tree:</span>
+            <span class="c1"># This process is based on the example script provided in ug975</span>
+            <span class="c1"># Vivado quick reference guide.</span>
+            <span class="c1">###################################################################</span>
+            <span class="c1"># Step 1: Add source files (HDL, UCF, NGC, XCI)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_sources</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">()</span>
+            <span class="c1"># Step 2: Run synthesis, report utilisation and timing estimates,</span>
+            <span class="c1"># write checkpoint.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">synth_design</span><span class="p">(</span>
+                <span class="n">synthesis_name</span><span class="p">,</span>
+                <span class="n">fpga_part</span><span class="p">,</span>
+                <span class="n">entity</span><span class="p">,</span>
+                <span class="n">generics</span><span class="p">,</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;synthesis&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_timing</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_synth_timing.rpt&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_checkpoint</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_synth.dcp&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_utilization</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_synth_util.rpt&#39;</span><span class="p">)</span>
+            <span class="c1"># Step 3: Run placement and logic optimisation, report utilisation</span>
+            <span class="c1"># and timing estimates:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;opt_design&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;power_opt_design&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;place_design&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;phys_opt_design -retime&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_checkpoint</span><span class="p">(</span><span class="n">synthesis_name</span> <span class="o">+</span> <span class="s1">&#39;_post_place.dcp&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_clock_utilization</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_clock_util.rpt&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_utilization</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_place_util.rpt&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_timing</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_place_timing.rpt&#39;</span><span class="p">)</span>
+            <span class="c1"># Step 4: Run router, report actual utilisation and timing, write</span>
+            <span class="c1"># checkpoint, run DRCs.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;route_design&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_checkpoint</span><span class="p">(</span><span class="n">synthesis_name</span> <span class="o">+</span> <span class="s1">&#39;_post_route.dcp&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_timing_summary</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_route_timing.rpt&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_utilization</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_route_util.rpt&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+                <span class="s1">&#39;report_power -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">synthesis_name</span> <span class="o">+</span> <span class="s1">&#39;_post_route_power.rpt&#39;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_drc</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_post_route_drc.rpt&#39;</span><span class="p">)</span>
+            <span class="c1"># Step 5: Write bitstream</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_bitstream</span><span class="p">(</span><span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.bit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;quit&#39;</span><span class="p">)</span>
+            <span class="c1"># Run the Vivado flow</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Vivado</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vivado</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="s1">&#39;-nojournal&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;-mode&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;tcl&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;-source&#39;</span><span class="p">,</span>
+                        <span class="n">tcl_name</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="n">cwd</span><span class="o">=</span><span class="n">synthesis_dir</span><span class="p">,</span>
+                    <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># Archive the outputs</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;Synthesis error, storing output in error directory...&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="s1">&#39;ERROR_&#39;</span> <span class="o">+</span> <span class="n">archive_name</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Build successful, checking reports for unacceptable &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;messages...&#39;</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1">#  Check the report</span>
+                <span class="n">reporter_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_reporter</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">reporter_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">reporter_fn</span><span class="p">(</span><span class="n">synthesis_dir</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;The post-synthesis reporter script caused an error:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="c1"># Archive the outputs</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Synthesis completed, saving output to archive...&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">archive_name</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vivado.report_clock_utilization"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.report_clock_utilization">[docs]</a>    <span class="k">def</span> <span class="nf">report_clock_utilization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;report_clock_utilization -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.report_timing"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.report_timing">[docs]</a>    <span class="k">def</span> <span class="nf">report_timing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+            <span class="s1">&#39;report_timing -sort_by group -max_paths 5 &#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;-path_type summary -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vivado.report_timing_summary"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.report_timing_summary">[docs]</a>    <span class="k">def</span> <span class="nf">report_timing_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;report_timing_summary -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.write_checkpoint"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.write_checkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">write_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;write_checkpoint -force </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.report_utilization"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.report_utilization">[docs]</a>    <span class="k">def</span> <span class="nf">report_utilization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;report_utilization -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.write_bitstream"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.write_bitstream">[docs]</a>    <span class="k">def</span> <span class="nf">write_bitstream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;write_bitstream -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.report_drc"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.report_drc">[docs]</a>    <span class="k">def</span> <span class="nf">report_drc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;report_drc -file </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Vivado.synth_design"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.synth_design">[docs]</a>    <span class="k">def</span> <span class="nf">synth_design</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">generics</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;synth_design -name </span><span class="si">%(name)s</span><span class="s1"> -part </span><span class="si">%(part)s</span><span class="s1"> -top </span><span class="si">%(top)s</span><span class="s1"> &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%(generics)s</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;</span><span class="si">%(additional_args)s</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">part</span><span class="o">=</span><span class="n">part</span><span class="p">,</span>
+                <span class="n">entity</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span>
+                <span class="n">top</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span>
+                <span class="n">generics</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="s1">&#39;-generic </span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">generics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">),</span>
+                <span class="n">additional_args</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vivado.add_sources"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.add_sources">[docs]</a>    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">file_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_fileset</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">libName</span><span class="p">,</span> <span class="n">fileList</span> <span class="ow">in</span> <span class="n">file_set</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">fileList</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+                <span class="c1"># We could leave it to the synthesis tool to report missing</span>
+                <span class="c1"># files, but handling them here means we can abort the process</span>
+                <span class="c1"># early and notify the user.</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+                            <span class="s1">&#39;read_vhdl -library </span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">file_object</span><span class="o">.</span><span class="n">library</span><span class="p">,</span> <span class="n">path</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+                            <span class="s1">&#39;read_verilog -library </span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">file_object</span><span class="o">.</span><span class="n">library</span><span class="p">,</span> <span class="n">path</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span>
+                            <span class="s1">&#39;read_verilog -library </span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">file_object</span><span class="o">.</span><span class="n">library</span><span class="p">,</span> <span class="n">path</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">NGCNetlist</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;read_edif </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">filetype</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VivadoIp</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;read_ip </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s1">&#39;Ignoring file of unknown type: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vivado.add_constraints"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()</span>
+        <span class="n">files_processed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">files_processed</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">flow</span> <span class="o">==</span> <span class="s1">&#39;vivado&#39;</span> <span class="ow">or</span> <span class="n">file_object</span><span class="o">.</span><span class="n">flow</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VivadoXDC</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">write_tcl</span><span class="p">(</span><span class="s1">&#39;read_xdc </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Added constraints file: &#39;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s1">&#39;Ignoring constraints file of unknown type: &#39;</span>
+                            <span class="o">+</span> <span class="n">path</span>
+                        <span class="p">)</span>
+            <span class="n">files_processed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vivado.write_tcl"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.vivado.html#chiptools.wrappers.synthesisers.vivado.Vivado.write_tcl">[docs]</a>    <span class="k">def</span> <span class="nf">write_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append the given TCL command to the project TCL script. The command</span>
+<span class="sd">        will be wrapped in a try: catch block so that Vivado can exit</span>
+<span class="sd">        gracefully in the event of an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;if { [catch {</span><span class="si">%(command)s</span><span class="s1">} result] } {</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;   puts stderr &quot;Command failed: $result&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;   exit 1</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

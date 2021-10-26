@@ -1,0 +1,22 @@
+chiptools.wrappers.simulators package
+=====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.wrappers.simulators.ghdl
+   chiptools.wrappers.simulators.isim
+   chiptools.wrappers.simulators.iverilog
+   chiptools.wrappers.simulators.modelsim
+   chiptools.wrappers.simulators.vivado
+
+Module contents
+---------------
+
+.. automodule:: chiptools.wrappers.simulators
+   :members:
+   :undoc-members:
+   :show-inheritance:

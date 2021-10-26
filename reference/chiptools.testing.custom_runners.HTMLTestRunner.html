@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.testing.custom_runners.HTMLTestRunner module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.testing.testloader module" href="chiptools.testing.testloader.html" />
+    <link rel="prev" title="chiptools.testing.custom_runners package" href="chiptools.testing.custom_runners.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.testing.html">chiptools.testing package</a> &raquo;</li>
+          <li><a href="chiptools.testing.custom_runners.html">chiptools.testing.custom_runners package</a> &raquo;</li>
+      <li>chiptools.testing.custom_runners.HTMLTestRunner module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.testing.custom_runners.HTMLTestRunner.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.testing.custom_runners.HTMLTestRunner">
+<span id="chiptools-testing-custom-runners-htmltestrunner-module"></span><h1>chiptools.testing.custom_runners.HTMLTestRunner module<a class="headerlink" href="#module-chiptools.testing.custom_runners.HTMLTestRunner" title="Permalink to this headline"></a></h1>
+<p>A TestRunner for use with the Python unit testing framework. It
+generates a HTML report to show the result at a glance.</p>
+<p>The simplest way to use this is to invoke its main method. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">HTMLTestRunner</span>
+
+<span class="o">...</span> <span class="n">define</span> <span class="n">your</span> <span class="n">tests</span> <span class="o">...</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">HTMLTestRunner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For more customization options, instantiates a HTMLTestRunner object.
+HTMLTestRunner is a counterpart to unittest’s TextTestRunner. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># output to a file</span>
+<span class="n">fp</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="s1">&#39;my_report.html&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">HTMLTestRunner</span><span class="o">.</span><span class="n">HTMLTestRunner</span><span class="p">(</span>
+            <span class="n">stream</span><span class="o">=</span><span class="n">fp</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;My unit test&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;This demonstrates the report output by HTMLTestRunner.&#39;</span>
+            <span class="p">)</span>
+
+<span class="c1"># Use an external stylesheet.</span>
+<span class="c1"># See the Template_mixin class for more customizable options</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">STYLESHEET_TMPL</span> <span class="o">=</span> <span class="s1">&#39;&lt;link rel=&quot;stylesheet&quot; href=&quot;my_stylesheet.css&quot; type=&quot;text/css&quot;&gt;&#39;</span>
+
+<span class="c1"># run the test</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">my_test_suite</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.</span></span><span class="sig-name descname"><span class="pre">HTMLTestRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stream=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></em>, <em class="sig-param"><span class="pre">verbosity=1</span></em>, <em class="sig-param"><span class="pre">title=None</span></em>, <em class="sig-param"><span class="pre">description=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#HTMLTestRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin" title="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.generateReport">
+<span class="sig-name descname"><span class="pre">generateReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#HTMLTestRunner.generateReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.generateReport" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.getReportAttributes">
+<span class="sig-name descname"><span class="pre">getReportAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#HTMLTestRunner.getReportAttributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.getReportAttributes" title="Permalink to this definition"></a></dt>
+<dd><p>Return report attributes as a list of (name, value).
+Override this to add custom attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#HTMLTestRunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.run" title="Permalink to this definition"></a></dt>
+<dd><p>Run the given test case or test suite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.sortResult">
+<span class="sig-name descname"><span class="pre">sortResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#HTMLTestRunner.sortResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.HTMLTestRunner.sortResult" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.</span></span><span class="sig-name descname"><span class="pre">OutputRedirector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#OutputRedirector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Wrapper to redirect stdout or stderr</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#OutputRedirector.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.flush" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#OutputRedirector.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.write" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.writelines">
+<span class="sig-name descname"><span class="pre">writelines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#OutputRedirector.writelines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.OutputRedirector.writelines" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.</span></span><span class="sig-name descname"><span class="pre">Template_mixin</span></span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#Template_mixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Define a HTML template for report customerization and generation.</p>
+<p>Overall structure of an HTML report:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span>
+<span class="o">+------------------------+</span>
+<span class="o">|&lt;</span><span class="n">html</span><span class="o">&gt;</span>                  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>                <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">STYLESHEET</span>           <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|</span>                <span class="o">|</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>  <span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>               <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>  <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>                <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">HEADING</span>              <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|</span>                <span class="o">|</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">REPORT</span>               <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|</span>                <span class="o">|</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">ENDING</span>               <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|</span>                <span class="o">|</span>   <span class="o">|</span>
+<span class="o">|</span>   <span class="o">+----------------+</span>   <span class="o">|</span>
+<span class="o">|</span>                        <span class="o">|</span>
+<span class="o">|</span>  <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>               <span class="o">|</span>
+<span class="o">|&lt;/</span><span class="n">html</span><span class="o">&gt;</span>                 <span class="o">|</span>
+<span class="o">+------------------------+</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.DEFAULT_DESCRIPTION">
+<span class="sig-name descname"><span class="pre">DEFAULT_DESCRIPTION</span></span><em class="property"> <span class="pre">=</span> <span class="pre">''</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.DEFAULT_DESCRIPTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.DEFAULT_TITLE">
+<span class="sig-name descname"><span class="pre">DEFAULT_TITLE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Unit</span> <span class="pre">Test</span> <span class="pre">Report'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.DEFAULT_TITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.ENDING_TMPL">
+<span class="sig-name descname"><span class="pre">ENDING_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;&lt;div</span> <span class="pre">id='ending'&gt;&amp;nbsp;&lt;/div&gt;&quot;</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.ENDING_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HEADING_ATTRIBUTE_TMPL">
+<span class="sig-name descname"><span class="pre">HEADING_ATTRIBUTE_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;&lt;p</span> <span class="pre">class='attribute'&gt;&lt;strong&gt;%(name)s:&lt;/strong&gt;</span> <span class="pre">%(value)s&lt;/p&gt;\n&quot;</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HEADING_ATTRIBUTE_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HEADING_TMPL">
+<span class="sig-name descname"><span class="pre">HEADING_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;&lt;div</span> <span class="pre">class='heading'&gt;\n&lt;h1&gt;%(title)s&lt;/h1&gt;\n%(parameters)s\n&lt;p</span> <span class="pre">class='description'&gt;%(description)s&lt;/p&gt;\n&lt;/div&gt;\n\n&quot;</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HEADING_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HTML_TMPL">
+<span class="sig-name descname"><span class="pre">HTML_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'&lt;?xml</span> <span class="pre">version=&quot;1.0&quot;</span> <span class="pre">encoding=&quot;UTF-8&quot;?&gt;\n&lt;!DOCTYPE</span> <span class="pre">html</span> <span class="pre">PUBLIC</span> <span class="pre">&quot;-//W3C//DTD</span> <span class="pre">XHTML</span> <span class="pre">1.0</span> <span class="pre">Strict//EN&quot;</span> <span class="pre">&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;\n&lt;html</span> <span class="pre">xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;\n&lt;head&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;title&gt;%(title)s&lt;/title&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;meta</span> <span class="pre">name=&quot;generator&quot;</span> <span class="pre">content=&quot;%(generator)s&quot;/&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;meta</span> <span class="pre">http-equiv=&quot;Content-Type&quot;</span> <span class="pre">content=&quot;text/html;</span> <span class="pre">charset=UTF-8&quot;/&gt;\n</span>&#160;&#160;&#160; <span class="pre">%(stylesheet)s\n&lt;/head&gt;\n&lt;body&gt;\n&lt;script</span> <span class="pre">language=&quot;javascript&quot;</span> <span class="pre">type=&quot;text/javascript&quot;&gt;&lt;!--\noutput_list</span> <span class="pre">=</span> <span class="pre">Array();\n\n/*</span> <span class="pre">level</span> <span class="pre">-</span> <span class="pre">0:Summary;</span> <span class="pre">1:Failed;</span> <span class="pre">2:All</span> <span class="pre">*/\nfunction</span> <span class="pre">showCase(level)</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">trs</span> <span class="pre">=</span> <span class="pre">document.getElementsByTagName(&quot;tr&quot;);\n</span>&#160;&#160;&#160; <span class="pre">for</span> <span class="pre">(var</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">trs.length;</span> <span class="pre">i++)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr</span> <span class="pre">=</span> <span class="pre">trs[i];\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">id</span> <span class="pre">=</span> <span class="pre">tr.id;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(id.substr(0,2)</span> <span class="pre">==</span> <span class="pre">\'ft\')</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(level</span> <span class="pre">&lt;</span> <span class="pre">1)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr.className</span> <span class="pre">=</span> <span class="pre">\'hiddenRow\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">else</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr.className</span> <span class="pre">=</span> <span class="pre">\'\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(id.substr(0,2)</span> <span class="pre">==</span> <span class="pre">\'pt\')</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(level</span> <span class="pre">&gt;</span> <span class="pre">1)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr.className</span> <span class="pre">=</span> <span class="pre">\'\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">else</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr.className</span> <span class="pre">=</span> <span class="pre">\'hiddenRow\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160; <span class="pre">}\n}\n\n\nfunction</span> <span class="pre">showClassDetail(cid,</span> <span class="pre">count)</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">var</span> <span class="pre">id_list</span> <span class="pre">=</span> <span class="pre">Array(count);\n</span>&#160;&#160;&#160; <span class="pre">var</span> <span class="pre">toHide</span> <span class="pre">=</span> <span class="pre">1;\n</span>&#160;&#160;&#160; <span class="pre">for</span> <span class="pre">(var</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">count;</span> <span class="pre">i++)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tid0</span> <span class="pre">=</span> <span class="pre">\'t\'</span> <span class="pre">+</span> <span class="pre">cid.substr(1)</span> <span class="pre">+</span> <span class="pre">\'.\'</span> <span class="pre">+</span> <span class="pre">(i+1);\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tid</span> <span class="pre">=</span> <span class="pre">\'f\'</span> <span class="pre">+</span> <span class="pre">tid0;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr</span> <span class="pre">=</span> <span class="pre">document.getElementById(tid);\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(!tr)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tid</span> <span class="pre">=</span> <span class="pre">\'p\'</span> <span class="pre">+</span> <span class="pre">tid0;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tr</span> <span class="pre">=</span> <span class="pre">document.getElementById(tid);\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">id_list[i]</span> <span class="pre">=</span> <span class="pre">tid;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(tr.className)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">toHide</span> <span class="pre">=</span> <span class="pre">0;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160; <span class="pre">for</span> <span class="pre">(var</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">count;</span> <span class="pre">i++)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">tid</span> <span class="pre">=</span> <span class="pre">id_list[i];\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(toHide)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">document.getElementById(\'div_\'+tid).style.display</span> <span class="pre">=</span> <span class="pre">\'none\'\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">document.getElementById(tid).className</span> <span class="pre">=</span> <span class="pre">\'hiddenRow\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">else</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">document.getElementById(tid).className</span> <span class="pre">=</span> <span class="pre">\'\';\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160; <span class="pre">}\n}\n\n\nfunction</span> <span class="pre">showTestDetail(div_id){\n</span>&#160;&#160;&#160; <span class="pre">var</span> <span class="pre">details_div</span> <span class="pre">=</span> <span class="pre">document.getElementById(div_id)\n</span>&#160;&#160;&#160; <span class="pre">var</span> <span class="pre">displayState</span> <span class="pre">=</span> <span class="pre">details_div.style.display\n</span>&#160;&#160;&#160; <span class="pre">//</span> <span class="pre">alert(displayState)\n</span>&#160;&#160;&#160; <span class="pre">if</span> <span class="pre">(displayState</span> <span class="pre">!=</span> <span class="pre">\'block\'</span> <span class="pre">)</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">displayState</span> <span class="pre">=</span> <span class="pre">\'block\'\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">details_div.style.display</span> <span class="pre">=</span> <span class="pre">\'block\'\n</span>&#160;&#160;&#160; <span class="pre">}\n</span>&#160;&#160;&#160; <span class="pre">else</span> <span class="pre">{\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">details_div.style.display</span> <span class="pre">=</span> <span class="pre">\'none\'\n</span>&#160;&#160;&#160; <span class="pre">}\n}\n\n\nfunction</span> <span class="pre">html_escape(s)</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">s</span> <span class="pre">=</span> <span class="pre">s.replace(/&amp;/g,\'&amp;amp;\');\n</span>&#160;&#160;&#160; <span class="pre">s</span> <span class="pre">=</span> <span class="pre">s.replace(/&lt;/g,\'&amp;lt;\');\n</span>&#160;&#160;&#160; <span class="pre">s</span> <span class="pre">=</span> <span class="pre">s.replace(/&gt;/g,\'&amp;gt;\');\n</span>&#160;&#160;&#160; <span class="pre">return</span> <span class="pre">s;\n}\n\n/*</span> <span class="pre">obsoleted</span> <span class="pre">by</span> <span class="pre">detail</span> <span class="pre">in</span> <span class="pre">&lt;div&gt;\nfunction</span> <span class="pre">showOutput(id,</span> <span class="pre">name)</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">var</span> <span class="pre">w</span> <span class="pre">=</span> <span class="pre">window.open(&quot;&quot;,</span> <span class="pre">//url\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">name,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;resizable,scrollbars,status,width=800,height=450&quot;);\n</span>&#160;&#160;&#160; <span class="pre">d</span> <span class="pre">=</span> <span class="pre">w.document;\n</span>&#160;&#160;&#160; <span class="pre">d.write(&quot;&lt;pre&gt;&quot;);\n</span>&#160;&#160;&#160; <span class="pre">d.write(html_escape(output_list[id]));\n</span>&#160;&#160;&#160; <span class="pre">d.write(&quot;\\n&quot;);\n</span>&#160;&#160;&#160; <span class="pre">d.write(&quot;&lt;a</span> <span class="pre">href=\'javascript:window.close()\'&gt;close&lt;/a&gt;\\n&quot;);\n</span>&#160;&#160;&#160; <span class="pre">d.write(&quot;&lt;/pre&gt;\\n&quot;);\n</span>&#160;&#160;&#160; <span class="pre">d.close();\n}\n*/\n--&gt;&lt;/script&gt;\n\n%(heading)s\n%(report)s\n%(ending)s\n\n&lt;/body&gt;\n&lt;/html&gt;\n'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.HTML_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_CLASS_TMPL">
+<span class="sig-name descname"><span class="pre">REPORT_CLASS_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'\n&lt;tr</span> <span class="pre">class=\'%(style)s\'&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(desc)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(count)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(Pass)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(fail)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(error)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;&lt;a</span> <span class="pre">href=&quot;javascript:showClassDetail(\'%(cid)s\',%(count)s)&quot;&gt;Detail&lt;/a&gt;&lt;/td&gt;\n&lt;/tr&gt;\n'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_CLASS_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_NO_OUTPUT_TMPL">
+<span class="sig-name descname"><span class="pre">REPORT_TEST_NO_OUTPUT_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;\n&lt;tr</span> <span class="pre">id='%(tid)s'</span> <span class="pre">class='%(Class)s'&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td</span> <span class="pre">class='%(style)s'&gt;&lt;div</span> <span class="pre">class='testcase'&gt;%(desc)s&lt;/div&gt;&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td</span> <span class="pre">colspan='5'</span> <span class="pre">align='center'&gt;%(status)s&lt;/td&gt;\n&lt;/tr&gt;\n&quot;</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_NO_OUTPUT_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_OUTPUT_TMPL">
+<span class="sig-name descname"><span class="pre">REPORT_TEST_OUTPUT_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'\n%(id)s:</span> <span class="pre">%(output)s\n'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_OUTPUT_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_WITH_OUTPUT_TMPL">
+<span class="sig-name descname"><span class="pre">REPORT_TEST_WITH_OUTPUT_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'\n&lt;tr</span> <span class="pre">id=\'%(tid)s\'</span> <span class="pre">class=\'%(Class)s\'&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td</span> <span class="pre">class=\'%(style)s\'&gt;&lt;div</span> <span class="pre">class=\'testcase\'&gt;%(desc)s&lt;/div&gt;&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td</span> <span class="pre">colspan=\'5\'</span> <span class="pre">align=\'center\'&gt;\n\n</span>&#160;&#160;&#160; <span class="pre">&lt;!--css</span> <span class="pre">div</span> <span class="pre">popup</span> <span class="pre">start--&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;a</span> <span class="pre">class=&quot;popup_link&quot;</span> <span class="pre">onfocus=\'this.blur();\'</span> <span class="pre">href=&quot;javascript:showTestDetail(\'div_%(tid)s\')&quot;</span> <span class="pre">&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">%(status)s&lt;/a&gt;\n\n</span>&#160;&#160;&#160; <span class="pre">&lt;div</span> <span class="pre">id=\'div_%(tid)s\'</span> <span class="pre">class=&quot;popup_window&quot;&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;div</span> <span class="pre">style=\'text-align:</span> <span class="pre">right;</span> <span class="pre">color:red;cursor:pointer\'&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;a</span> <span class="pre">onfocus=\'this.blur();\'</span> <span class="pre">onclick=&quot;document.getElementById(\'div_%(tid)s\').style.display</span> <span class="pre">=</span> <span class="pre">\'none\'</span> <span class="pre">&quot;</span> <span class="pre">&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[x]&lt;/a&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;/div&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;pre&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">%(script)s\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;/pre&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;/div&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;!--css</span> <span class="pre">div</span> <span class="pre">popup</span> <span class="pre">end--&gt;\n\n</span>&#160;&#160;&#160; <span class="pre">&lt;/td&gt;\n&lt;/tr&gt;\n'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TEST_WITH_OUTPUT_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TMPL">
+<span class="sig-name descname"><span class="pre">REPORT_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;\n&lt;p</span> <span class="pre">id='show_detail_line'&gt;Show\n&lt;a</span> <span class="pre">href='javascript:showCase(0)'&gt;Summary&lt;/a&gt;\n&lt;a</span> <span class="pre">href='javascript:showCase(1)'&gt;Failed&lt;/a&gt;\n&lt;a</span> <span class="pre">href='javascript:showCase(2)'&gt;All&lt;/a&gt;\n&lt;/p&gt;\n&lt;table</span> <span class="pre">id='result_table'&gt;\n&lt;colgroup&gt;\n&lt;col</span> <span class="pre">align='left'</span> <span class="pre">/&gt;\n&lt;col</span> <span class="pre">align='right'</span> <span class="pre">/&gt;\n&lt;col</span> <span class="pre">align='right'</span> <span class="pre">/&gt;\n&lt;col</span> <span class="pre">align='right'</span> <span class="pre">/&gt;\n&lt;col</span> <span class="pre">align='right'</span> <span class="pre">/&gt;\n&lt;col</span> <span class="pre">align='right'</span> <span class="pre">/&gt;\n&lt;/colgroup&gt;\n&lt;tr</span> <span class="pre">id='header_row'&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Test</span> <span class="pre">Group/Test</span> <span class="pre">case&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Count&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Pass&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Fail&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Error&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;View&lt;/td&gt;\n&lt;/tr&gt;\n%(test_list)s\n&lt;tr</span> <span class="pre">id='total_row'&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;Total&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(count)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(Pass)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(fail)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;%(error)s&lt;/td&gt;\n</span>&#160;&#160;&#160; <span class="pre">&lt;td&gt;&amp;nbsp;&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/table&gt;\n&quot;</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.REPORT_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.STATUS">
+<span class="sig-name descname"><span class="pre">STATUS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{0:</span> <span class="pre">'pass',</span> <span class="pre">1:</span> <span class="pre">'fail',</span> <span class="pre">2:</span> <span class="pre">'error'}</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.STATUS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.STYLESHEET_TMPL">
+<span class="sig-name descname"><span class="pre">STYLESHEET_TMPL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'\n&lt;style</span> <span class="pre">type=&quot;text/css&quot;</span> <span class="pre">media=&quot;screen&quot;&gt;\nbody</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">{</span> <span class="pre">font-family:</span> <span class="pre">verdana,</span> <span class="pre">arial,</span> <span class="pre">helvetica,</span> <span class="pre">sans-serif;</span> <span class="pre">font-size:</span> <span class="pre">80%;</span> <span class="pre">}\ntable</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">{</span> <span class="pre">font-size:</span> <span class="pre">100%;</span> <span class="pre">}\npre</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">{</span> <span class="pre">}\n\n/*</span> <span class="pre">--</span> <span class="pre">heading</span> <span class="pre">----------------------------------------------------------------------</span> <span class="pre">*/\nh1</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">font-size:</span> <span class="pre">16pt;\n</span>&#160;&#160;&#160; <span class="pre">color:</span> <span class="pre">gray;\n}\n.heading</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">margin-top:</span> <span class="pre">0ex;\n</span>&#160;&#160;&#160; <span class="pre">margin-bottom:</span> <span class="pre">1ex;\n}\n\n.heading</span> <span class="pre">.attribute</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">margin-top:</span> <span class="pre">1ex;\n</span>&#160;&#160;&#160; <span class="pre">margin-bottom:</span> <span class="pre">0;\n}\n\n.heading</span> <span class="pre">.description</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">margin-top:</span> <span class="pre">4ex;\n</span>&#160;&#160;&#160; <span class="pre">margin-bottom:</span> <span class="pre">6ex;\n}\n\n/*</span> <span class="pre">--</span> <span class="pre">css</span> <span class="pre">div</span> <span class="pre">popup</span> <span class="pre">------------------------------------------------------------------------</span> <span class="pre">*/\na.popup_link</span> <span class="pre">{\n}\n\na.popup_link:hover</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">color:</span> <span class="pre">red;\n}\n\n.popup_window</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">display:</span> <span class="pre">none;\n</span>&#160;&#160;&#160; <span class="pre">position:</span> <span class="pre">relative;\n</span>&#160;&#160;&#160; <span class="pre">left:</span> <span class="pre">0px;\n</span>&#160;&#160;&#160; <span class="pre">top:</span> <span class="pre">0px;\n</span>&#160;&#160;&#160; <span class="pre">/*border:</span> <span class="pre">solid</span> <span class="pre">#627173</span> <span class="pre">1px;</span> <span class="pre">*/\n</span>&#160;&#160;&#160; <span class="pre">padding:</span> <span class="pre">10px;\n</span>&#160;&#160;&#160; <span class="pre">background-color:</span> <span class="pre">#E6E6D6;\n</span>&#160;&#160;&#160; <span class="pre">font-family:</span> <span class="pre">&quot;Lucida</span> <span class="pre">Console&quot;,</span> <span class="pre">&quot;Courier</span> <span class="pre">New&quot;,</span> <span class="pre">Courier,</span> <span class="pre">monospace;\n</span>&#160;&#160;&#160; <span class="pre">text-align:</span> <span class="pre">left;\n</span>&#160;&#160;&#160; <span class="pre">font-size:</span> <span class="pre">8pt;\n</span>&#160;&#160;&#160; <span class="pre">width:</span> <span class="pre">500px;\n}\n\n}\n/*</span> <span class="pre">--</span> <span class="pre">report</span> <span class="pre">------------------------------------------------------------------------</span> <span class="pre">*/\n#show_detail_line</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">margin-top:</span> <span class="pre">3ex;\n</span>&#160;&#160;&#160; <span class="pre">margin-bottom:</span> <span class="pre">1ex;\n}\n#result_table</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">width:</span> <span class="pre">80%;\n</span>&#160;&#160;&#160; <span class="pre">border-collapse:</span> <span class="pre">collapse;\n</span>&#160;&#160;&#160; <span class="pre">border:</span> <span class="pre">1px</span> <span class="pre">solid</span> <span class="pre">#777;\n}\n#header_row</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">font-weight:</span> <span class="pre">bold;\n</span>&#160;&#160;&#160; <span class="pre">color:</span> <span class="pre">white;\n</span>&#160;&#160;&#160; <span class="pre">background-color:</span> <span class="pre">#777;\n}\n#result_table</span> <span class="pre">td</span> <span class="pre">{\n</span>&#160;&#160;&#160; <span class="pre">border:</span> <span class="pre">1px</span> <span class="pre">solid</span> <span class="pre">#777;\n</span>&#160;&#160;&#160; <span class="pre">padding:</span> <span class="pre">2px;\n}\n#total_row</span>&#160; <span class="pre">{</span> <span class="pre">font-weight:</span> <span class="pre">bold;</span> <span class="pre">}\n.passClass</span>&#160; <span class="pre">{</span> <span class="pre">background-color:</span> <span class="pre">#6c6;</span> <span class="pre">}\n.failClass</span>&#160; <span class="pre">{</span> <span class="pre">background-color:</span> <span class="pre">#c60;</span> <span class="pre">}\n.errorClass</span> <span class="pre">{</span> <span class="pre">background-color:</span> <span class="pre">#c00;</span> <span class="pre">}\n.passCase</span>&#160;&#160; <span class="pre">{</span> <span class="pre">color:</span> <span class="pre">#6c6;</span> <span class="pre">}\n.failCase</span>&#160;&#160; <span class="pre">{</span> <span class="pre">color:</span> <span class="pre">#c60;</span> <span class="pre">font-weight:</span> <span class="pre">bold;</span> <span class="pre">}\n.errorCase</span>&#160; <span class="pre">{</span> <span class="pre">color:</span> <span class="pre">#c00;</span> <span class="pre">font-weight:</span> <span class="pre">bold;</span> <span class="pre">}\n.hiddenRow</span>&#160; <span class="pre">{</span> <span class="pre">display:</span> <span class="pre">none;</span> <span class="pre">}\n.testcase</span>&#160;&#160; <span class="pre">{</span> <span class="pre">margin-left:</span> <span class="pre">2em;</span> <span class="pre">}\n\n\n/*</span> <span class="pre">--</span> <span class="pre">ending</span> <span class="pre">----------------------------------------------------------------------</span> <span class="pre">*/\n#ending</span> <span class="pre">{\n}\n\n&lt;/style&gt;\n'</span></em><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.Template_mixin.STYLESHEET_TMPL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.TestProgram">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.</span></span><span class="sig-name descname"><span class="pre">TestProgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">module='__main__'</span></em>, <em class="sig-param"><span class="pre">defaultTest=None</span></em>, <em class="sig-param"><span class="pre">argv=None</span></em>, <em class="sig-param"><span class="pre">testRunner=None</span></em>, <em class="sig-param"><span class="pre">testLoader=&lt;unittest.loader.TestLoader</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">exit=True</span></em>, <em class="sig-param"><span class="pre">verbosity=1</span></em>, <em class="sig-param"><span class="pre">failfast=None</span></em>, <em class="sig-param"><span class="pre">catchbreak=None</span></em>, <em class="sig-param"><span class="pre">buffer=None</span></em>, <em class="sig-param"><span class="pre">warnings=None</span></em>, <em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">tb_locals=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#TestProgram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.TestProgram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.main.TestProgram</span></code></p>
+<p>A variation of the unittest.TestProgram. Please refer to the base
+class for command line parameters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.TestProgram.runTests">
+<span class="sig-name descname"><span class="pre">runTests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/custom_runners/HTMLTestRunner.html#TestProgram.runTests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.TestProgram.runTests" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.custom_runners.HTMLTestRunner.main">
+<span class="sig-prename descclassname"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.</span></span><span class="sig-name descname"><span class="pre">main</span></span><a class="headerlink" href="#chiptools.testing.custom_runners.HTMLTestRunner.main" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#chiptools.testing.custom_runners.HTMLTestRunner.TestProgram" title="chiptools.testing.custom_runners.HTMLTestRunner.TestProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">chiptools.testing.custom_runners.HTMLTestRunner.TestProgram</span></code></a></p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.testing.custom_runners.html" class="btn btn-neutral float-left" title="chiptools.testing.custom_runners package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.testing.testloader.html" class="btn btn-neutral float-right" title="chiptools.testing.testloader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

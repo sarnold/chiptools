@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.simulators.modelsim &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.simulators.modelsim</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.simulators.modelsim</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.wrappers.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Modelsim"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim">[docs]</a><span class="k">class</span> <span class="nc">Modelsim</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ModelsimSimulator provides a wrapper around ModelSim to allow simulations</span>
+<span class="sd">    to be performed using the data contained in the supplied Project and</span>
+<span class="sd">    Options instances.</span>
+<span class="sd">    The ModelsimSimulator wrapper can be used to create libraries, compile</span>
+<span class="sd">    files and invoke ModelSim in either interactive (GUI) mode or as a console</span>
+<span class="sd">    application to support automated unit testing of the design.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;modelsim&#39;</span>
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;vcom&#39;</span><span class="p">,</span> <span class="s1">&#39;vlib&#39;</span><span class="p">,</span> <span class="s1">&#39;vlog&#39;</span><span class="p">,</span> <span class="s1">&#39;vmap&#39;</span><span class="p">,</span> <span class="s1">&#39;vsim&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Modelsim</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmap</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vmap&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vcom</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vcom&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlog</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vlog&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlib</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vlib&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsim</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;vsim&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Modelsim.simulate"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">library</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+        <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">generics</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">includes</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invoke the simulator and target the given *entity* in the given</span>
+<span class="sd">        *library*.</span>
+<span class="sd">        If the optional argument *gui* is set to False the simulator will</span>
+<span class="sd">        execute as a console application otherwise it will run as a GUI. This</span>
+<span class="sd">        function is blocking and will only continue when the simulator</span>
+<span class="sd">        terminates.</span>
+<span class="sd">        The optional argument *generics* provides a dictionary of *generic</span>
+<span class="sd">        name*/*generic value*key, value pairs that are passed to the simulator</span>
+<span class="sd">        as a command line argument. This allowsyou to set generics present on</span>
+<span class="sd">        the entity being simulated.</span>
+<span class="sd">        The optional argument *do* can be used to supply a string argument to</span>
+<span class="sd">        be interpreted by the simulator as a script to execute after loading.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add any custom arguments from the project file</span>
+        <span class="n">arguments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;simulate&#39;</span><span class="p">)</span>
+        <span class="n">arguments</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">arguments</span><span class="p">][</span><span class="n">arguments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">arguments</span> <span class="o">+=</span> <span class="n">args</span>
+        <span class="c1"># Add any includes</span>
+        <span class="k">for</span> <span class="n">libname</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">includes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-L&#39;</span><span class="p">,</span> <span class="n">libname</span><span class="p">]</span>
+        <span class="c1"># Add project libraries</span>
+        <span class="k">for</span> <span class="n">libname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_libraries</span><span class="p">():</span>
+            <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-L&#39;</span><span class="p">,</span> <span class="n">libname</span><span class="p">]</span>
+        <span class="c1"># Map any generics</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">generics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-G</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">binding</span><span class="p">)]</span>
+        <span class="c1"># Enable or disable the GUI</span>
+        <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[[</span><span class="s1">&#39;-c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;-i&#39;</span><span class="p">]][</span><span class="n">gui</span><span class="p">]</span>
+        <span class="c1"># Apply any DO commands</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="s1">&#39;-all&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">seconds_to_timestring</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+            <span class="n">do</span> <span class="o">=</span> <span class="s1">&#39;set NumericStdNoWarnings 1</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;run &#39;</span> <span class="o">+</span> <span class="n">duration</span> <span class="o">+</span> <span class="s1">&#39;;quit&#39;</span>
+            <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-do&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">do</span><span class="p">)]</span>
+        <span class="c1"># Finish processing arguments and invoke vsim</span>
+        <span class="c1"># arguments += [&#39;-L &#39; + library for library in includes.keys()]</span>
+        <span class="n">arguments</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">.</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">)]</span>
+        <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vsim</span><span class="p">,</span>
+            <span class="n">arguments</span><span class="p">,</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span></div>
+
+<div class="viewcode-block" id="Modelsim.compile"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile the supplied *file_object* into the current working library.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Before compiling this file, check to see if it has any additional</span>
+        <span class="c1"># arguments that need passing to modelsim. First check the global</span>
+        <span class="c1"># project config, and then check the local file config.</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;compile&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">file_object</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;compile&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">:</span>
+            <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vcom</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">:</span>
+            <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vlog</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_object</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">:</span>
+            <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vlog</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Simulator ignoring file with unsupported extension: &#39;</span>
+                <span class="o">+</span> <span class="n">file_object</span><span class="o">.</span><span class="n">path</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Modelsim.set_working_library"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim.set_working_library">[docs]</a>    <span class="k">def</span> <span class="nf">set_working_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="n">library</span><span class="p">],</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Modelsim.set_library_path"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim.set_library_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_library_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">library</span><span class="p">,</span> <span class="n">path</span><span class="p">],</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Modelsim.add_library"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.simulators.modelsim.html#chiptools.wrappers.simulators.modelsim.Modelsim.add_library">[docs]</a>    <span class="k">def</span> <span class="nf">add_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">):</span>
+        <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vlib</span><span class="p">,</span> <span class="p">[</span><span class="n">library</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">Modelsim</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">library</span><span class="p">,</span> <span class="n">library</span><span class="p">],</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

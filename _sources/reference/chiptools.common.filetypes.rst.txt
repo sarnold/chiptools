@@ -1,0 +1,7 @@
+chiptools.common.filetypes module
+=================================
+
+.. automodule:: chiptools.common.filetypes
+   :members:
+   :undoc-members:
+   :show-inheritance:

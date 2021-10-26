@@ -1,0 +1,7 @@
+chiptools
+=========
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools

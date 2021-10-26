@@ -1,0 +1,21 @@
+chiptools.common package
+========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.common.colourer
+   chiptools.common.exceptions
+   chiptools.common.filetypes
+   chiptools.common.utils
+
+Module contents
+---------------
+
+.. automodule:: chiptools.common
+   :members:
+   :undoc-members:
+   :show-inheritance:

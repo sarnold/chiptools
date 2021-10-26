@@ -1,0 +1,7 @@
+chiptools.chiptools\_main module
+================================
+
+.. automodule:: chiptools.chiptools_main
+   :members:
+   :undoc-members:
+   :show-inheritance:

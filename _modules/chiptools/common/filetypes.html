@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.common.filetypes &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.common.filetypes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.common.filetypes</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">xml</span>
+
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">FileType</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span>
+    <span class="s1">&#39;FileType&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s1">&#39;Unknown&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;VHDL&#39;</span><span class="p">,</span>  <span class="c1"># VHDL</span>
+        <span class="s1">&#39;Verilog&#39;</span><span class="p">,</span>  <span class="c1"># Verilog</span>
+        <span class="s1">&#39;SystemVerilog&#39;</span><span class="p">,</span>  <span class="c1"># Verilog (SV)</span>
+        <span class="s1">&#39;NGCNetlist&#39;</span><span class="p">,</span>  <span class="c1"># Netlist</span>
+        <span class="s1">&#39;TCL&#39;</span><span class="p">,</span>  <span class="c1"># TCL</span>
+        <span class="s1">&#39;UCF&#39;</span><span class="p">,</span>  <span class="c1"># Universal constraints format</span>
+        <span class="s1">&#39;SDC&#39;</span><span class="p">,</span>  <span class="c1"># Synopsis design constraints</span>
+        <span class="s1">&#39;Python&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;VivadoIp&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;VivadoXDC&#39;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Mapping of file extensions to FileType objects</span>
+<span class="n">fileExtensionsLookup</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Common VHDL source extensions</span>
+    <span class="s1">&#39;.vhd&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">,</span>
+    <span class="s1">&#39;.vhdl&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">,</span>
+    <span class="c1"># Common Verilog source extentions</span>
+    <span class="s1">&#39;.v&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">,</span>
+    <span class="s1">&#39;.vl&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">,</span>
+    <span class="s1">&#39;.sv&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">,</span>
+    <span class="c1"># Netlist Extensions</span>
+    <span class="s1">&#39;.ngc&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">NGCNetlist</span><span class="p">,</span>
+    <span class="c1"># Constraint/Script Extensions</span>
+    <span class="s1">&#39;.tcl&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">TCL</span><span class="p">,</span>
+    <span class="s1">&#39;.sdc&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SDC</span><span class="p">,</span>
+    <span class="c1"># Python</span>
+    <span class="s1">&#39;.py&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Python</span><span class="p">,</span>
+    <span class="c1"># Vivado/ISE Extentions</span>
+    <span class="s1">&#39;.xci&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VivadoIp</span><span class="p">,</span>
+    <span class="s1">&#39;.xco&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VivadoIp</span><span class="p">,</span>
+    <span class="s1">&#39;.xdc&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VivadoXDC</span><span class="p">,</span>
+    <span class="s1">&#39;.ucf&#39;</span><span class="p">:</span> <span class="n">FileType</span><span class="o">.</span><span class="n">UCF</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="ProjectAttributes"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes">[docs]</a><span class="k">class</span> <span class="nc">ProjectAttributes</span><span class="p">:</span>
+    <span class="c1"># XML nodes identify opening tags that can be used in the file</span>
+    <span class="n">XML_NODE_PROJECT</span> <span class="o">=</span> <span class="s1">&#39;project&#39;</span>
+    <span class="n">XML_NODE_LIBRARY</span> <span class="o">=</span> <span class="s1">&#39;library&#39;</span>
+    <span class="n">XML_NODE_FILE</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span>
+    <span class="n">XML_NODE_CONFIG</span> <span class="o">=</span> <span class="s1">&#39;config&#39;</span>
+    <span class="n">XML_NODE_COMMENT</span> <span class="o">=</span> <span class="s1">&#39;#comment&#39;</span>
+    <span class="n">XML_NODE_TEXT</span> <span class="o">=</span> <span class="s1">&#39;#text&#39;</span>
+    <span class="n">XML_NODE_CONSTRAINTS</span> <span class="o">=</span> <span class="s1">&#39;constraints&#39;</span>
+    <span class="n">XML_NODE_GENERIC</span> <span class="o">=</span> <span class="s1">&#39;generic&#39;</span>
+    <span class="n">XML_NODE_UNITTEST</span> <span class="o">=</span> <span class="s1">&#39;unittest&#39;</span>
+    <span class="c1"># XML attributes identify parameters that can be applied to XML nodes.</span>
+    <span class="n">ATTRIBUTE_NAME</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span>
+    <span class="n">ATTRIBUTE_PATH</span> <span class="o">=</span> <span class="s1">&#39;path&#39;</span>
+    <span class="n">ATTRIBUTE_FLOW</span> <span class="o">=</span> <span class="s1">&#39;flow&#39;</span>
+    <span class="n">ATTRIBUTE_PREPROCESSOR</span> <span class="o">=</span> <span class="s1">&#39;preprocessor&#39;</span>
+    <span class="n">ATTRIBUTE_SYNTHESIS</span> <span class="o">=</span> <span class="s1">&#39;synthesise&#39;</span>
+    <span class="c1"># These XML attributes are required configuration attributes that control</span>
+    <span class="c1"># which tools and directories are used by the framework. They must be</span>
+    <span class="c1"># present in the project file.</span>
+    <span class="n">ATTRIBUTE_SIM_DIR</span> <span class="o">=</span> <span class="s1">&#39;simulation_directory&#39;</span>
+    <span class="n">ATTRIBUTE_SYNTH_DIR</span> <span class="o">=</span> <span class="s1">&#39;synthesis_directory&#39;</span>
+    <span class="n">ATTRIBUTE_SIM_TOOL</span> <span class="o">=</span> <span class="s1">&#39;simulator&#39;</span>
+    <span class="n">ATTRIBUTE_SYNTH_TOOL</span> <span class="o">=</span> <span class="s1">&#39;synthesiser&#39;</span>
+    <span class="n">ATTRIBUTE_SYNTH_PART</span> <span class="o">=</span> <span class="s1">&#39;part&#39;</span>
+    <span class="n">ATTRIBUTE_REPORTER</span> <span class="o">=</span> <span class="s1">&#39;reporter&#39;</span>
+    <span class="n">ATTRIBUTE_LIBRARY</span> <span class="o">=</span> <span class="s1">&#39;library&#39;</span>
+
+    <span class="c1"># Additional tool arguments can be attached to File objects by supplying</span>
+    <span class="c1"># attributes using the naming convention:</span>
+    <span class="c1">#   args_toolname_flowstagenname</span>
+    <span class="c1"># These attributes will be stored with the file so that the additional</span>
+    <span class="c1"># arguments can be used by the relevent tool and flow stage if it is</span>
+    <span class="c1"># invoked on the file.</span>
+    <span class="n">XML_ADDITIONAL_TOOL_ARGS_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;args_([A-Z,a-z]+)_([A-Z,a-z]+)&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProjectAttributes.bool_processor"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes.bool_processor">[docs]</a>    <span class="k">def</span> <span class="nf">bool_processor</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;false&#39;</span></div>
+
+<div class="viewcode-block" id="ProjectAttributes.string_tolower"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes.string_tolower">[docs]</a>    <span class="k">def</span> <span class="nf">string_tolower</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="c1"># Process nodes according to the processor functions contained within this</span>
+    <span class="c1"># dictionary.</span>
+    <span class="n">NODE_PROCESSOR</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_PATH</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">relative_path_to_abs</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SIM_DIR</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">relative_path_to_abs</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTH_DIR</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">relative_path_to_abs</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_PREPROCESSOR</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">relative_path_to_abs</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_REPORTER</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">relative_path_to_abs</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">:</span> <span class="n">bool_processor</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SIM_TOOL</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTH_TOOL</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTH_PART</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_LIBRARY</span><span class="p">:</span> <span class="n">string_tolower</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Default fields for different node types</span>
+    <span class="n">FILE_NODE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_PATH</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_PREPROCESSOR</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">PROJECT_NODE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_PATH</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">LIBRARY_NODE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_NAME</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">UNITTEST_NODE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_PATH</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">CONSTRAINTS_NODE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ATTRIBUTE_PATH</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ATTRIBUTE_FLOW</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="ProjectAttributes.cast_attributes_to_dict"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes.cast_attributes_to_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cast_attributes_to_dict</span><span class="p">(</span><span class="n">attributes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure that attributes is a dictionary. Casts None to an empty dict</span>
+<span class="sd">        and casts an xml.dom.minidom.NamedNodeMap to a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">xml</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">minidom</span><span class="o">.</span><span class="n">NamedNodeMap</span><span class="p">):</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">attributes</span></div>
+
+<div class="viewcode-block" id="ProjectAttributes.process_attributes"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes.process_attributes">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">process_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;Process each of the attributes in the supplied dictionary or</span>
+<span class="sd">        xml.dom.minidom.NamedNodeMap using the associated functions in the</span>
+<span class="sd">        NODE_PROCESSOR dictionary and return an updated dictionary of the</span>
+<span class="sd">        attribute name, value pairs.</span>
+
+<span class="sd">        If the defaults dictionary is supplied, the returned dictionary will</span>
+<span class="sd">        contain *at least* the keys and associated values present in the</span>
+<span class="sd">        defaults dictionary.</span>
+
+<span class="sd">        The root argument is passed to the NODE_PROCESSOR functions and it</span>
+<span class="sd">        should be a string path pointing to the project root directory, this</span>
+<span class="sd">        ensures any file paths can be cast to absolute paths correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure that the attributes argument is a dictionary type:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">cast_attributes_to_dict</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="c1"># Obtain a list of the attribute names to process, the result will</span>
+        <span class="c1"># contain a value for each of these keys:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="c1"># Process each of the attributes using the NODE_PROCESSOR</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="c1"># Obtain the function to process the attribute value from the</span>
+            <span class="c1"># NODE_PROCESSOR dictionary if available, otherwise obtain the</span>
+            <span class="c1"># value from the defaults dictionary. If neither dictionaries</span>
+            <span class="c1"># contain an entry for the attribute then return the original</span>
+            <span class="c1"># value.</span>
+            <span class="n">processor</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">NODE_PROCESSOR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="c1"># Return the original value.</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">processor</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">attributes</span></div>
+
+<div class="viewcode-block" id="ProjectAttributes.get_processed_attribute"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.ProjectAttributes.get_processed_attribute">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_processed_attribute</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the given attribute according to the functions in the</span>
+<span class="sd">        NODE_PROCESSOR dictionary using the name as a key and the root as the</span>
+<span class="sd">        project root. The original attribute is returned if no NODE_PROCESSOR</span>
+<span class="sd">        function can be found that matches the name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">NODE_PROCESSOR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">x</span><span class="p">)(</span>
+            <span class="n">attribute</span><span class="p">,</span> <span class="n">root</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UnitTestFile"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.UnitTestFile">[docs]</a><span class="k">class</span> <span class="nc">UnitTestFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The UnitTestFile object provides a container for Python test shims.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileType</span> <span class="o">=</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Python</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testsuite</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The File object contains properties of a design source file that has been</span>
+<span class="sd">    loaded from the project XML file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># The library to which this file belongs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+        <span class="c1"># MD5 sum for change detection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md5</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># The path to this source file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="c1"># A flag to indicate whether or not this file should be included for</span>
+        <span class="c1"># synthesis. It not specified it will default to True.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synthesise</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synthesise</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesise</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesise</span>
+        <span class="c1"># The preprocessor is a path to a Python module containing a</span>
+        <span class="c1"># preprocessor object that can edit the associated source file before</span>
+        <span class="c1"># it is passed to synthesis.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PREPROCESSOR</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="c1"># Automatically discover the filetype from the extension</span>
+        <span class="n">fileName</span><span class="p">,</span> <span class="n">fileExtension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">fileExtension</span> <span class="o">=</span> <span class="n">fileExtension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>  <span class="c1"># Remove trailing whitespace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileType</span> <span class="o">=</span> <span class="n">fileExtensionsLookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fileExtension</span><span class="p">,</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">)</span>
+        <span class="c1"># Search through the keyword arguments for any attributes that match</span>
+        <span class="c1"># the XML_ADDITIONAL_TOOL_ARGS_RE search pattern and store these as</span>
+        <span class="c1"># additional tool arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optionalToolArgs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_ADDITIONAL_TOOL_ARGS_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">toolName</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">flowName</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="c1"># The attribute matched but did not return enough match</span>
+                    <span class="c1"># groups.</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s1">&#39;Ignoring attribute </span><span class="si">{0}</span><span class="s1"> on file </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">toolName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionalToolArgs</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">optionalToolArgs</span><span class="p">[</span><span class="n">toolName</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optionalToolArgs</span><span class="p">[</span><span class="n">toolName</span><span class="p">][</span><span class="n">flowName</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s1">&#39;Added attribute </span><span class="si">{0}</span><span class="s1"> with value </span><span class="si">{2}</span><span class="s1"> to file </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">v</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="vm">__dict__</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;File (</span><span class="si">{0}</span><span class="s1">)&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+
+<div class="viewcode-block" id="File.get_tool_arguments"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.File.get_tool_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toolName</span><span class="p">,</span> <span class="n">flowName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the optional tool arguments attached to this file for the given</span>
+<span class="sd">        toolname and flowname. If the tool or flow are not present in the</span>
+<span class="sd">        optional arguments then return an empty string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionalToolArgs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">toolName</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">flowName</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Constraints"><a class="viewcode-back" href="../../../reference/chiptools.common.filetypes.html#chiptools.common.filetypes.Constraints">[docs]</a><span class="k">class</span> <span class="nc">Constraints</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The constraints object provides a container for constraints files&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileType</span> <span class="o">=</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Unknown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_FLOW</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fileName</span><span class="p">,</span> <span class="n">fileExtension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">fileExtension</span> <span class="o">=</span> <span class="n">fileExtension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fileExtension</span> <span class="ow">in</span> <span class="n">fileExtensionsLookup</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileType</span> <span class="o">=</span> <span class="n">fileExtensionsLookup</span><span class="p">[</span><span class="n">fileExtension</span><span class="p">]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

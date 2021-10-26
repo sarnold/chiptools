@@ -1,0 +1,7 @@
+chiptools.wrappers.simulators.ghdl module
+=========================================
+
+.. automodule:: chiptools.wrappers.simulators.ghdl
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.project module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.core.reporter module" href="chiptools.core.reporter.html" />
+    <link rel="prev" title="chiptools.core.preprocessor module" href="chiptools.core.preprocessor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.core.html">chiptools.core package</a> &raquo;</li>
+      <li>chiptools.core.project module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.core.project.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.core.project">
+<span id="chiptools-core-project-module"></span><h1>chiptools.core.project module<a class="headerlink" href="#module-chiptools.core.project" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.core.project.Project">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.core.project.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/nerdboy/src/chiptools/docs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_config">
+<span class="sig-name descname"><span class="pre">add_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_config" title="Permalink to this definition"></a></dt>
+<dd><p>Add a configuration key, value mapping for the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_config_dict">
+<span class="sig-name descname"><span class="pre">add_config_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_config_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_config_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Add a configuration dictionary of key, value mappings for the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_constraints">
+<span class="sig-name descname"><span class="pre">add_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attribs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given constraints file to the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_file">
+<span class="sig-name descname"><span class="pre">add_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attribs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_file" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given file to the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_files">
+<span class="sig-name descname"><span class="pre">add_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'work'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*.*'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attribs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_files" title="Permalink to this definition"></a></dt>
+<dd><p>Add all files in the given directory to the project. The optional
+pattern can be used to filter which paths are added.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_generic">
+<span class="sig-name descname"><span class="pre">add_generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_generic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_generic" title="Permalink to this definition"></a></dt>
+<dd><p>Add a generic key, value mapping for the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.add_unittest">
+<span class="sig-name descname"><span class="pre">add_unittest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attribs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.add_unittest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.add_unittest" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given TestSuite file to the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.compile" title="Permalink to this definition"></a></dt>
+<dd><p>Compile the libraries and files loaded into the <em>Project</em>.
+The Simulation tool that is used is determined by the
+<em>tool_name</em> input if supplied, otherwise the <em>Project</em> configuration
+: ‘simulator’ tool name will be used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_all_tool_argument_keys">
+<span class="sig-name descname"><span class="pre">get_all_tool_argument_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_all_tool_argument_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_all_tool_argument_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Return all optional tool argument keys attached to this file for the
+given tool_name. The list returned by this method can be used to
+determine which tool arguments are available for the tool_name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_available_simulators">
+<span class="sig-name descname"><span class="pre">get_available_simulators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_available_simulators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_available_simulators" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary of the Simulators available on this system.
+Return a dictionary of tool_name : tool_instance where <em>tool_name</em> is
+a string name and <em>tool_instance</em> is a Simulator instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_available_synthesisers">
+<span class="sig-name descname"><span class="pre">get_available_synthesisers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_available_synthesisers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_available_synthesisers" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary of the Synthesisers available on this system.
+Return a dictionary of tool_name : tool_instance where <em>tool_name</em> is
+a string name and <em>tool_instance</em> is a Synthesiser instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_constraints">
+<span class="sig-name descname"><span class="pre">get_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of <em>Constraint</em> objects that have been added to the
+project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_files">
+<span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_files" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of <em>File</em> objects that have been added to the <em>Project</em>.
+The order in which the files appear in the list matches the order in
+which they were added to the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_fpga_part">
+<span class="sig-name descname"><span class="pre">get_fpga_part</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_fpga_part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_fpga_part" title="Permalink to this definition"></a></dt>
+<dd><p>Return the FPGA part to be used for synthesis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_generics">
+<span class="sig-name descname"><span class="pre">get_generics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_generics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_generics" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of (generic : setting) where <em>generic</em> is the
+string name of a HDL port generic and <em>setting</em> is the value to assign
+to the port generic. The port value can be a string, integer or
+boolean type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_libraries">
+<span class="sig-name descname"><span class="pre">get_libraries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_libraries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_libraries" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of <em>libname</em>, <em>[file_list]</em> where <em>libname</em> is a
+string indicating a library name and <em>[file_list]</em> is a list of
+<em>File</em> objects that have been added to the library.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_reporter">
+<span class="sig-name descname"><span class="pre">get_reporter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_reporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_reporter" title="Permalink to this definition"></a></dt>
+<dd><p>Return function pointer to a reporter function that is executed after a
+synthesis run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_simulation_directory">
+<span class="sig-name descname"><span class="pre">get_simulation_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_simulation_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_simulation_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the simulation directory where all simulation
+outputs will be stored.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_simulation_tool_name">
+<span class="sig-name descname"><span class="pre">get_simulation_tool_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_simulation_tool_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_simulation_tool_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return the name of the simulation tool to use for simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_simulator_library_dependencies">
+<span class="sig-name descname"><span class="pre">get_simulator_library_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_simulator_library_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_simulator_library_dependencies" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of library_name : path where both are strings and
+the <em>library_name</em> defines a simulation library dependency name and
+<em>path</em> provides the path to the dependency. Simulation libraries for
+the given simulation tool name are returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_synthesis_directory">
+<span class="sig-name descname"><span class="pre">get_synthesis_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_synthesis_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_synthesis_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the synthesis directory where all synthesis outputs
+will be stored.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_synthesis_fileset">
+<span class="sig-name descname"><span class="pre">get_synthesis_fileset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_synthesis_fileset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_synthesis_fileset" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of {lib : [file_a, file_b]} where <em>lib</em> is a string
+indicating the name of the library and <em>[file_a, file_b]</em> is a list of
+<em>File</em> objects that has been filtered to contain only files that have
+their <em>.synthesise</em> attribute set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_synthesis_tool_name">
+<span class="sig-name descname"><span class="pre">get_synthesis_tool_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_synthesis_tool_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_synthesis_tool_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return the name of the synthesis tool to use for synthesis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_system_config_path">
+<span class="sig-name descname"><span class="pre">get_system_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_system_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_system_config_path" title="Permalink to this definition"></a></dt>
+<dd><p>Return a path string indicating the location of the .chiptoolsconfig
+configuration file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_tests">
+<span class="sig-name descname"><span class="pre">get_tests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of files implementing TestSuite objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.get_tool_arguments">
+<span class="sig-name descname"><span class="pre">get_tool_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.get_tool_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.get_tool_arguments" title="Permalink to this definition"></a></dt>
+<dd><p>Return the optional tool arguments attached to this file for the given
+tool_name and flow_name. If the tool or flow are not present in the
+optional arguments then return an empty string. Multiple spaces in the
+tool argument string are merged into a single space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.initialise">
+<span class="sig-name descname"><span class="pre">initialise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/nerdboy/src/chiptools/docs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.initialise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.initialise" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.load_project">
+<span class="sig-name descname"><span class="pre">load_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.load_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.load_project" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise this project instance using the project file supplied
+by path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.run_preprocessors">
+<span class="sig-name descname"><span class="pre">run_preprocessors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.run_preprocessors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.run_preprocessors" title="Permalink to this definition"></a></dt>
+<dd><p>Execute any <em>Preprocessors</em> attached to <em>Files</em> currently loaded into
+the <em>Project</em>. A preprocessor can be used to modify the contents of the
+file prior to simulation or synthesis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.run_tests">
+<span class="sig-name descname"><span class="pre">run_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.run_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.run_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Run the Project unit tests. The <em>ids</em> input is an iterable containing
+integer IDs referencing test cases from the test suite. If <em>ids</em> is
+None all tests in the test suite will be executed, otherwise the
+<em>ids</em> will be used to select which tests in the test suite are run.</p>
+<p>The Simulation tool that is used is determined by the
+<em>tool_name</em> input if supplied, otherwise the <em>Project</em> configuration
+: ‘simulator’ tool name will be used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.set_cache_path">
+<span class="sig-name descname"><span class="pre">set_cache_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.set_cache_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.set_cache_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Simulate the <em>Project</em> using the given <em>library</em> and <em>entity</em> as a top
+level. The Simulation tool that is used is determined by the
+<em>tool_name</em> input if supplied, otherwise the <em>Project</em> configuration
+: ‘simulator’ tool name will be used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.synthesise">
+<span class="sig-name descname"><span class="pre">synthesise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpga_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.synthesise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.synthesise" title="Permalink to this definition"></a></dt>
+<dd><p>Synthesise the <em>Project</em> using the given <em>library</em> and <em>entity</em> as a
+top level. The synthesis tool that is used is determined by the
+<em>tool_name</em> input if supplied, otherwise the <em>Project</em> configuration
+: ‘synthesiser’ tool name will be used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.project.Project.write_designtree_png">
+<span class="sig-name descname"><span class="pre">write_designtree_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#Project.write_designtree_png"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.Project.write_designtree_png" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.core.project.load_tests">
+<span class="sig-prename descclassname"><span class="pre">chiptools.core.project.</span></span><span class="sig-name descname"><span class="pre">load_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/project.html#load_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.project.load_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Import the test shim python module given by path and return a
+collection of Unittest classes for each of the tests found in the shim</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.core.preprocessor.html" class="btn btn-neutral float-left" title="chiptools.core.preprocessor module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.core.reporter.html" class="btn btn-neutral float-right" title="chiptools.core.reporter module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples: Max Hold &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Project Format" href="project_format.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples: Max Hold</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#source-files">Source Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-project">Creating the Project</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initial-setup">Initial Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-configuration">Project Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apply-values-to-generic-ports">Apply Values to Generic Ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-source-files">Add Source Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-xml-file">Project (XML) File</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-and-test">Simulation and Test</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#unit-tests">Unit Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-test-report">Unit Test Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-unit-tests">Advanced Unit Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#synthesis-and-build">Synthesis and Build</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-with-the-command-line-interface">Building with the Command Line Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Examples: Max Hold</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/max_hold.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples-max-hold">
+<span id="max-hold"></span><h1>Examples: Max Hold<a class="headerlink" href="#examples-max-hold" title="Permalink to this headline"></a></h1>
+<p>A demonstration of the ChipTools framework being used to simulate, test and
+build a simple VHDL component.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>The <strong>Max Hold</strong> example implements a basic component to output the maximum
+value of an input sequence until it is reset. For example, if such a component
+were to be fed an oscillating input with steadily increasing amplitude we would
+expect the following result:</p>
+<img alt="_images/max_hold_demo.png" src="_images/max_hold_demo.png" />
+<p>This example will show you how you can use ChipTools to generate stimulus,
+check responses, create test reports and generate bit files for the
+<strong>Max Hold</strong> component.</p>
+</section>
+<section id="source-files">
+<h2>Source Files<a class="headerlink" href="#source-files" title="Permalink to this headline"></a></h2>
+<p>The Max Hold example is located in <a class="reference external" href="https://github.com/pabennett/chiptools/tree/master/examples/max_hold">examples/max_hold</a>.</p>
+<p>The following source files belong to the Max Hold example:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 40%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>max_hold.vhd</p></td>
+<td><p><strong>VHDL</strong></p></td>
+<td><p>Max Hold component (VHDL).</p></td>
+</tr>
+<tr class="row-odd"><td><p>pkg_max_hold.vhd</p></td>
+<td><p><strong>VHDL</strong></p></td>
+<td><p>Package for Max Hold component.</p></td>
+</tr>
+<tr class="row-even"><td><p>tb_max_hold.vhd</p></td>
+<td><p><strong>VHDL</strong></p></td>
+<td><p>Testbench for Max Hold component (VHDL).</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold.sv</p></td>
+<td><p><strong>SystemVerilog</strong></p></td>
+<td><p>Max Hold component (SystemVerilog).</p></td>
+</tr>
+<tr class="row-even"><td><p>tb_max_hold.sv</p></td>
+<td><p><strong>SystemVerilog</strong></p></td>
+<td><p>Testbench for Max Hold component (SystemVerilog).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Support files:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 40%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>max_hold_tests.py</p></td>
+<td><p><strong>Unit Test</strong></p></td>
+<td><p>Collection of advanced unit tests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>basic_unit_tests.py</p></td>
+<td><p><strong>Unit Test</strong></p></td>
+<td><p>Simple unit test.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold.xml</p></td>
+<td><p><strong>Project</strong></p></td>
+<td><p>Project file (using VHDL sources).</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_sv.xml</p></td>
+<td><p><strong>Project</strong></p></td>
+<td><p>Project file (using SystemVerilog sources).</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold.ucf</p></td>
+<td><p><strong>Constraints</strong></p></td>
+<td><p>Constraints file when using the ISE synthesis flow.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold.xdc</p></td>
+<td><p><strong>Constraints</strong></p></td>
+<td><p>Constraints file when using the Vivado synthesis flow.</p></td>
+</tr>
+<tr class="row-even"><td><p>simulation</p></td>
+<td><p><strong>Folder</strong></p></td>
+<td><p>Output directory for simulation tasks.</p></td>
+</tr>
+<tr class="row-odd"><td><p>synthesis</p></td>
+<td><p><strong>Folder</strong></p></td>
+<td><p>Output directory for synthesis tasks.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The Max Hold component has been designed in both VHDL and SystemVerilog so that
+single-language simulators such as GHDL or Icarus can be used.</p>
+</section>
+<section id="creating-the-project">
+<h2>Creating the Project<a class="headerlink" href="#creating-the-project" title="Permalink to this headline"></a></h2>
+<p>This section will walk through the steps required to load and use the source
+files with ChipTools. The complete example is available in
+<strong>max_hold_project.py</strong> in the Max Hold project directory.</p>
+<section id="initial-setup">
+<h3>Initial Setup<a class="headerlink" href="#initial-setup" title="Permalink to this headline"></a></h3>
+<p>First, import the ChipTools Project wrapper and create a project instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chiptools.core.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+<span class="c1"># Create a new Project</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The project wrapper provides a set of functions for loading source files and
+configuring a project.</p>
+</section>
+<section id="project-configuration">
+<h3>Project Configuration<a class="headerlink" href="#project-configuration" title="Permalink to this headline"></a></h3>
+<p>Projects should be configured with the following information before they are
+used:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Configuration Item</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>simulation_directory</p></td>
+<td><p>Output directory for simulation tasks.</p></td>
+</tr>
+<tr class="row-odd"><td><p>synthesis_directory</p></td>
+<td><p>Output directory for synthesis tasks.</p></td>
+</tr>
+<tr class="row-even"><td><p>fpga_part</p></td>
+<td><p>The FPGA part to target when performing a synthesis flow.</p></td>
+</tr>
+<tr class="row-odd"><td><p>simulator</p></td>
+<td><p>Name of the default simulator to use when performing simulations.</p></td>
+</tr>
+<tr class="row-even"><td><p>synthesiser</p></td>
+<td><p>Name of the default synthesiser to use when performing synthesis.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The project wrapper provides two methods for setting configuration data:
+<strong>add_config</strong>, which accepts a name, value pair as arguments or
+<strong>add_config_dict</strong>, which accepts a dictionary of name, value pairs.</p>
+<p>The following code sample uses the <strong>add_config</strong> method to configure the
+project wrapper.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configure project, you may wish to edit some of these settings depending</span>
+<span class="c1"># on which simulation/synthesis tools are installed on your system.</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="s1">&#39;simulation_directory&#39;</span><span class="p">,</span> <span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="s1">&#39;synthesis_directory&#39;</span><span class="p">,</span> <span class="s1">&#39;synthesis&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="s1">&#39;simulator&#39;</span><span class="p">,</span> <span class="s1">&#39;ghdl&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="s1">&#39;synthesiser&#39;</span><span class="p">,</span> <span class="s1">&#39;ise&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="s1">&#39;part&#39;</span><span class="p">,</span> <span class="s1">&#39;xc6slx9-csg324-2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="apply-values-to-generic-ports">
+<h3>Apply Values to Generic Ports<a class="headerlink" href="#apply-values-to-generic-ports" title="Permalink to this headline"></a></h3>
+<p>FPGA designs can be parameterised via the use of a generic port on the top level
+component. You can assign values to top level port generics by using the
+<strong>add_generic</strong> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Synthesis generics can be assigned via the add_generic command, in this</span>
+<span class="c1"># example we set the data_width generic to 3:</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_generic</span><span class="p">(</span><span class="s1">&#39;data_width&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-source-files">
+<h3>Add Source Files<a class="headerlink" href="#add-source-files" title="Permalink to this headline"></a></h3>
+<p>Add the Max Hold source files to the project and assign them to a library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Source files for the max_hold component are added to the project. The Project</span>
+<span class="c1"># **add_file** method accepts a file path and library name, if no library is</span>
+<span class="c1"># specified it will default to &#39;work&#39;. Other file attributes are available but</span>
+<span class="c1"># not covered in this example.</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="s1">&#39;max_hold.vhd&#39;</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;lib_max_hold&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="s1">&#39;pkg_max_hold.vhd&#39;</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;lib_max_hold&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The testbench is also added to the project under a different library.
+The optional argument <em>synthesise</em> is set to <strong>False</strong> when adding the testbench
+as we do not want to include it in the files sent to synthesis:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># When adding the testbench file we supply a &#39;synthesise&#39; attribute and set it</span>
+<span class="c1"># to &#39;False&#39;, this tells the synthesis tool not to try to synthesise this file.</span>
+<span class="c1"># If not specified, &#39;synthesise&#39; will default to &#39;True&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span>
+    <span class="s1">&#39;tb_max_hold.vhd&#39;</span><span class="p">,</span>
+    <span class="n">library</span><span class="o">=</span><span class="s1">&#39;lib_tb_max_hold&#39;</span><span class="p">,</span>
+    <span class="n">synthesise</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>There are two unit test files provided for the Max Hold project, these can be
+added to the project using the <strong>add_unittest</strong> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Unit tests have been written for the max_hold component and stored in</span>
+<span class="c1"># max_hold_tests.py. The Project class provides an &#39;add_unittest&#39; method for</span>
+<span class="c1"># adding unit tests to the project, it expects a path to the unit test file.</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_unittest</span><span class="p">(</span><span class="s1">&#39;max_hold_tests.py&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_unittest</span><span class="p">(</span><span class="s1">&#39;basic_unit_test.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, the constraints files can be added to the project using the
+<strong>add_constraints</strong> method, which takes a <strong>path</strong> argument and an optional
+<strong>flow</strong> name argument which allows you to explicitly name which synthesis flow
+the constraints are intended for:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The constraints are added to the project using the add_constraints method.</span>
+<span class="c1"># The optional &#39;flow&#39; argument is used to explicitly identify which synthesis</span>
+<span class="c1"># flow the constraints are intended for (the default is to infer supported</span>
+<span class="c1"># flows from the file extension).</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="s1">&#39;max_hold.xdc&#39;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="s1">&#39;vivado&#39;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="s1">&#39;max_hold.ucf&#39;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="s1">&#39;ise&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The project is now fully configured and can be synthesised, simulated or the
+unit test suite can be executed to check that the requirements are met:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate the project interactively by presenting the simulator GUI:</span>
+<span class="n">project</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+    <span class="n">library</span><span class="o">=</span><span class="s1">&#39;lib_tb_max_hold&#39;</span><span class="p">,</span>
+    <span class="n">entity</span><span class="o">=</span><span class="s1">&#39;tb_max_hold&#39;</span><span class="p">,</span>
+    <span class="n">gui</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">tool_name</span><span class="o">=</span><span class="s1">&#39;modelsim&#39;</span>
+<span class="p">)</span>
+<span class="c1"># Run the automated unit tests on the project (console simulation):</span>
+<span class="n">project</span><span class="o">.</span><span class="n">run_tests</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="s1">&#39;isim&#39;</span><span class="p">)</span>
+<span class="c1"># Synthesise the project:</span>
+<span class="n">project</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span>
+    <span class="n">library</span><span class="o">=</span><span class="s1">&#39;lib_max_hold&#39;</span><span class="p">,</span>
+    <span class="n">entity</span><span class="o">=</span><span class="s1">&#39;max_hold&#39;</span><span class="p">,</span>
+    <span class="n">tool_name</span><span class="o">=</span><span class="s1">&#39;vivado&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively the ChipTools command line can be launched on the project to
+enable the user to run project operations interactively:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Launch the ChipTools command line with the project we just configured:</span>
+<span class="kn">from</span> <span class="nn">chiptools.core.cli</span> <span class="kn">import</span> <span class="n">CommandLine</span>
+<span class="n">CommandLine</span><span class="p">(</span><span class="n">project</span><span class="p">)</span><span class="o">.</span><span class="n">cmdloop</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="project-xml-file">
+<h3>Project (XML) File<a class="headerlink" href="#project-xml-file" title="Permalink to this headline"></a></h3>
+<p>The Project configuration can also be captured as an XML file, which provides
+an alternative method of maintaining the project configuration.</p>
+<p>The example project file <strong>max_hold.xml</strong> provides the same configuration as
+<strong>max_hold_project.py</strong>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;project&gt;</span>
+    <span class="nt">&lt;config</span> <span class="na">simulation_directory=</span><span class="s">&#39;simulation&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;config</span> <span class="na">synthesis_directory=</span><span class="s">&#39;synthesis&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;config</span> <span class="na">simulator=</span><span class="s">&#39;ghdl&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;config</span> <span class="na">synthesiser=</span><span class="s">&#39;vivado&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;config</span> <span class="na">part=</span><span class="s">&#39;xc7a100tcsg324-1&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;unittest</span> <span class="na">path=</span><span class="s">&#39;max_hold_tests.py&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;unittest</span> <span class="na">path=</span><span class="s">&#39;basic_unit_test.py&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;constraints</span> <span class="na">path=</span><span class="s">&#39;max_hold.ucf&#39;</span> <span class="na">flow=</span><span class="s">&#39;ise&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;constraints</span> <span class="na">path=</span><span class="s">&#39;max_hold.xdc&#39;</span> <span class="na">flow=</span><span class="s">&#39;vivado&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;generic</span> <span class="na">data_width=</span><span class="s">&#39;3&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;library</span> <span class="na">name=</span><span class="s">&#39;lib_max_hold&#39;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;file</span> <span class="na">path=</span><span class="s">&#39;max_hold.vhd&#39;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;file</span> <span class="na">path=</span><span class="s">&#39;pkg_max_hold.vhd&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/library&gt;</span>
+    <span class="nt">&lt;library</span> <span class="na">name=</span><span class="s">&#39;lib_tb_max_hold&#39;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;file</span>
+            <span class="na">path=</span><span class="s">&#39;tb_max_hold.vhd&#39;</span>
+            <span class="na">synthesise=</span><span class="s">&#39;false&#39;</span>
+        <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/library&gt;</span>
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+<p>The project XML file can be loaded in the ChipTools command line interface
+using the <strong>load_project</strong> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ chiptools
+<span class="o">(</span>cmd<span class="o">)</span> load_project max_hold.xml
+</pre></div>
+</div>
+<p>…or in a Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chiptools.core.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+<span class="c1"># Create a new Project</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+<span class="c1"># Load a pre-existing project file</span>
+<span class="n">project</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="s1">&#39;max_hold.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="simulation-and-test">
+<h2>Simulation and Test<a class="headerlink" href="#simulation-and-test" title="Permalink to this headline"></a></h2>
+<p>To test the Max Hold component an accompanying testbench, <em>tb_max_hold.vhd</em>
+(VHDL) or <em>tb_max_hold.sv</em> (SystemVerilog), is used to feed the component data
+from a stimulus input text file and record the output values in an output text
+file. By using stimulus input files and output files we gain the freedom to use
+the language of our choice to generate stimulus and check results.</p>
+<p>A simple stimulus file format is used by the testbench that allows a data write
+or a reset to be issued to the unit under test:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 68%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td colspan="2"><p>Stimulus File Format</p></td>
+</tr>
+<tr class="row-even"><td><p>Reset (1-bit) (Binary)</p></td>
+<td><p>Data (N-bit) (Binary)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reset (1-bit) (Binary)</p></td>
+<td><p>Data (N-bit) (Binary)</p></td>
+</tr>
+<tr class="row-even"><td colspan="2"><p>… Repeated</p></td>
+</tr>
+</tbody>
+</table>
+<p>The width of the binary data field must match the data width on the testbench
+generic. On each clock cycle a single line should be read from the stimulus
+file and the supplied values sent to the input of the Max Hold component.</p>
+<p>We will use Python to create stimulus files in this format for the testbench.</p>
+<section id="unit-tests">
+<h3>Unit Tests<a class="headerlink" href="#unit-tests" title="Permalink to this headline"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following example can be found in <strong>examples/max_hold/basic_unit_test.py</strong></p>
+</div>
+<p>We can use Python to define tests for the Max Hold component by first importing
+the <strong>ChipToolsTest</strong> class from <strong>chiptools.testing.testloader</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chiptools.testing.testloader</span> <span class="kn">import</span> <span class="n">ChipToolsTest</span>
+</pre></div>
+</div>
+<p>The <strong>ChipToolsTest</strong> class provides a wrapper around Python’s Unittest
+<strong>TestCase</strong> class that will manage simulation execution behind the scenes
+while our test cases are executed.</p>
+<p>First off, create a ChipToolsTest class and define some basic information about
+the testbench:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MaxHoldsTestBase</span><span class="p">(</span><span class="n">ChipToolsTest</span><span class="p">):</span>
+    <span class="c1"># Specify the duration your test should run for in seconds.</span>
+    <span class="c1"># If the test should run until the testbench aborts itself use 0.</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Testbench generics are defined in this dictionary.</span>
+    <span class="c1"># In this example we set the &#39;width&#39; generic to 32, it can be overridden</span>
+    <span class="c1"># by your tests to check different configurations.</span>
+    <span class="n">generics</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data_width&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">}</span>
+    <span class="c1"># Specify the entity that this Test should target</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="s1">&#39;tb_max_hold&#39;</span>
+    <span class="c1"># Specify the library that this Test should target</span>
+    <span class="n">library</span> <span class="o">=</span> <span class="s1">&#39;lib_tb_max_hold&#39;</span>
+</pre></div>
+</div>
+<p>These attributes provide the basic information required by ChipTools to execute
+the testbench.</p>
+<p>Tests are executed using the following sequence when using the Python Unittest
+framework:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Execute the unit test class <strong>setUp</strong> function if defined.</p></li>
+<li><p>Execute the test case (a test case is any class method with a ‘test prefix’).</p></li>
+<li><p>Execute the unit test class <strong>tearDown</strong> function if defined.</p></li>
+</ol>
+</div></blockquote>
+<p>If the unit test class provides multiple testcases they can be executed
+individually or as a batch in ChipTools. The sequence above is executed for
+each individual test case.</p>
+<p>The <strong>setUp</strong> function executes before each test and can be used to prepare any
+inputs that do not change for each test. In this example we will simply use the
+setUp function to prepare the test environment by defining paths to the input
+and output files to be used by the testbench:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Place any code that is required to prepare simulator inputs in this</span>
+<span class="sd">    method.&quot;&quot;&quot;</span>
+    <span class="c1"># Set the paths for the input and output files using the</span>
+    <span class="c1"># &#39;simulation_root&#39; attribute as the working directory</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_root</span><span class="p">,</span> <span class="s1">&#39;input.txt&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_root</span><span class="p">,</span> <span class="s1">&#39;output.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, the <strong>tearDown</strong> function executes at the end of each test, so we can
+use this to remove any files that were generated during the test:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Insert any cleanup code to remove generated files in this method.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To execute our tests we will create a function that performs the following
+operations:</p>
+<ol class="arabic simple">
+<li><p>Create an array of N random integers</p></li>
+<li><p>Write the array of integers to the input stimulus file</p></li>
+<li><p>Execute the simulation and check that the return code is 0</p></li>
+<li><p>Read the output data generated by the simulation</p></li>
+<li><p>Compare the output data to our Python model of the Max Hold function.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_random_data_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+
+    <span class="c1"># Generate a list of n random integers</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+    <span class="c1"># Write the values to the testbench input file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s1">&#39;0&#39;</span><span class="p">,</span>  <span class="c1"># Reset status (0)</span>
+                    <span class="nb">bin</span><span class="p">(</span><span class="n">value</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>  <span class="c1"># write 32bit data</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Run the simulation</span>
+    <span class="n">return_code</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">return_code</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Read the simulation output</span>
+    <span class="n">output_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">valueIdx</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="c1"># testbench response</span>
+        <span class="n">output_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># Binary to integer</span>
+
+    <span class="c1"># Use Python to work out the expected result from the original imput</span>
+    <span class="n">max_hold</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Compare the expected result to what the Testbench returned:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertListEqual</span><span class="p">(</span><span class="n">output_values</span><span class="p">,</span> <span class="n">max_hold</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can add extra functions to our class using the ‘test’ prefix to execute
+<strong>run_random_data_test</strong> with different parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_10_random_integers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the Max hold component using 10 random integers.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">run_random_data_test</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_100_random_integers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the Max hold component using 100 random integers.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">run_random_data_test</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example is saved as <strong>basic_unit_test.py</strong> in the Max Hold
+example folder. We can run this test by invoking ChipTools in the example
+folder, loading the <strong>max_hold_basic_test.xml</strong> project and then adding and running the
+testsuite (simulator output has been hidden for presentation purposes):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ chiptools
+<span class="o">(</span>Cmd<span class="o">)</span> load_project max_hold_basic_test.xml
+<span class="o">(</span>Cmd<span class="o">)</span> run_tests
+ok test_100_random_integers <span class="o">(</span>chiptools_tests_basic_unit_test.MaxHoldsTestBase<span class="o">)</span>
+ok test_10_random_integers <span class="o">(</span>chiptools_tests_basic_unit_test.MaxHoldsTestBase<span class="o">)</span>
+Time Elapsed: <span class="m">0</span>:00:11.967197
+<span class="o">(</span>Cmd<span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="unit-test-report">
+<h3>Unit Test Report<a class="headerlink" href="#unit-test-report" title="Permalink to this headline"></a></h3>
+<p>When ChipTools has finished running a test suite invoked with the <strong>run_tests</strong>
+command it will place a report called <strong>report.html</strong> in the simulation
+directory. The unit test report indicates which tests passed or failed and
+provides debug information on tests that have failed. A sample report for the
+full Max Hold unit test suite is given below:</p>
+<img alt="_images/max_hold_results.png" src="_images/max_hold_results.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The test report is overwritten each time the unit test suite is executed, so backup old reports if you want to keep them.</p>
+</div>
+</section>
+<section id="advanced-unit-tests">
+<h3>Advanced Unit Tests<a class="headerlink" href="#advanced-unit-tests" title="Permalink to this headline"></a></h3>
+<p>The previous example showed how a simple unit test can be created to test the
+Max Hold component with random stimulus. This approach can be extended to
+produce a large set of tests to thoroughly test the component and provide
+detailed information about how it is performing. The <strong>max_hold_tests.py</strong>
+file in the Max Hold example folder implements the following tests:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 9%" />
+<col style="width: 55%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Test Name</p></th>
+<th class="head"><p>Data Width</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>max_hold_constant_data_0</p></td>
+<td><p>32</p></td>
+<td><p>Continuous data test using zero</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_constant_data_1</p></td>
+<td><p>32</p></td>
+<td><p>Continuous data test using 1</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_constant_data_100</p></td>
+<td><p>32</p></td>
+<td><p>Continuous data test using 100</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_impulse_test</p></td>
+<td><p>32</p></td>
+<td><p>The first data point is nonzero followed by constant zero data.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_ramp_down_test</p></td>
+<td><p>32</p></td>
+<td><p>Successive random length sequences of reducing values.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_ramp_up_test</p></td>
+<td><p>32</p></td>
+<td><p>Successive random length sequences of increasing values.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_random_single_sequence</p></td>
+<td><p>32</p></td>
+<td><p>Single sequence of 200 random values.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_random_tests_100bit</p></td>
+<td><p>100</p></td>
+<td><p>Successive random length sequences of 100bit random values.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_random_tests_128bit</p></td>
+<td><p>128</p></td>
+<td><p>Successive random length sequences of 128bit random values.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_random_tests_1bit</p></td>
+<td><p>1</p></td>
+<td><p>Successive random length sequences of 1bit random values.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_random_tests_32bit</p></td>
+<td><p>32</p></td>
+<td><p>Successive random length sequences of 32bit random values.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_random_tests_8bit</p></td>
+<td><p>8</p></td>
+<td><p>Successive random length sequences of 8bit random values.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_sinusoid_single_sequence</p></td>
+<td><p>12</p></td>
+<td><p>Single sinusoidal sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_hold_sinusoid_test</p></td>
+<td><p>12</p></td>
+<td><p>Multiple sinusoidal sequences of random length.</p></td>
+</tr>
+<tr class="row-even"><td><p>max_hold_square_test</p></td>
+<td><p>8</p></td>
+<td><p>Multiple toggling sequences of random length.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If <strong>Matplotlib</strong> is installed the Unit Test will also
+create an output image for each test in the simulation folder to show a graph
+of the input data with the model data and the Max Hold component output data.
+For example, the max_hold_sinusoid_single_sequence test produces the following
+output:</p>
+<img alt="_images/max_hold_sinusoid_single_sequence.png" src="_images/max_hold_sinusoid_single_sequence.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For this example, graph generation requires <a class="reference external" href="https://matplotlib.org/">Matplotlib</a> (optionally with <a class="reference external" href="http://seaborn.pydata.org/">Seaborn</a>)</p>
+</div>
+<p>Plots such as these provide a powerful diagnostic tool when debugging
+components or analysing performance.</p>
+</section>
+</section>
+<section id="synthesis-and-build">
+<h2>Synthesis and Build<a class="headerlink" href="#synthesis-and-build" title="Permalink to this headline"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <strong>Max Hold</strong> example is provided to demonstrate the ChipTools
+build process, do not attempt to use the bitfiles generated from
+this project on an FPGA as the IO constraints are not fully defined
+and have not been checked. Using the bitfiles generated from this
+project may cause damage to your device.</p>
+</div>
+<p>The Max Hold example includes the files necessary for it to be built using the
+Xilinx ISE, Vivado and Quartus synthesis flows; the project files provided
+in the example are configured to use the Vivado synthesis flow by default.</p>
+<section id="building-with-the-command-line-interface">
+<h3>Building with the Command Line Interface<a class="headerlink" href="#building-with-the-command-line-interface" title="Permalink to this headline"></a></h3>
+<p>To build the design using the ChipTools command line, first open a terminal in
+the Max Hold example directory and invoke the ChipTools command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ chiptools
+-------------------------------------------------------------------------------
+ChipTools <span class="o">(</span>version: <span class="m">0</span>.1.50<span class="o">)</span>
+
+Type <span class="s1">&#39;help&#39;</span> to get started.
+Type <span class="s1">&#39;load_project &lt;path&gt;&#39;</span> to load a project.
+The current directory contains the following projects:
+        <span class="m">1</span>: max_hold.xml
+        <span class="m">2</span>: max_hold_basic_test.xml
+-------------------------------------------------------------------------------
+<span class="o">(</span>cmd<span class="o">)</span>
+</pre></div>
+</div>
+<p>Two projects should be listed by ChipTools in the current directory, load the
+<strong>max_hold.xml</strong> project by using the <strong>load_project</strong> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>Cmd<span class="o">)</span> load_project max_hold.xml
+<span class="o">[</span>INFO<span class="o">]</span> Loading max_hold.xml <span class="k">in</span> current working directory: max_hold
+<span class="o">[</span>INFO<span class="o">]</span> Loading project: max_hold.xml
+<span class="o">[</span>INFO<span class="o">]</span> Parsing: max_hold.xml <span class="nv">synthesis</span><span class="o">=</span>None
+<span class="o">(</span>Cmd<span class="o">)</span>
+</pre></div>
+</div>
+<p>We can check which files will be sent to the synthesis tool by using the
+<strong>show_synthesis_fileset</strong> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>Cmd<span class="o">)</span> show_synthesis_fileset
+<span class="o">[</span>INFO<span class="o">]</span> Library: lib_max_hold
+<span class="o">[</span>INFO<span class="o">]</span>          max_hold.vhd
+<span class="o">[</span>INFO<span class="o">]</span>          pkg_max_hold.vhd
+<span class="o">[</span>INFO<span class="o">]</span> Library: lib_tb_max_hold
+</pre></div>
+</div>
+<p>Note that the Max Hold testbench <strong>tb_max_hold.vhd</strong> is excluded from
+synthesis, this is due to the <em>synthesis=’false’</em> attribute on the testbench
+file tag in the <strong>max_hold.xml</strong> project file.</p>
+<p>An FPGA build can be initiated by using the <strong>synthesise</strong> command, which
+accepts the following arguments:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>target</p></td>
+<td><p>The library and entity to synthesise, using the format <em>library.entity</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>flow</p></td>
+<td><p>The synthesis flow to use. The default value is taken from the project config.</p></td>
+</tr>
+<tr class="row-even"><td><p>part</p></td>
+<td><p>The fpga part to use. The default value is taken from the project config.</p></td>
+</tr>
+</tbody>
+</table>
+<p>To build the Max Hold project using the default synthesis flow (Vivado) for the
+default FPGA part (xc7a100tcsg324-1) simply issue the synthesise command
+with the target library and entity:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>Cmd<span class="o">)</span> synthesise lib_max_hold.max_hold
+</pre></div>
+</div>
+<p>To build the Max Hold project using <em>Altera Quartus</em>, issue the synthesise
+command with the flow set to ‘quartus’ and the part set to ‘EP3C40F484C6’.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>Cmd<span class="o">)</span> synthesise lib_max_hold.max_hold quartus EP3C40F484C6
+</pre></div>
+</div>
+<p>To build the Max Hold project using <em>Xilinx ISE</em>, issue the synthesise
+command with the flow set to ‘ise’ and the part set to ‘xc6slx9-csg324-2’.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>Cmd<span class="o">)</span> synthesise lib_max_hold.max_hold ise xc6slx9-csg324-2
+</pre></div>
+</div>
+<p>While the build is running any messages generated by the synthesis tool will
+be displayed in the ChipTools command line. When the build has completed
+ChipTools will store any build outputs in a timestamped archive in the
+synthesis output directory specified in the project settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>INFO<span class="o">]</span> Build successful, checking reports <span class="k">for</span> unacceptable messages...
+<span class="o">[</span>INFO<span class="o">]</span> Synthesis completed, saving output to archive...
+<span class="o">[</span>INFO<span class="o">]</span> Added: max_hold_synth_151215_134719
+<span class="o">[</span>INFO<span class="o">]</span> ...done
+<span class="o">(</span>cmd<span class="o">)</span>
+</pre></div>
+</div>
+<p>If there is an error during build, ChipTools will store any outputs generated
+by the synthesis tool in a timestamped archive with an ‘ERROR’ name prefix.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="project_format.html" class="btn btn-neutral float-right" title="Project Format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

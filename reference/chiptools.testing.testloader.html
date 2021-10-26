@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.testing.testloader module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.wrappers package" href="chiptools.wrappers.html" />
+    <link rel="prev" title="chiptools.testing.custom_runners.HTMLTestRunner module" href="chiptools.testing.custom_runners.HTMLTestRunner.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.testing.html">chiptools.testing package</a> &raquo;</li>
+      <li>chiptools.testing.testloader module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.testing.testloader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.testing.testloader">
+<span id="chiptools-testing-testloader-module"></span><h1>chiptools.testing.testloader module<a class="headerlink" href="#module-chiptools.testing.testloader" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.testing.testloader.</span></span><span class="sig-name descname"><span class="pre">ChipToolsTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/testloader.html#ChipToolsTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>The <em>ChipToolsTest</em> class is derived from unittest.TestCase and provides a
+base class for your unit tests to allow them to make full use of ChipTools.</p>
+<p>When creating a unit test class you should override the <em>duration</em>,
+<em>generics</em>, <em>library</em> and <em>entity</em> attributes to define the test
+configuration for the simulator. Individual tests can redefine these
+attributes at run-time to provide a powerful testing mechanism for covering
+different configurations.</p>
+<p>A brief example of a basic unit test case is given below:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chiptools.testing.testloader</span> <span class="kn">import</span> <span class="n">ChipToolsTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyBasicTestCase</span><span class="p">(</span><span class="n">ChipToolsTest</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Run forever</span>
+<span class="gp">... </span>    <span class="n">generics</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data_width&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">}</span>  <span class="c1"># Set data-width to 3</span>
+<span class="gp">... </span>    <span class="n">library</span> <span class="o">=</span> <span class="s1">&#39;lib_tb_max_hold&#39;</span>  <span class="c1"># Testbench library</span>
+<span class="gp">... </span>    <span class="n">entity</span> <span class="o">=</span> <span class="s1">&#39;tb_max_hold&#39;</span>  <span class="c1"># Entity to simulate</span>
+<span class="gp">... </span>    <span class="c1"># Defining a path to a project allows us to run this test case</span>
+<span class="gp">... </span>    <span class="c1"># with Nosetests etc. as well as through ChipTools.</span>
+<span class="gp">... </span>    <span class="n">project</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;max_hold.xml&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># The setUp method is called at the beginning of each test:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Do individual test set-up here</span>
+<span class="gp">... </span>        <span class="k">pass</span>
+<span class="gp">... </span>    <span class="c1"># Methods starting with &#39;test_&#39; are considered test cases:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">test_max_hold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Run the simulator</span>
+<span class="gp">... </span>        <span class="n">return_code</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">return_code</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Check error code</span>
+<span class="gp">... </span>        <span class="c1"># More advanced checks could search stdout/stderr for</span>
+<span class="gp">... </span>        <span class="c1"># assertions, or read output files and compare the</span>
+<span class="gp">... </span>        <span class="c1"># response to a Python model.</span>
+<span class="gp">... </span>        <span class="k">pass</span>
+<span class="gp">... </span>    <span class="c1"># The tearDown method is called at the end of each test:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Clean up after your tests here</span>
+<span class="gp">... </span>        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>For a complete example refer to the Max Hold example in the examples
+folder.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.duration">
+<span class="sig-name descname"><span class="pre">duration</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.duration" title="Permalink to this definition"></a></dt>
+<dd><p>The duration attribute defines the time in seconds that the simulation
+should run for if the chosen simulator supports this as an argument during
+execution.  If a time of 0 is specified the simulation will run until it is
+terminated automatically by the testbench.  e.g. To fix simulation time at
+10ms set duration to 10e-3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.entity">
+<span class="sig-name descname"><span class="pre">entity</span></span><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.entity" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>entity</em> attribute defines the name of the top level component to be
+simulated when running this test. The entity should name a valid design
+unit that has been compiled as part of the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.generics">
+<span class="sig-name descname"><span class="pre">generics</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">{}</span></em><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.generics" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>generics</em> attribute is a dictionary of parameter/generic names and
+associated values.  These key, value pairs will be passed to the simulator
+to override top-level generics or parameters to customise the test
+environment:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generics</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;data_width&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;invert_bits&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;test_string&#39;</span><span class="p">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.33</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The <em>generics</em> attribute can also be used to dynamically specify parameters
+for individual tests to check different configurations in your testbench:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test_32_bit_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">generics</span><span class="p">[</span><span class="s1">&#39;data_width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test_16_bit_bus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">generics</span><span class="p">[</span><span class="s1">&#39;data_width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.get_environment">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/testloader.html#ChipToolsTest.get_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.get_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Return the simulation environment items from the supplied project
+instance as a tuple of (simulator, simulation_root, libraries).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.library">
+<span class="sig-name descname"><span class="pre">library</span></span><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.library" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>library</em> attribute defines the name of the library in which the top
+level component to be simulated exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.load_environment">
+<span class="sig-name descname"><span class="pre">load_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/testloader.html#ChipToolsTest.load_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.load_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise the TestCase simulation environment using the supplied
+Project reference so that the individual tests implemented in this
+TestCase are able to compile and simulate the design.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.project">
+<span class="sig-name descname"><span class="pre">project</span></span><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.project" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>project</em> attribute is optional, but if used it should supply an
+absolute path to a valid ChipTools Project XML file that defines the
+libraries and source files that make up the design that this test case
+belongs to.  This attribute is required when the test case is executed
+directly by an external test runner instead of ChipTools, as it will be
+used to prepare the simulation environment for the external test runner.</p>
+<p>The following provides a convenient way of setting the project path so that
+your test can be run from any directory:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chiptools.testing.testloader</span> <span class="kn">import</span> <span class="n">ChipToolsTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyUnitTest</span><span class="p">(</span><span class="n">ChipToolsTest</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># Now use os.path.join to build a relative path to the project.</span>
+<span class="gp">... </span>    <span class="n">project</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;my_project.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.setUpClass">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">setUpClass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/testloader.html#ChipToolsTest.setUpClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.setUpClass" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>setUpClass</em> method prepares the ChipTools simulation environment
+if it has not already been loaded.</p>
+<p>If this test case is loaded via the ChipTools Project API it will be
+initialised via a call to the <em>load_environment</em> method, which pulls
+the simulation environment information from the parent Project
+instance.</p>
+<p>If this test case is loaded via an external tool such as Nosetests the
+setUpClass method will attempt to load the project file pointed to by
+the project path stored in the <em>project</em> attribute. When you create
+your test case you can specify this attribute in your test class to
+allow an external runner like Nosetests to call your test cases.</p>
+<p>If the environment was not already initialised by ChipTools and a valid
+project file path is not stored in the <em>project</em> attribute, this method
+will raise an EnvironmentError and cause your test to fail.</p>
+<p>This method overloads the unittest.TestCase.setUpClass classmethod,
+which is called once when a TestCase class is instanced.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/testing/testloader.html#ChipToolsTest.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Launch the simulation tool in console mode to execute the testbench.</p>
+<p>The simulation tool used and the arguments passed during simulation are
+defined by the test environment configured by the test case and the
+<em>Project</em> settings. When the simulation is complete this method will
+return a tuple of (<em>return_code</em>, <em>stdout</em>, <em>stderr</em>) which can be used
+to determine if the test was a success or failure. For example your
+testbench may use assertions to print messages during simulation, your
+Python TestCase could use regex to match success of failure criteria in
+the stdout string:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test_stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">return_code</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="c1"># Use an assertion to check for a negative result on a search</span>
+<span class="gp">... </span>    <span class="c1"># for &#39;Error:&#39; in the simulator stdout string.</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;.*Error:.*&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chiptools.testing.testloader.ChipToolsTest.simulation_root">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">simulation_root</span></span><a class="headerlink" href="#chiptools.testing.testloader.ChipToolsTest.simulation_root" title="Permalink to this definition"></a></dt>
+<dd><p>The <em>simulation_root</em> property is an absolute path to the directory
+where the simulator is invoked when simulating the testbench. Any
+inputs required by the testbench, such as stimulus files, should be
+placed in this directory by your TestCase. Similarly, any outputs
+produced by the testbench will be placed in this directory.</p>
+<p>For example, to build paths to a testbench input and output file you
+could do the following:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">tb_in</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_root</span><span class="p">,</span> <span class="s1">&#39;input.txt&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="bp">self</span><span class="o">.</span><span class="n">tb_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_root</span><span class="p">,</span> <span class="s1">&#39;output.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.testing.custom_runners.HTMLTestRunner.html" class="btn btn-neutral float-left" title="chiptools.testing.custom_runners.HTMLTestRunner module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.wrappers.html" class="btn btn-neutral float-right" title="chiptools.wrappers package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

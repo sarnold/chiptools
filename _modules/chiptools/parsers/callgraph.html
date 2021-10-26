@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.parsers.callgraph &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.parsers.callgraph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.parsers.callgraph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.parsers.vhdl</span> <span class="kn">import</span> <span class="n">ParsedVhdlFile</span><span class="p">,</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="CallGraph"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph">[docs]</a><span class="k">class</span> <span class="nc">CallGraph</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">get_parsed_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CallGraph.get_callchain"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.get_callchain">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_callchain</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">modified_nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a topologically sorted list of the nodes dependent on the</span>
+<span class="sd">        given node.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sorted_nodes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># The graph contains cycles</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">callchain</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">callchain</span> <span class="o">+=</span> <span class="n">modified_nodes</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sorted_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+                <span class="c1"># This node has no incoming edges and so has no dependencies</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">caller</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">callchain</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">callchain</span><span class="p">:</span>
+                    <span class="n">callchain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">callchain</span></div>
+
+<div class="viewcode-block" id="CallGraph.get_parsed_file"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.get_parsed_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_parsed_file</span><span class="p">(</span><span class="n">sourcefile</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ParsedVhdlFile</span><span class="p">(</span><span class="n">sourcefile</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CallGraph.get_definition_map"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.get_definition_map">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_definition_map</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a dictionary mapping design unit instances to a set of files</span>
+<span class="sd">        that provide an implementation for the design unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">definition_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">file_object</span><span class="o">.</span><span class="n">definitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">definition_map</span><span class="p">:</span>
+                    <span class="n">definition_map</span><span class="p">[</span><span class="n">definition</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">file_object</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">definition_map</span><span class="p">[</span><span class="n">definition</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">file_object</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">definition_map</span></div>
+
+<div class="viewcode-block" id="CallGraph.get_reference_map"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.get_reference_map">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_reference_map</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a dictionary mapping design unit instances to a set of files</span>
+<span class="sd">        that reference them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reference_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">reference</span> <span class="ow">in</span> <span class="n">file_object</span><span class="o">.</span><span class="n">references</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">reference</span> <span class="ow">in</span> <span class="n">reference_map</span><span class="p">:</span>
+                    <span class="n">reference_map</span><span class="p">[</span><span class="n">reference</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_object</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">reference_map</span><span class="p">[</span><span class="n">reference</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_object</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">reference_map</span></div>
+
+<div class="viewcode-block" id="CallGraph.get_design_hierarchy"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.get_design_hierarchy">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_design_hierarchy</span><span class="p">(</span><span class="n">definition_map</span><span class="p">,</span> <span class="n">reference_map</span><span class="p">):</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">reference_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># List of files that implement this dependency, note that if there</span>
+            <span class="c1"># are more than one files implementing this dependency we are in</span>
+            <span class="c1"># danger of creating a link to the wrong child, we need to</span>
+            <span class="c1"># determine exactly which child is referred to by this parent file.</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="n">definition_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="c1"># List of files that require this dependency</span>
+            <span class="n">parents</span> <span class="o">=</span> <span class="n">reference_map</span><span class="p">[</span><span class="n">dependency</span><span class="p">]</span>
+            <span class="c1"># Generate a graph of the design hierarchy.</span>
+            <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+                <span class="c1"># If the parent is contained in the childen then it implements</span>
+                <span class="c1"># its own dependency and an edge should not be added.</span>
+                <span class="k">if</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="c1"># Initialise parent edge set</span>
+                <span class="k">if</span> <span class="n">parent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                    <span class="n">dependency</span><span class="p">,</span> <span class="n">Component</span>
+                <span class="p">):</span>
+                    <span class="c1"># If no files implement this dependency then it is</span>
+                    <span class="c1"># unresolved, it could be the case that this dependency is</span>
+                    <span class="c1"># a primitive. It will be added to the graph as a stub.</span>
+                    <span class="n">graph</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Create an edge from the parent node to the child nodes.</span>
+                    <span class="n">graph</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span></div>
+
+<div class="viewcode-block" id="CallGraph.write_graph_png"><a class="viewcode-back" href="../../../reference/chiptools.parsers.callgraph.html#chiptools.parsers.callgraph.CallGraph.write_graph_png">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">write_graph_png</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">show_unresolved</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">highlight_nodes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(),</span>  <span class="c1"># empty list bad</span>
+    <span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;out.dot&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;digraph project {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;node [fontname = &quot;helvetica&quot;, fontsize = &quot;10&quot;];</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ParsedVhdlFile</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">highlight_nodes</span><span class="p">:</span>
+                        <span class="n">colour</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="mf">0.6</span><span class="p">,</span>
+                            <span class="p">(</span>
+                                <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlight_nodes</span><span class="p">))</span>
+                                <span class="o">*</span> <span class="n">highlight_nodes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                            <span class="p">),</span>
+                            <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">name</span>
+                            <span class="o">+</span> <span class="s1">&#39; [shape=box,style=filled,color=&quot;&#39;</span>
+                            <span class="o">+</span> <span class="n">colour</span>
+                            <span class="o">+</span> <span class="s1">&#39;&quot;];</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">name</span>
+                            <span class="o">+</span> <span class="s1">&#39; [shape=box,style=filled,color=&quot;1. 1. 1.&quot;];</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="p">)</span>
+                <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ParsedVhdlFile</span><span class="p">):</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> -&gt; </span><span class="si">{1}</span><span class="s1">;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">show_unresolved</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Component</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">name</span>
+                            <span class="o">+</span> <span class="s1">&#39; -&gt; &#39;</span>
+                            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="s1">&#39;[style=dotted]&#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;dot&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;-Tpng&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;output.png&#39;</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

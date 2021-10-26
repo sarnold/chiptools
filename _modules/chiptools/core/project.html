@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.project &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.core.project</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.core.project</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">File</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">Constraints</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">ProjectAttributes</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">UnitTestFile</span>
+<span class="kn">from</span> <span class="nn">chiptools.core.preprocessor</span> <span class="kn">import</span> <span class="n">Preprocessor</span>
+<span class="kn">from</span> <span class="nn">chiptools.core</span> <span class="kn">import</span> <span class="n">reporter</span>
+<span class="kn">from</span> <span class="nn">chiptools.core.cache</span> <span class="kn">import</span> <span class="n">FileCache</span>
+<span class="kn">from</span> <span class="nn">chiptools.parsers</span> <span class="kn">import</span> <span class="n">options</span>
+<span class="kn">from</span> <span class="nn">chiptools.parsers</span> <span class="kn">import</span> <span class="n">xml_project</span>
+<span class="kn">from</span> <span class="nn">chiptools.parsers</span> <span class="kn">import</span> <span class="n">callgraph</span>
+
+<span class="c1"># from chiptools.testing import testloader</span>
+<span class="kn">from</span> <span class="nn">chiptools.testing.custom_runners</span> <span class="kn">import</span> <span class="n">HTMLTestRunner</span>
+<span class="kn">from</span> <span class="nn">chiptools.wrappers.wrapper</span> <span class="kn">import</span> <span class="n">ToolWrapper</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.load_tests">[docs]</a><span class="k">def</span> <span class="nf">load_tests</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">simulation_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Import the test shim python module given by path and return a</span>
+<span class="sd">    collection of Unittest classes for each of the tests found in the shim&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;File not found, aborting test package load: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loading test package: &#39;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">test_loader</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span>
+        <span class="n">module_loader</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">machinery</span><span class="o">.</span><span class="n">SourceFileLoader</span><span class="p">(</span>
+            <span class="s1">&#39;chiptools_tests_&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span>
+        <span class="p">)</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">test_loader</span><span class="o">.</span><span class="n">loadTestsFromModule</span><span class="p">(</span><span class="n">module_loader</span><span class="o">.</span><span class="n">load_module</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s1">&#39;The module could not be imported due to the &#39;</span>
+            <span class="o">+</span> <span class="s1">&#39; following error:&#39;</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">suite</span></div>
+
+
+<div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialise</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Project.initialise"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.initialise">[docs]</a>    <span class="k">def</span> <span class="nf">initialise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">Options</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_wrapper</span> <span class="o">=</span> <span class="n">ToolWrapper</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_user_tool_paths</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">FileCache</span><span class="p">(</span><span class="s1">&#39;.chiptools&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generics</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Project.write_designtree_png"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.write_designtree_png">[docs]</a>    <span class="k">def</span> <span class="nf">write_designtree_png</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+
+        <span class="c1"># Get root object</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_files</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">root</span><span class="p">:</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">file_object</span>
+                <span class="c1"># Continue with drawing the graph</span>
+                <span class="n">cg</span> <span class="o">=</span> <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_files</span><span class="p">())</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">parsed_files</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">root</span><span class="p">)]</span>
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">get_design_hierarchy</span><span class="p">(</span>
+                    <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">get_definition_map</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">parsed_files</span><span class="p">),</span>
+                    <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">get_reference_map</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">parsed_files</span><span class="p">),</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Get changed files:</span>
+                <span class="n">changed_files</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_files</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">is_file_changed</span><span class="p">(</span>
+                        <span class="n">file_object</span><span class="p">,</span> <span class="s1">&#39;modelsim&#39;</span>
+                    <span class="p">):</span>  <span class="c1"># TODO</span>
+                        <span class="n">changed_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">parsed_files</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+                <span class="c1"># Using the list of changed files, obtain a new list of files</span>
+                <span class="c1"># that must be recompiled by inspecting the callgraph.</span>
+                <span class="n">callchain</span> <span class="o">=</span> <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">get_callchain</span><span class="p">(</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">root</span><span class="p">),</span> <span class="n">changed_files</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Draw the callgraph</span>
+                <span class="n">callgraph</span><span class="o">.</span><span class="n">CallGraph</span><span class="o">.</span><span class="n">write_graph_png</span><span class="p">(</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">root</span><span class="p">),</span>
+                    <span class="n">show_unresolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">highlight_nodes</span><span class="o">=</span><span class="n">callchain</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Project.load_project"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.load_project">[docs]</a>    <span class="k">def</span> <span class="nf">load_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialise this project instance using the project file supplied</span>
+<span class="sd">        by path.&quot;&quot;&quot;</span>
+        <span class="n">xml_project</span><span class="o">.</span><span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.set_cache_path"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.set_cache_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="p">):</span>
+        <span class="c1"># Update the FileCache to point at the new path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">FileCache</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.add_file"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_file">[docs]</a>    <span class="k">def</span> <span class="nf">add_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add the given file to the project.&quot;&quot;&quot;</span>
+        <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_LIBRARY</span><span class="p">]</span> <span class="o">=</span> <span class="n">library</span>
+        <span class="c1"># Process the attributes to ensure they conform to our expectations</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span><span class="n">attribs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="c1"># Default synthesis to true</span>
+        <span class="n">file_object</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">**</span><span class="n">attribs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">library</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span><span class="p">[</span><span class="n">library</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">file_object</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span><span class="p">[</span><span class="n">library</span><span class="p">]:</span>
+            <span class="c1"># Both a dictionary and list of files are maintained so that</span>
+            <span class="c1"># compilation order can be preserved</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span><span class="p">[</span><span class="n">library</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_object</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.add_files"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_files">[docs]</a>    <span class="k">def</span> <span class="nf">add_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;*.*&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add all files in the given directory to the project. The optional</span>
+<span class="sd">        pattern can be used to filter which paths are added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project (add_all): invalid path: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.add_constraints"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add the given constraints file to the project.&quot;&quot;&quot;</span>
+        <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="c1"># Process the attributes to ensure they conform to our expectations</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span><span class="n">attribs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Constraints</span><span class="p">(</span><span class="o">**</span><span class="n">attribs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Project.add_unittest"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_unittest">[docs]</a>    <span class="k">def</span> <span class="nf">add_unittest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add the given TestSuite file to the project.&quot;&quot;&quot;</span>
+        <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="c1"># Process the attributes to ensure they conform to our expectations</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span><span class="n">attribs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">UnitTestFile</span><span class="p">(</span><span class="o">**</span><span class="n">attribs</span><span class="p">)</span>
+        <span class="c1"># Perform TestSuite loading on the supplied path</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]):</span>
+            <span class="c1"># Convert the testsuite path into an unpacked testsuite</span>
+            <span class="c1"># for each file object that has a link to a test suite.</span>
+            <span class="n">unpacked_testsuite</span> <span class="o">=</span> <span class="n">load_tests</span><span class="p">(</span>
+                <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="c1"># Modify the file object, replacing the testsuite path</span>
+            <span class="c1"># string with the testsuite object that we just</span>
+            <span class="c1"># unpacked.</span>
+            <span class="n">unit</span><span class="o">.</span><span class="n">testsuite</span> <span class="o">=</span> <span class="n">unpacked_testsuite</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.add_config"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_config">[docs]</a>    <span class="k">def</span> <span class="nf">add_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a configuration key, value mapping for the project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">get_processed_attribute</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Ignoring duplicate configuration attribute &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;found in project file, &#39;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39; set to &#39;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;but already defined as &#39;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Set project configuration &#39;&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;&#39; to &#39;&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Project.add_config_dict"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_config_dict">[docs]</a>    <span class="k">def</span> <span class="nf">add_config_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a configuration dictionary of key, value mappings for the project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_config</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.add_generic"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.add_generic">[docs]</a>    <span class="k">def</span> <span class="nf">add_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a generic key, value mapping for the project.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Project.get_fpga_part"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_fpga_part">[docs]</a>    <span class="k">def</span> <span class="nf">get_fpga_part</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the FPGA part to be used for synthesis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTH_PART</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_simulation_tool_name"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_simulation_tool_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_simulation_tool_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the name of the simulation tool to use for simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SIM_TOOL</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_synthesis_tool_name"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_synthesis_tool_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_synthesis_tool_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the name of the synthesis tool to use for synthesis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTH_TOOL</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_synthesis_directory"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_synthesis_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_synthesis_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the path to the synthesis directory where all synthesis outputs</span>
+<span class="sd">        will be stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTH_DIR</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Project.get_simulation_directory"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_simulation_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_simulation_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the path to the simulation directory where all simulation</span>
+<span class="sd">        outputs will be stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SIM_DIR</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Project.get_reporter"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_reporter">[docs]</a>    <span class="k">def</span> <span class="nf">get_reporter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return function pointer to a reporter function that is executed after a</span>
+<span class="sd">        synthesis run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reporter</span><span class="o">.</span><span class="n">get_reporter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_REPORTER</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_tool_arguments"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_tool_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">flow_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the optional tool arguments attached to this file for the given</span>
+<span class="sd">        tool_name and flow_name. If the tool or flow are not present in the</span>
+<span class="sd">        optional arguments then return an empty string. Multiple spaces in the</span>
+<span class="sd">        tool argument string are merged into a single space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="s1">&#39; +&#39;</span><span class="p">,</span>
+            <span class="s1">&#39; &#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;args_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">flow_name</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_all_tool_argument_keys"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_all_tool_argument_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_tool_argument_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all optional tool argument keys attached to this file for the</span>
+<span class="sd">        given tool_name. The list returned by this method can be used to</span>
+<span class="sd">        determine which tool arguments are available for the tool_name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;args_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool_name</span><span class="p">)),</span>
+                <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_libraries"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_libraries">[docs]</a>    <span class="k">def</span> <span class="nf">get_libraries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of *libname*, *[file_list]* where *libname* is a</span>
+<span class="sd">        string indicating a library name and *[file_list]* is a list of</span>
+<span class="sd">        *File* objects that have been added to the library.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span></div>
+
+<div class="viewcode-block" id="Project.get_generics"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_generics">[docs]</a>    <span class="k">def</span> <span class="nf">get_generics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of (generic : setting) where *generic* is the</span>
+<span class="sd">        string name of a HDL port generic and *setting* is the value to assign</span>
+<span class="sd">        to the port generic. The port value can be a string, integer or</span>
+<span class="sd">        boolean type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generics</span></div>
+
+<div class="viewcode-block" id="Project.get_constraints"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of *Constraint* objects that have been added to the</span>
+<span class="sd">        project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span></div>
+
+<div class="viewcode-block" id="Project.get_files"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of *File* objects that have been added to the *Project*.</span>
+<span class="sd">        The order in which the files appear in the list matches the order in</span>
+<span class="sd">        which they were added to the project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span></div>
+
+<div class="viewcode-block" id="Project.get_synthesis_fileset"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_synthesis_fileset">[docs]</a>    <span class="k">def</span> <span class="nf">get_synthesis_fileset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of {lib : [file_a, file_b]} where *lib* is a string</span>
+<span class="sd">        indicating the name of the library and *[file_a, file_b]* is a list of</span>
+<span class="sd">        *File* objects that has been filtered to contain only files that have</span>
+<span class="sd">        their *.synthesise* attribute set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">libName</span><span class="p">,</span> <span class="n">library</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">libName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">libName</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># Only include files that are registered for synthesis</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">libName</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">synthesise</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Project.get_available_simulators"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_available_simulators">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary of the Simulators available on this system.</span>
+<span class="sd">        Return a dictionary of tool_name : tool_instance where *tool_name* is</span>
+<span class="sd">        a string name and *tool_instance* is a Simulator instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_wrapper</span><span class="o">.</span><span class="n">simulators</span></div>
+
+<div class="viewcode-block" id="Project.get_available_synthesisers"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_available_synthesisers">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_synthesisers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary of the Synthesisers available on this system.</span>
+<span class="sd">        Return a dictionary of tool_name : tool_instance where *tool_name* is</span>
+<span class="sd">        a string name and *tool_instance* is a Synthesiser instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_wrapper</span><span class="o">.</span><span class="n">synthesisers</span></div>
+
+<div class="viewcode-block" id="Project.get_simulator_library_dependencies"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_simulator_library_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">get_simulator_library_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of library_name : path where both are strings and</span>
+<span class="sd">        the *library_name* defines a simulation library dependency name and</span>
+<span class="sd">        *path* provides the path to the dependency. Simulation libraries for</span>
+<span class="sd">        the given simulation tool name are returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span><span class="n">tool_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_system_config_path"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_system_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a path string indicating the location of the .chiptoolsconfig</span>
+<span class="sd">        configuration file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getOptionsPath</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.run_preprocessors"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.run_preprocessors">[docs]</a>    <span class="k">def</span> <span class="nf">run_preprocessors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute any *Preprocessors* attached to *Files* currently loaded into</span>
+<span class="sd">        the *Project*. A preprocessor can be used to modify the contents of the</span>
+<span class="sd">        file prior to simulation or synthesis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span>
+        <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="c1"># Preprocess the file if it has a preprocessor</span>
+            <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">preprocessor</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Preprocessor</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+                    <span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">file_object</span><span class="o">.</span><span class="n">preprocessor</span>
+                <span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s1">&#39;Executed preprocessor </span><span class="si">{0}</span><span class="s1"> on file </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">preprocessor</span><span class="p">),</span>
+                            <span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.compile"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile the libraries and files loaded into the *Project*.</span>
+<span class="sd">        The Simulation tool that is used is determined by the</span>
+<span class="sd">        *tool_name* input if supplied, otherwise the *Project* configuration</span>
+<span class="sd">        : &#39;simulator&#39; tool name will be used instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">simulation_tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+        <span class="n">simulation_tool</span><span class="o">.</span><span class="n">compile_project</span><span class="p">(</span>
+            <span class="n">includes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span>
+                <span class="n">simulation_tool</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">):</span>
+        <span class="n">tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_wrapper</span><span class="o">.</span><span class="n">get_tool</span><span class="p">(</span>
+            <span class="n">tool_type</span><span class="o">=</span><span class="n">tool_type</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">tool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span>
+                <span class="s1">&#39;Operation aborted, no </span><span class="si">{0}</span><span class="s1"> tool is available&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool_type</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tool</span><span class="o">.</span><span class="n">installed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span>
+                <span class="s1">&#39;Operation aborted, </span><span class="si">{0}</span><span class="s1"> is not available.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">tool</span>
+
+<div class="viewcode-block" id="Project.simulate"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulate the *Project* using the given *library* and *entity* as a top</span>
+<span class="sd">        level. The Simulation tool that is used is determined by the</span>
+<span class="sd">        *tool_name* input if supplied, otherwise the *Project* configuration</span>
+<span class="sd">        : &#39;simulator&#39; tool name will be used instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">simulation_tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+        <span class="n">includes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span>
+            <span class="n">simulation_tool</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+        <span class="c1"># Do a compilation of the design to ensure the libraries are up to date</span>
+        <span class="n">simulation_tool</span><span class="o">.</span><span class="n">compile_project</span><span class="p">(</span><span class="n">includes</span><span class="o">=</span><span class="n">includes</span><span class="p">)</span>
+        <span class="n">includes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;includes&#39;</span><span class="p">,</span> <span class="p">{}))</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;includes&#39;</span><span class="p">:</span> <span class="n">includes</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Simulating entity &#39;</span> <span class="o">+</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39; in library &#39;</span> <span class="o">+</span> <span class="n">library</span><span class="p">)</span>
+        <span class="n">simulation_tool</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.synthesise"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.synthesise">[docs]</a>    <span class="k">def</span> <span class="nf">synthesise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fpga_part</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Synthesise the *Project* using the given *library* and *entity* as a</span>
+<span class="sd">        top level. The synthesis tool that is used is determined by the</span>
+<span class="sd">        *tool_name* input if supplied, otherwise the *Project* configuration</span>
+<span class="sd">        : &#39;synthesiser&#39; tool name will be used instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Run the preprocessors prior to build.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_preprocessors</span><span class="p">()</span>
+        <span class="n">synthesis_tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;synthesis&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Synthesising entity &#39;</span> <span class="o">+</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39; in library &#39;</span> <span class="o">+</span> <span class="n">library</span><span class="p">)</span>
+        <span class="n">synthesis_tool</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.get_tests">[docs]</a>    <span class="k">def</span> <span class="nf">get_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of files implementing TestSuite objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files_with_tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">testsuite</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">files_with_tests</span></div>
+
+<div class="viewcode-block" id="Project.run_tests"><a class="viewcode-back" href="../../../reference/chiptools.core.project.html#chiptools.core.project.Project.run_tests">[docs]</a>    <span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the Project unit tests. The *ids* input is an iterable containing</span>
+<span class="sd">        integer IDs referencing test cases from the test suite. If *ids* is</span>
+<span class="sd">        None all tests in the test suite will be executed, otherwise the</span>
+<span class="sd">        *ids* will be used to select which tests in the test suite are run.</span>
+
+<span class="sd">        The Simulation tool that is used is determined by the</span>
+<span class="sd">        *tool_name* input if supplied, otherwise the *Project* configuration</span>
+<span class="sd">        : &#39;simulator&#39; tool name will be used instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">simulation_tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool</span><span class="p">(</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+        <span class="c1"># First compile the project</span>
+        <span class="n">simulation_tool</span><span class="o">.</span><span class="n">compile_project</span><span class="p">(</span>
+            <span class="n">includes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get_simulator_library_dependencies</span><span class="p">(</span>
+                <span class="n">simulation_tool</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">()</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tests</span><span class="p">():</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">test_group</span> <span class="ow">in</span> <span class="n">file_object</span><span class="o">.</span><span class="n">testsuite</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">testId</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">iterate_tests</span><span class="p">(</span><span class="n">test_group</span><span class="p">)):</span>
+                    <span class="c1"># Patch in the simulation runtime data</span>
+                    <span class="n">test</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
+                    <span class="c1"># Add the test to the library</span>
+                    <span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">file_name</span><span class="p">,</span> <span class="n">test</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No tests available.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Run all tests by default if no IDs are specified</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">):</span>
+                <span class="n">fileName</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">tests</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()))</span>
+                <span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Added &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; to testsuite&#39;</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running testsuite...&#39;</span><span class="p">)</span>
+        <span class="c1"># TODO: Allow HTML or Console selection</span>
+        <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_simulation_directory</span><span class="p">(),</span> <span class="s1">&#39;report.html&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;w&#39;</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">report</span><span class="p">:</span>
+                <span class="n">HTMLTestRunner</span><span class="o">.</span><span class="n">HTMLTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">report</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="n">suite</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

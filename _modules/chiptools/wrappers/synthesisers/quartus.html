@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.wrappers.synthesisers.quartus &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.wrappers.synthesisers.quartus</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.wrappers.synthesisers.quartus</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.exceptions</span> <span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">FileType</span>
+<span class="kn">from</span> <span class="nn">chiptools.wrappers</span> <span class="kn">import</span> <span class="n">synthesiser</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Quartus"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus">[docs]</a><span class="k">class</span> <span class="nc">Quartus</span><span class="p">(</span><span class="n">synthesiser</span><span class="o">.</span><span class="n">Synthesiser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Quartus Synthesiser instance can be used to synthesise the files in the</span>
+<span class="sd">    given Project using the quartus_sh utility provided in a base Altera</span>
+<span class="sd">    Quartus installation. The Quartus synthesis flow follows the following</span>
+<span class="sd">    steps:</span>
+
+<span class="sd">      * Create synthesis directories</span>
+<span class="sd">      * Create a project TCL file listing FPGA part, source files and any</span>
+<span class="sd">        constraints * Invoke quartus_sh</span>
+<span class="sd">      * Archive the outputs</span>
+
+<span class="sd">    In addition to running the quartus_sh synthesis flow, the Quartus</span>
+<span class="sd">    Synthesiser instance also uses a Reporter instance to filter the synthesis</span>
+<span class="sd">    log messages for important information relating to the build.</span>
+
+<span class="sd">    When complete, the output files from synthesis will be stored in an</span>
+<span class="sd">    archive bearing the name of the entity that was synthesised and a unique</span>
+<span class="sd">    timestamp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;quartus&#39;</span>
+    <span class="n">executables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;quartus_sh&#39;</span><span class="p">,</span> <span class="s1">&#39;quartus_cpf&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise a Quartus Synthesiser instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Quartus</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executables</span><span class="p">,</span> <span class="n">user_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quartus_sh</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;quartus_sh&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quartus_cpf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;quartus_cpf&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Quartus.synthesise"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.synthesise">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">synthesise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Synthesise the target entity in the given library for the currently</span>
+<span class="sd">        loaded project.</span>
+<span class="sd">        The following steps are performed during synthesis:</span>
+
+<span class="sd">          * Create synthesis directories</span>
+<span class="sd">          * Create a project TCL file listing FPGA part, source files and any</span>
+<span class="sd">            constraints * Invoke quartus_sh</span>
+<span class="sd">          * Generate reports</span>
+<span class="sd">          * Archive the outputs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Quartus</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">synthesise</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fpga_part</span><span class="p">)</span>
+        <span class="c1"># make a temporary working directory for the synth tool</span>
+        <span class="kn">import</span> <span class="nn">tempfile</span>
+
+        <span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_directory</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">workingDirectory</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Created temporary synthesis directory: &#39;</span> <span class="o">+</span> <span class="n">workingDirectory</span>
+            <span class="p">)</span>
+            <span class="n">synthName</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;_synth_&#39;</span> <span class="o">+</span> <span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%m%y_%H%M%S&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">archiveName</span> <span class="o">=</span> <span class="n">synthName</span> <span class="o">+</span> <span class="s1">&#39;.tar&#39;</span>
+            <span class="n">synthesisDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">synthName</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="n">projectFilePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.tcl&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fpga_part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fpga_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_fpga_part</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">makeProject</span><span class="p">(</span>
+                <span class="n">projectFilePath</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_synthesis_fileset</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">(),</span>
+                <span class="n">fpga_part</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_generics</span><span class="p">(),</span>
+                <span class="n">synthesisDirectory</span><span class="p">,</span>
+                <span class="n">entity</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Run the flow</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exec_quartus_sh</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">projectFilePath</span><span class="p">),</span> <span class="n">synthesisDirectory</span>
+                <span class="p">)</span>
+                <span class="c1"># Convert programming files using user-supplied args</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generate_programming_files</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># Archive the outputs</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;Synthesis error, storing output in error directory...&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="s1">&#39;ERROR_&#39;</span> <span class="o">+</span> <span class="n">archiveName</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Build successful, checking reports for unacceptable &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;messages...&#39;</span>
+            <span class="p">)</span>
+            <span class="c1">#  Check the report</span>
+            <span class="n">reporter_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_reporter</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">reporter_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">reporter_fn</span><span class="p">(</span><span class="n">synthesisDirectory</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;The post-synthesis reporter script caused an error:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">+</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="c1"># Archive the outputs</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Synthesis completed, saving output to archive...&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storeOutputs</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">archiveName</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quartus.makeProject"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.makeProject">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">makeProject</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">projectFilePath</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">,</span>
+        <span class="n">constraints</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">,</span>
+        <span class="n">generics</span><span class="p">,</span>
+        <span class="n">workingDirectory</span><span class="p">,</span>
+        <span class="n">entity</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a TCL file that is compatible with the quartus_sh API to</span>
+<span class="sd">        allow the source files in the supplied *files* list to be built using</span>
+<span class="sd">        the quartus_sh utility.</span>
+<span class="sd">        The following items are inserted into the resulting TCL file:</span>
+
+<span class="sd">          * Relevant TCL imports (::quartus::project, ::quartus::flow)</span>
+<span class="sd">          * Entity</span>
+<span class="sd">          * FPGA Part</span>
+<span class="sd">          * Source Files</span>
+<span class="sd">          * Synthesis Generics (for the top level entity)</span>
+<span class="sd">          * Constraints (as a TCL script appended to the project TCL file)</span>
+<span class="sd">          * TCL commands to execute synthesis flow</span>
+
+<span class="sd">        The TCL file to be written will be stored at the given</span>
+<span class="sd">        *projectFilePath* filepath.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating project file for Quartus...&#39;</span><span class="p">)</span>
+        <span class="c1"># Import the quartus TCL project module</span>
+        <span class="n">projectFileString</span> <span class="o">=</span> <span class="s1">&#39;package require ::quartus::project&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;package require ::quartus::flow&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;load_package report&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="c1"># Create the project</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_project_new</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="c1"># Set the top level</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_set_top_level_entity</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="c1"># Set the part</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_set_part</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="c1"># Add all the source files to the project</span>
+        <span class="k">for</span> <span class="n">libName</span><span class="p">,</span> <span class="n">fileList</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">fileObject</span> <span class="ow">in</span> <span class="n">fileList</span><span class="p">:</span>
+                <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_add_file</span><span class="p">(</span><span class="n">fileObject</span><span class="p">)</span>
+
+        <span class="c1"># Add the project generics</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">generics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_set_generic</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># Add user constraints and other source files</span>
+        <span class="n">sdcString</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">fileObject</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">flow</span> <span class="o">==</span> <span class="s1">&#39;quartus&#39;</span> <span class="ow">or</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">flow</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">TCL</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">constraintsFile</span><span class="p">:</span>
+                        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="n">constraintsFile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s1">&#39;Added supplementary TCL script: &#39;</span>
+                            <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span>
+                        <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SDC</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">constraintsFile</span><span class="p">:</span>
+                        <span class="n">sdcString</span> <span class="o">+=</span> <span class="n">constraintsFile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                        <span class="n">sdcString</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s1">&#39;Added timing constraints script: &#39;</span>
+                            <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span>
+                        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sdcString</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sdcPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.sdc&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sdcPath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Writing: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdcPath</span><span class="p">))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sdcString</span><span class="p">)</span>
+
+        <span class="c1"># Commit the assignment</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;export_assignments&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="c1"># Execute the flow</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="s1">&#39;execute_flow -compile&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="c1"># Close the project</span>
+        <span class="n">projectFileString</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcl_project_close</span><span class="p">()</span>
+
+        <span class="c1"># Write out the synthesis project file</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Writing: &#39;</span> <span class="o">+</span> <span class="n">projectFilePath</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">projectFilePath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">projectFileString</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_set_part"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_set_part">[docs]</a>    <span class="k">def</span> <span class="nf">tcl_set_part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        set_global_assignment -name DEVICE *&lt;part&gt;*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;set_global_assignment -name DEVICE &#39;</span> <span class="o">+</span> <span class="n">part</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_set_top_level_entity"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_set_top_level_entity">[docs]</a>    <span class="k">def</span> <span class="nf">tcl_set_top_level_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        set_global_assignment -name TOP_LEVEL_ENTITY *&lt;entity&gt;*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;set_global_assignment -name TOP_LEVEL_ENTITY &#39;</span> <span class="o">+</span> <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_set_generic"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_set_generic">[docs]</a>    <span class="k">def</span> <span class="nf">tcl_set_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        set_parameter -name *&lt;name&gt;* *&lt;value&gt;*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;set_parameter -name &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_add_file"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_add_file">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">tcl_add_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileObject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        set_global_assignment [VHDL_FILE/VERILOG_FILE] *&lt;fileObject.path&gt;*</span>
+<span class="sd">        -library *&lt;fileObject.library&gt;*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We could leave it to the synthesis tool to report missing files, but</span>
+        <span class="c1"># handling them here means we can abort the process early and notify</span>
+        <span class="c1"># the user.</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;set_global_assignment -name &#39;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">VHDL</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;VHDL_FILE &#39;</span>
+            <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">Verilog</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;VERILOG_FILE &#39;</span>
+            <span class="k">elif</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span> <span class="o">==</span> <span class="n">FileType</span><span class="o">.</span><span class="n">SystemVerilog</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;VERILOG_FILE &#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SynthesisException</span><span class="p">(</span>
+                    <span class="s1">&#39;Unknown file type for synthesis tool: &#39;</span>
+                    <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">fileType</span>
+                <span class="p">)</span>
+            <span class="c1"># Quartus will not allow backslashes, force forward slashes here.</span>
+            <span class="n">filePath</span> <span class="o">=</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">filePath</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;-library &#39;</span> <span class="o">+</span> <span class="n">fileObject</span><span class="o">.</span><span class="n">library</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="k">return</span> <span class="n">string</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">fileObject</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_project_close"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_project_close">[docs]</a>    <span class="k">def</span> <span class="nf">tcl_project_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        project_close [-dont_export_assignments]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;project_close&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+
+<div class="viewcode-block" id="Quartus.tcl_project_new"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.tcl_project_new">[docs]</a>    <span class="k">def</span> <span class="nf">tcl_project_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Quartus API TCL command string:</span>
+<span class="sd">        project_new [-family &lt;family&gt;] [-overwrite] [-part &lt;part&gt;] [-revision</span>
+<span class="sd">        &lt;revision_name&gt;] &lt;project_name&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;project_new -overwrite -revision &#39;</span>
+            <span class="o">+</span> <span class="n">entity</span>
+            <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            <span class="o">+</span> <span class="n">entity</span>
+            <span class="o">+</span> <span class="s1">&#39;proj&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quartus.generate_programming_files"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.generate_programming_files">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">generate_programming_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert programming files using the quartus_cpf utility using user</span>
+<span class="sd">        defined arguments supplied in the project configuration. User defined</span>
+<span class="sd">        arguments should be supplied via configuration items using the</span>
+<span class="sd">        following naming convention: &#39;args_quartus_cpf_&lt;format&gt;&#39;. If no</span>
+<span class="sd">        configuration items matching this naming convention are provided then</span>
+<span class="sd">        no additional programming files will be generated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all Quartus tool arguments for the CPF stage:</span>
+        <span class="n">arg_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_all_tool_argument_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">filter_args_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;args_</span><span class="si">{0}</span><span class="s1">_cpf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="n">arg_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">filter_args_fn</span><span class="p">,</span> <span class="n">arg_keys</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;cpf&#39;</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;Generating programming file using user defined &#39;</span>
+                    <span class="s1">&#39;arguments from configuration item: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="c1"># Get the quartus_cpf user args specific to this format</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;cpf_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+                <span class="c1"># Append the input and output file names</span>
+                <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.sof&#39;</span><span class="p">,</span>  <span class="c1"># Input SOF</span>
+                    <span class="n">entity</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">mode</span><span class="p">,</span>  <span class="c1"># Output file</span>
+                <span class="p">]</span>
+                <span class="c1"># Run quartus_cpf using the mode recovered from the config key</span>
+                <span class="n">Quartus</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">quartus_cpf</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quartus.exec_quartus_sh"><a class="viewcode-back" href="../../../../reference/chiptools.wrappers.synthesisers.quartus.html#chiptools.wrappers.synthesisers.quartus.Quartus.exec_quartus_sh">[docs]</a>    <span class="nd">@synthesiser</span><span class="o">.</span><span class="n">throws_synthesis_exception</span>
+    <span class="k">def</span> <span class="nf">exec_quartus_sh</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">projectFilePath</span><span class="p">,</span>
+        <span class="n">workingDirectory</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Invoke quartus_sh using the TCL file pointed to by *projectFilePath*</span>
+<span class="sd">        using the given *workingDirectory* as a working directory.</span>
+
+<span class="sd">        quartus_sh uses the following command line arguments:</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            quartus_sh</span>
+<span class="sd">            -f=&lt;argument file&gt;</span>
+<span class="sd">            -h</span>
+<span class="sd">            -s</span>
+<span class="sd">            -t=&lt;script file&gt;</span>
+<span class="sd">            -v</span>
+<span class="sd">            --64bit</span>
+<span class="sd">            --archive</span>
+<span class="sd">            --determine_smart_action</span>
+<span class="sd">            --dse</span>
+<span class="sd">            --dtw</span>
+<span class="sd">            --flow</span>
+<span class="sd">            --help[=&lt;option|topic&gt;]</span>
+<span class="sd">            --lower_priority</span>
+<span class="sd">            --prepare</span>
+<span class="sd">            --qboard</span>
+<span class="sd">            --qhelp</span>
+<span class="sd">            --qinstall</span>
+<span class="sd">            --qslave</span>
+<span class="sd">            --relcon</span>
+<span class="sd">            --restore</span>
+<span class="sd">            --script=&lt;script file&gt;</span>
+<span class="sd">            --set</span>
+<span class="sd">            --shell</span>
+<span class="sd">            --simlib_comp</span>
+<span class="sd">            --tcl_eval=&lt;tcl command&gt;</span>
+<span class="sd">            --version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get additional tool arguments for this flow stage</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_tool_arguments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;quartus_sh&#39;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">][</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-t&#39;</span> <span class="o">+</span> <span class="n">projectFilePath</span><span class="p">]</span>
+
+        <span class="n">Quartus</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quartus_sh</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">workingDirectory</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

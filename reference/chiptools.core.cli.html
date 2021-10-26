@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.core.cli module &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="chiptools.core.package_builder module" href="chiptools.core.package_builder.html" />
+    <link rel="prev" title="chiptools.core.cache module" href="chiptools.core.cache.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">chiptools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="chiptools.html">chiptools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="chiptools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="chiptools.common.html">chiptools.common package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="chiptools.core.html">chiptools.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.parsers.html">chiptools.parsers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.testing.html">chiptools.testing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chiptools.wrappers.html">chiptools.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chiptools.html#module-chiptools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">chiptools</a> &raquo;</li>
+          <li><a href="chiptools.html">chiptools package</a> &raquo;</li>
+          <li><a href="chiptools.core.html">chiptools.core package</a> &raquo;</li>
+      <li>chiptools.core.cli module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/chiptools.core.cli.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chiptools.core.cli">
+<span id="chiptools-core-cli-module"></span><h1>chiptools.core.cli module<a class="headerlink" href="#module-chiptools.core.cli" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">chiptools.core.cli.</span></span><span class="sig-name descname"><span class="pre">CommandLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">cmd.Cmd</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_add_tests">
+<span class="sig-name descname"><span class="pre">do_add_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_add_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_add_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Add the given tests to the test suite. Tests should be supplied as
+comma separated numbers or numeric ranges, for example:</p>
+<p>add_tests 1-3, 5, 6, 7</p>
+<p>Would add tests 1, 2, 3, 5, 6, 7 to the test suite.</p>
+<p>You can check which tests are available by issuing the show_tests
+command or remove tests that have been added to the suite by issuing
+the remove_tests command.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_clean">
+<span class="sig-name descname"><span class="pre">do_clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_clean" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the file cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_compile">
+<span class="sig-name descname"><span class="pre">do_compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_compile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_exit">
+<span class="sig-name descname"><span class="pre">do_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_exit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_graph">
+<span class="sig-name descname"><span class="pre">do_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_load_project">
+<span class="sig-name descname"><span class="pre">do_load_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_load_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_load_project" title="Permalink to this definition"></a></dt>
+<dd><p>Load the given project XML file: load_project &lt;path_to_project&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_plugins">
+<span class="sig-name descname"><span class="pre">do_plugins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_plugins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_pwd">
+<span class="sig-name descname"><span class="pre">do_pwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_pwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_pwd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_remove_tests">
+<span class="sig-name descname"><span class="pre">do_remove_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_remove_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_remove_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the given tests from the test suite. Tests should be supplied
+as comma separated numbers or numeric ranges, for example:</p>
+<p>remove_tests 1-3, 5, 6, 7</p>
+<p>Would remove tests 1, 2, 3, 5, 6, 7 from the test suite.</p>
+<p>You can check which tests are available by issuing the show_tests
+command or add tests by issuing the add_tests command.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_run_preprocessors">
+<span class="sig-name descname"><span class="pre">do_run_preprocessors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_run_preprocessors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_run_preprocessors" title="Permalink to this definition"></a></dt>
+<dd><p>For each project file in the design run any associated
+preprocessors. You can use this command to test that a preprocessor is
+running on your file correctly. Preprocessors are called automatically
+when you run synthesis</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_run_tests">
+<span class="sig-name descname"><span class="pre">do_run_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_run_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_run_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Run the tests that were selected via the add_tests command and report
+the results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_show_config">
+<span class="sig-name descname"><span class="pre">do_show_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_show_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_show_config" title="Permalink to this definition"></a></dt>
+<dd><p>Print out the project settings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_show_synthesis_fileset">
+<span class="sig-name descname"><span class="pre">do_show_synthesis_fileset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_show_synthesis_fileset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_show_synthesis_fileset" title="Permalink to this definition"></a></dt>
+<dd><p>Print out the synthesis file set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_show_tests">
+<span class="sig-name descname"><span class="pre">do_show_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_show_tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_show_tests" title="Permalink to this definition"></a></dt>
+<dd><p>Show the tests available in the current project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_simulate">
+<span class="sig-name descname"><span class="pre">do_simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Compile the given entity in the given library using the chosen
+simulator and invoke the simulator GUI.
+Example: (Cmd) simulate my_library.my_entity</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.do_synthesise">
+<span class="sig-name descname"><span class="pre">do_synthesise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.do_synthesise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.do_synthesise" title="Permalink to this definition"></a></dt>
+<dd><p>Synthesise the design using the chosen synthesis tool and report any
+errors Example: (Cmd) simulate my_library.my_entity</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.locateProjects">
+<span class="sig-name descname"><span class="pre">locateProjects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.locateProjects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.locateProjects" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of projects found in the current path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chiptools.core.cli.CommandLine.show_test_selection">
+<span class="sig-name descname"><span class="pre">show_test_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#CommandLine.show_test_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.CommandLine.show_test_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Show the currently selected tests in the current project.
+Add or remove tests using the
+add_tests and remove_tests commands respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chiptools.core.cli.wraps_do_commands">
+<span class="sig-prename descclassname"><span class="pre">chiptools.core.cli.</span></span><span class="sig-name descname"><span class="pre">wraps_do_commands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chiptools/core/cli.html#wraps_do_commands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chiptools.core.cli.wraps_do_commands" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chiptools.core.cache.html" class="btn btn-neutral float-left" title="chiptools.core.cache module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chiptools.core.package_builder.html" class="btn btn-neutral float-right" title="chiptools.core.package_builder module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

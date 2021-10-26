@@ -1,0 +1,7 @@
+chiptools.parsers.xml\_project module
+=====================================
+
+.. automodule:: chiptools.parsers.xml_project
+   :members:
+   :undoc-members:
+   :show-inheritance:

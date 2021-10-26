@@ -1,0 +1,23 @@
+chiptools.core package
+======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.core.cache
+   chiptools.core.cli
+   chiptools.core.package_builder
+   chiptools.core.preprocessor
+   chiptools.core.project
+   chiptools.core.reporter
+
+Module contents
+---------------
+
+.. automodule:: chiptools.core
+   :members:
+   :undoc-members:
+   :show-inheritance:

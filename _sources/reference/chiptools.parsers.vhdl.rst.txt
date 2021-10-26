@@ -1,0 +1,7 @@
+chiptools.parsers.vhdl module
+=============================
+
+.. automodule:: chiptools.parsers.vhdl
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+chiptools.wrappers.simulators.iverilog module
+=============================================
+
+.. automodule:: chiptools.wrappers.simulators.iverilog
+   :members:
+   :undoc-members:
+   :show-inheritance:

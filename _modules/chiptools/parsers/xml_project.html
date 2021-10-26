@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.parsers.xml_project &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.parsers.xml_project</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.parsers.xml_project</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">xml</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">chiptools.common.filetypes</span> <span class="kn">import</span> <span class="n">ProjectAttributes</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="XmlProjectParser"><a class="viewcode-back" href="../../../reference/chiptools.parsers.xml_project.html#chiptools.parsers.xml_project.XmlProjectParser">[docs]</a><span class="k">class</span> <span class="nc">XmlProjectParser</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The XmlProjectParser class implements an XML parser for project files using</span>
+<span class="sd">    the following format.</span>
+
+<span class="sd">    .. note:: All paths appearing in a project file are relative to the</span>
+<span class="sd">              location of the project file.</span>
+
+<span class="sd">    **&lt;project&gt;**</span>
+
+<span class="sd">    The project parent tag encapsulates all configuration and file tags</span>
+<span class="sd">    belonging to a project file. Existing project files may be imported into</span>
+<span class="sd">    a project by including a project tag with the *path* attribute pointing to</span>
+<span class="sd">    the existing XML file.</span>
+
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | Attribute | Value  | Description                                        |</span>
+<span class="sd">    +===========+========+====================================================+</span>
+<span class="sd">    | synthesise| True   | (default) These files are included for synthesis.  |</span>
+<span class="sd">    |           +--------+----------------------------------------------------+</span>
+<span class="sd">    |           | False  | Exclude these files from synthesis.                |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | path      |*string*| Path to existing project file to include.          |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+
+<span class="sd">    **&lt;library&gt;**</span>
+
+<span class="sd">    The *library* tag is used to group all child file tags into</span>
+<span class="sd">    the same library. If a file is not associated with a library it will</span>
+<span class="sd">    default to the *work* library.</span>
+
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | Attribute | Value  | Description                                        |</span>
+<span class="sd">    +===========+========+====================================================+</span>
+<span class="sd">    | synthesise| True   | (default) These files are included for synthesis.  |</span>
+<span class="sd">    |           +--------+----------------------------------------------------+</span>
+<span class="sd">    |           | False  | Exclude these files from synthesis.                |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | name      |*string*| (required) Name of the HDL library for these files.|</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+
+<span class="sd">    **&lt;file&gt;**</span>
+
+<span class="sd">    The *file* tag is used to define a source file to include in the project.</span>
+<span class="sd">    Source files can either be text based HDL source files (VHDL or Verilog) or</span>
+<span class="sd">    they can be netlists. Tool wrapper plugins will check the file extension to</span>
+<span class="sd">    determine how they should process the file, for example .VHD and .V files</span>
+<span class="sd">    will be processed with vcom and vlog respectively by Modelsim and .ngc</span>
+<span class="sd">    files will be copied into the synthesis folder by ISE.</span>
+
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | Attribute | Value  | Description                                        |</span>
+<span class="sd">    +===========+========+====================================================+</span>
+<span class="sd">    | synthesise| True   | (default) This file is included for synthesis.     |</span>
+<span class="sd">    |           +--------+----------------------------------------------------+</span>
+<span class="sd">    |           | False  | Exclude this file from synthesis.                  |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | path      |*string*| (required) Path to the source file.                |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+
+<span class="sd">    .. note:: If a file tag is used outside of a library tag the file will</span>
+<span class="sd">              automatically be associated with the *work* library and a</span>
+<span class="sd">              warning will be displayed.</span>
+
+<span class="sd">    .. note:: File tags support additional optional attributes of the form</span>
+<span class="sd">             *args_toolname_compile* where *toolname* is the name of a specific</span>
+<span class="sd">             tool wrapper (for example: *modelsim*). The attribute value is</span>
+<span class="sd">             passed to the simulation tool during compilation if it is the</span>
+<span class="sd">             selected tool. *args_modelsim_compile=&#39;-2008&#39;* would pass the</span>
+<span class="sd">             command line arg &#39;-2008&#39; to Modelsim when it compiles the file.</span>
+
+<span class="sd">    **&lt;constraints&gt;**</span>
+
+<span class="sd">    The *constraints* tag defines the path to a constraints file to be included</span>
+<span class="sd">    when performing synthesis on the project. Constraints can be limited to a</span>
+<span class="sd">    specific synthesis tool via use of the *flow* attribute.</span>
+
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | Attribute | Value  | Description                                        |</span>
+<span class="sd">    +===========+========+====================================================+</span>
+<span class="sd">    | path      |*string*| (required) Path to the constraints file.           |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | flow      |*string*| (optional) Name of the associated synthesis tool.  |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+
+<span class="sd">    **&lt;unittest&gt;**</span>
+
+<span class="sd">    The *unittest* tag defines the path to a Python based unit test suite to</span>
+<span class="sd">    be included in the project test suite. Unit tests must be valid Python</span>
+<span class="sd">    files with a .py extension. If the file is invalid or contains syntax</span>
+<span class="sd">    errors it will be excluded from the project test suite. Runtime errors</span>
+<span class="sd">    occurring from a unit test will result in that test failing.</span>
+
+
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+<span class="sd">    | Attribute | Value  | Description                                        |</span>
+<span class="sd">    +===========+========+====================================================+</span>
+<span class="sd">    | path      |*string*| (required) Path to the unit test file.             |</span>
+<span class="sd">    +-----------+--------+----------------------------------------------------+</span>
+
+<span class="sd">    **&lt;generic&gt;**</span>
+
+<span class="sd">    The *generic* tag defines a generic value setting for the top level entity</span>
+<span class="sd">    during synthesis. Generic attribute names map to the name of a generic on</span>
+<span class="sd">    the top level entity and the associated value is passed as the generic</span>
+<span class="sd">    value.</span>
+
+<span class="sd">    +----------+-------+------------------------------------------------------+</span>
+<span class="sd">    | Attribute| Value | Description                                          |</span>
+<span class="sd">    +==========+=======+======================================================+</span>
+<span class="sd">    | (name)   |(value)| Set top level generic *name* to *value* at synthesis.|</span>
+<span class="sd">    +----------+-------+------------------------------------------------------+</span>
+
+<span class="sd">    **&lt;config&gt;**</span>
+
+<span class="sd">    The *config* tag defines a config value setting for the project.</span>
+<span class="sd">    Config attribute names map to the name of a configuration item in the</span>
+<span class="sd">    project and the associated value is passed as the config value.</span>
+
+<span class="sd">    +----------+-------+------------------------------------------------------+</span>
+<span class="sd">    | Attribute| Value | Description                                          |</span>
+<span class="sd">    +==========+=======+======================================================+</span>
+<span class="sd">    | (name)   |(value)| Set the configuration item *name* to *value*.        |</span>
+<span class="sd">    +----------+-------+------------------------------------------------------+</span>
+
+<span class="sd">    The following configuration items can be set in a project:</span>
+
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | Config               | Description                                      |</span>
+<span class="sd">    +======================+==================================================+</span>
+<span class="sd">    | simulation_directory | Directory to use as simulation working directory.|</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | synthesis_directory  | Directory to use as synthesis working directory. |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | simulator            | Default simulator to use for this project.       |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | synthesiser          | Default synthesiser to use for this project.     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | part                 | FPGA part to target when performing synthesis.   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+
+<span class="sd">    In addition to the above configuration items, the *config* tag also allows</span>
+<span class="sd">    tool-specific argument passing through the use of config attributes using</span>
+<span class="sd">    the following naming convention: *args_toolname_flowname*, where</span>
+<span class="sd">    *toolname* is the name of the tool to target and *flowname* is the name</span>
+<span class="sd">    of a specific tool flow stage. For example:</span>
+<span class="sd">    args_ise_par=&#39;-mt 4 -ol high -xe n&#39; would pass the arguments</span>
+<span class="sd">    *-mt 4 -ol high -xe n* to the place and route stage of an ISE synthesis</span>
+<span class="sd">    flow. Each tool wrapper implements its own specific flow stage names.</span>
+
+<span class="sd">    .. note:: If a configuration item is already defined any new definitions</span>
+<span class="sd">              will be ignored. A warning will be displayed if a</span>
+<span class="sd">              redefinition is attempted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="XmlProjectParser.load_project"><a class="viewcode-back" href="../../../reference/chiptools.parsers.xml_project.html#chiptools.parsers.xml_project.XmlProjectParser.load_project">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_project</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the project XML file provided by the *path*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading project: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">project_object</span><span class="o">.</span><span class="n">initialise</span><span class="p">()</span>
+        <span class="n">base_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">base_name</span><span class="p">)</span>
+        <span class="n">project_object</span><span class="o">.</span><span class="n">set_cache_path</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
+        <span class="c1"># Parse the project file</span>
+        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">parse_project</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="XmlProjectParser.parse_project"><a class="viewcode-back" href="../../../reference/chiptools.parsers.xml_project.html#chiptools.parsers.xml_project.XmlProjectParser.parse_project">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_project</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">project_object</span><span class="p">,</span> <span class="n">synthesise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse the XML project and update the project_dictionary or return</span>
+<span class="sd">        a new dictionary if one is not supplied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Parsing: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; synthesis=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">synthesise</span><span class="p">))</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">project_node</span> <span class="ow">in</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span>
+                <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_PROJECT</span>
+            <span class="p">):</span>
+                <span class="c1"># Project attributes (if any)</span>
+                <span class="c1"># If this whole node should not be synthesised, ignore any</span>
+                <span class="c1"># child flags otherwise get the child synthesis flag and use</span>
+                <span class="c1"># that.</span>
+                <span class="k">if</span> <span class="n">synthesise</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">project_attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+                        <span class="n">project_node</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span> <span class="n">project_root</span>
+                    <span class="p">)</span>
+                    <span class="n">synthesis_enabled</span> <span class="o">=</span> <span class="n">project_attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">synthesis_enabled</span> <span class="o">=</span> <span class="n">synthesise</span>
+
+                <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">project_node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_PROJECT</span><span class="p">:</span>
+                        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+                            <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+                            <span class="n">project_root</span><span class="p">,</span>
+                            <span class="n">defaults</span><span class="o">=</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">PROJECT_NODE_DEFAULTS</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="c1"># If this whole node should not be synthesised, ignore</span>
+                        <span class="c1"># any child flags otherwise get the child synthesis</span>
+                        <span class="c1"># flag and use that.</span>
+                        <span class="k">if</span> <span class="n">synthesis_enabled</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">synthesise</span> <span class="o">=</span> <span class="n">attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">synthesise</span> <span class="o">=</span> <span class="n">synthesis_enabled</span>
+
+                        <span class="k">if</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">:</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="s1">&#39;Found sub-project: &#39;</span>
+                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                                    <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="c1"># Recursively call this parser with the new project</span>
+                            <span class="c1"># path</span>
+                            <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">parse_project</span><span class="p">(</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]),</span>
+                                <span class="n">project_object</span><span class="p">,</span>
+                                <span class="n">synthesise</span><span class="p">,</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_CONFIG</span><span class="p">:</span>
+                        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_config</span><span class="p">(</span>
+                            <span class="n">child</span><span class="p">,</span> <span class="n">project_root</span><span class="p">,</span> <span class="n">project_object</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_LIBRARY</span><span class="p">:</span>
+                        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_library</span><span class="p">(</span>
+                            <span class="n">child</span><span class="p">,</span>
+                            <span class="n">project_root</span><span class="p">,</span>
+                            <span class="n">project_object</span><span class="p">,</span>
+                            <span class="n">synthesis_enabled</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="p">(</span>
+                        <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_CONSTRAINTS</span>
+                    <span class="p">):</span>
+                        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_constraints</span><span class="p">(</span>
+                            <span class="n">child</span><span class="p">,</span>
+                            <span class="n">project_root</span><span class="p">,</span>
+                            <span class="n">project_object</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="p">(</span>
+                        <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_UNITTEST</span>
+                    <span class="p">):</span>
+                        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_unittest</span><span class="p">(</span>
+                            <span class="n">child</span><span class="p">,</span>
+                            <span class="n">project_root</span><span class="p">,</span>
+                            <span class="n">project_object</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_GENERIC</span><span class="p">:</span>
+                        <span class="c1"># Build a dictionary of generics using the attribute</span>
+                        <span class="c1"># name and value</span>
+                        <span class="n">attribs</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">attributes</span>
+                        <span class="k">if</span> <span class="n">attribs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">attribs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attribs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                        <span class="k">for</span> <span class="n">attrName</span><span class="p">,</span> <span class="n">attrVal</span> <span class="ow">in</span> <span class="n">attribs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">project_object</span><span class="o">.</span><span class="n">add_generic</span><span class="p">(</span><span class="n">attrName</span><span class="p">,</span> <span class="n">attrVal</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_FILE</span><span class="p">:</span>
+                        <span class="c1"># Files should not be left unassociated with a library</span>
+                        <span class="c1"># unless you wish to add all files to the work library.</span>
+                        <span class="c1"># The default behavior will be to add parentless files</span>
+                        <span class="c1"># to the work library, but a configuration option could</span>
+                        <span class="c1"># make this post an error instead.</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s1">&#39;Found file with no parent library, &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;defaulting to work library&#39;</span>
+                        <span class="p">)</span>
+                        <span class="c1"># If this whole node should not be synthesised, ignore</span>
+                        <span class="c1"># any child flags otherwise get the child synthesis</span>
+                        <span class="c1"># flag and use that.</span>
+                        <span class="k">if</span> <span class="n">synthesis_enabled</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">synthesise</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">get_processed_attribute</span><span class="p">(</span>
+                                    <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                        <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">,</span>
+                                        <span class="kc">None</span><span class="p">,</span>
+                                    <span class="p">),</span>
+                                    <span class="n">project_root</span><span class="p">,</span>
+                                    <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">synthesise</span> <span class="o">=</span> <span class="n">synthesis_enabled</span>
+
+                        <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_file</span><span class="p">(</span>
+                            <span class="n">child</span><span class="p">,</span>
+                            <span class="s1">&#39;work&#39;</span><span class="p">,</span>
+                            <span class="n">project_root</span><span class="p">,</span>
+                            <span class="n">project_object</span><span class="p">,</span>
+                            <span class="n">synthesise</span><span class="o">=</span><span class="n">synthesise</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_TEXT</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_COMMENT</span><span class="p">:</span>
+                        <span class="k">pass</span>
+        <span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">expat</span><span class="o">.</span><span class="n">ExpatError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Error found in XML file, check the formatting. &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;Refer to the traceback below for the line number and file.&#39;</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+            <span class="n">project_object</span><span class="o">.</span><span class="n">initialise</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="n">filepath</span>
+            <span class="o">+</span> <span class="s1">&#39; parsed in &#39;</span>
+            <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_delta_string</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_config</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">project_object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process and add all child attributes to the given</span>
+<span class="sd">        configuration dict. Return a reference to the modified dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">project_object</span><span class="o">.</span><span class="n">add_config_dict</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_file</span><span class="p">(</span><span class="n">file_node</span><span class="p">,</span> <span class="n">library_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">project_object</span><span class="p">,</span> <span class="n">synthesise</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add the given file to the given library and ensure that any</span>
+<span class="sd">        relative file paths are correctly converted into absolute paths using</span>
+<span class="sd">        the project_root as a reference&quot;&quot;&quot;</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+            <span class="n">file_node</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">FILE_NODE_DEFAULTS</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Override the file synthesis flag if the library is marked for</span>
+            <span class="c1"># exclusion from synthesis</span>
+            <span class="k">if</span> <span class="n">synthesise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">]</span> <span class="o">=</span> <span class="n">synthesise</span>
+            <span class="c1"># Path is passed directly, so remove it from kwargs</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+            <span class="n">project_object</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library_name</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring file with no path.&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_library</span><span class="p">(</span>
+        <span class="n">child</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">,</span>
+        <span class="n">project_object</span><span class="p">,</span>
+        <span class="n">synthesise</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process the given library node and add it to the</span>
+<span class="sd">        project_dictionary. Any files containedwithin the library will be</span>
+<span class="sd">        added to the project_dictionary under that library&quot;&quot;&quot;</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">LIBRARY_NODE_DEFAULTS</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_NAME</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring library with no name specified&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">library_name</span> <span class="o">=</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_NAME</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">synthesise</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">synthesise</span> <span class="o">=</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_SYNTHESIS</span><span class="p">]</span>
+        <span class="c1"># Add all files in this library node to the project</span>
+        <span class="k">for</span> <span class="n">file_node</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">XML_NODE_FILE</span><span class="p">,</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">childNodes</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">XmlProjectParser</span><span class="o">.</span><span class="n">_add_file</span><span class="p">(</span>
+                <span class="n">file_node</span><span class="p">,</span>
+                <span class="n">library_name</span><span class="p">,</span>
+                <span class="n">root</span><span class="p">,</span>
+                <span class="n">project_object</span><span class="p">,</span>
+                <span class="n">synthesise</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_constraints</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">project_object</span><span class="p">):</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">CONSTRAINTS_NODE_DEFAULTS</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="c1"># Path is passed separately, so delete it from the kwargs dict.</span>
+        <span class="k">del</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="n">project_object</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_unittest</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">project_object</span><span class="p">):</span>
+        <span class="n">attribs</span> <span class="o">=</span> <span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">process_attributes</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">UNITTEST_NODE_DEFAULTS</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="c1"># Path is passed separately, so delete it from the kwargs dict.</span>
+        <span class="k">del</span> <span class="n">attribs</span><span class="p">[</span><span class="n">ProjectAttributes</span><span class="o">.</span><span class="n">ATTRIBUTE_PATH</span><span class="p">]</span>
+        <span class="n">project_object</span><span class="o">.</span><span class="n">add_unittest</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">attribs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

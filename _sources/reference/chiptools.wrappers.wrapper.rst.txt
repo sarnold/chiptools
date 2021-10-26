@@ -1,0 +1,7 @@
+chiptools.wrappers.wrapper module
+=================================
+
+.. automodule:: chiptools.wrappers.wrapper
+   :members:
+   :undoc-members:
+   :show-inheritance:

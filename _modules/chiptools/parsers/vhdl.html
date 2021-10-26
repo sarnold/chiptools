@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.parsers.vhdl &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.parsers.vhdl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.parsers.vhdl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="remove_comments"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.remove_comments">[docs]</a><span class="k">def</span> <span class="nf">remove_comments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the supplied VHDL file data string, *data*, with all comments</span>
+<span class="sd">    removed.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;--[^\n]*&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Function"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Function">[docs]</a><span class="k">class</span> <span class="nc">Function</span><span class="p">:</span>
+
+    <span class="n">REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \s*</span>
+<span class="sd">        function</span>
+<span class="sd">        \s+</span>
+<span class="sd">        (?P&lt;ident&gt;\w+)</span>
+<span class="sd">        \s*</span>
+<span class="sd">        (?:\([^;]*)?</span>
+<span class="sd">        \s*</span>
+<span class="sd">        return</span>
+<span class="sd">        \s*</span>
+<span class="sd">        (?:\w+)</span>
+<span class="sd">        \s+</span>
+<span class="sd">        is</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Function </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="Function.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Function.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">REGEX</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Procedure"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Procedure">[docs]</a><span class="k">class</span> <span class="nc">Procedure</span><span class="p">:</span>
+
+    <span class="n">REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \s*</span>
+<span class="sd">        procedure</span>
+<span class="sd">        \s+</span>
+<span class="sd">        (?P&lt;id&gt;\w+)</span>
+<span class="sd">        \s*</span>
+<span class="sd">        (?:\([^;]*)?</span>
+<span class="sd">        \s*</span>
+<span class="sd">        return</span>
+<span class="sd">        \s*</span>
+<span class="sd">        (?:\w+)</span>
+<span class="sd">        \s+</span>
+<span class="sd">        is</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Procedure </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Procedure</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="Procedure.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Procedure.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">REGEX</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Package"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Package">[docs]</a><span class="k">class</span> <span class="nc">Package</span><span class="p">:</span>
+
+    <span class="n">PACKAGE_START_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                      # Word boundary</span>
+<span class="sd">        package                 # &#39;Package&#39; keyword</span>
+<span class="sd">        \s+                     # 1 or more whitespace</span>
+<span class="sd">        (?P&lt;ident&gt;\w+)          # Mandatory identifier</span>
+<span class="sd">        \s+                     # 1 or more whitespace</span>
+<span class="sd">        (?:is)                  # &#39;is&#39; keyword</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">PACKAGE_USE_CLAUSES</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        \b                      # Word boundary</span>
+<span class="s2">        use                     # use keyword</span>
+<span class="s2">        \s*                     # Optional whitepsace</span>
+<span class="s2">        </span><span class="si">%(library)s</span><span class="s2">             # Dynamic library name</span>
+<span class="s2">        \.                      # &#39;.&#39; separator</span>
+<span class="s2">        (?P&lt;module&gt;\w+)         # Module name</span>
+<span class="s2">        \.                      # &#39;.&#39; separator</span>
+<span class="s2">        (?P&lt;unit&gt;all|\w+)       # Part name (&#39;all&#39; or custom name)</span>
+<span class="s2">        \s*                     # Optional whitespace</span>
+<span class="s2">        ;                       # Terminator</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+        <span class="c1"># For package references, this is the unit referenced within the</span>
+        <span class="c1"># package, either &#39;all&#39; or a named unit.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+
+<div class="viewcode-block" id="Package.get_all_references"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Package.get_all_references">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_references</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">libraries</span><span class="p">):</span>
+        <span class="n">references</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">library</span> <span class="ow">in</span> <span class="n">libraries</span><span class="p">:</span>
+            <span class="n">includes_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+                <span class="n">Package</span><span class="o">.</span><span class="n">PACKAGE_USE_CLAUSES</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">),</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">includes_re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                <span class="n">package</span> <span class="o">=</span> <span class="n">Package</span><span class="p">(</span>
+                    <span class="n">include</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">),</span>
+                    <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">,</span>
+                    <span class="n">unit</span><span class="o">=</span><span class="n">include</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;unit&#39;</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">references</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">references</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Package.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Package.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">Package</span><span class="o">.</span><span class="n">PACKAGE_START_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Package</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Package </span><span class="si">{0}</span><span class="s1">.</span><span class="si">{1}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Package</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">library</span></div>
+
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">:</span>
+
+    <span class="n">ENTITY_START_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b              # Word boundary</span>
+<span class="sd">        entity          # &#39;Entity&#39; keyword</span>
+<span class="sd">        \s+             # 1 or more whitespace</span>
+<span class="sd">        (?P&lt;ident&gt;\w+)  # Mandatory identifier</span>
+<span class="sd">        \s+             # 1 or more whitespace</span>
+<span class="sd">        (?:is)          # &#39;is&#39; keyword</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Entity </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Entity</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="Entity.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Entity.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_START_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Entity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Entity.get_all_references"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Entity.get_all_references">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_references</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">libraries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Entity references are made by direct instantiation or by a component</span>
+<span class="sd">        instantiation via a component definition. Embedded configurations can</span>
+<span class="sd">        be used to make a component instantiation reference a entity directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Use Component.get_all_references()&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Configuration"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Configuration">[docs]</a><span class="k">class</span> <span class="nc">Configuration</span><span class="p">:</span>
+
+    <span class="n">CONFIGURATION_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                                  # Word boundary</span>
+<span class="sd">        configuration                       # Component keyword</span>
+<span class="sd">        \s+                                 # At least one whitespace</span>
+<span class="sd">        (?P&lt;ident&gt;\w+)                      # Identifier</span>
+<span class="sd">        \s+                                 # At least one whitespace</span>
+<span class="sd">        of                                  # &#39;of&#39; keyword</span>
+<span class="sd">        \s+                                 # At least one whitespace</span>
+<span class="sd">        (?P&lt;entity&gt;\w+)                     # Identifier</span>
+<span class="sd">        \s+                                 # At least one whitespace</span>
+<span class="sd">        is                                  # &#39;is&#39; keyword</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity</span> <span class="o">=</span> <span class="n">entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Configuration </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="Configuration.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Configuration.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">CONFIGURATION_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">),)</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;entity&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">Configuration</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">entity</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">:</span>
+
+    <span class="n">COMPONENT_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                                  # Word boundary</span>
+<span class="sd">        component                           # Component keyword</span>
+<span class="sd">        \s*                                 # Optional whitepsace</span>
+<span class="sd">        (?P&lt;entity&gt;\w+)                     # Identifier</span>
+<span class="sd">        \s*                                 # Optional whitespace</span>
+<span class="sd">        (is)?                               # Optional &#39;is&#39; keyword</span>
+<span class="sd">        \s*                                 # Optional whitespace</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Detect an Entity or Component instantation</span>
+    <span class="n">INSTANCE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                                  # Word boundary</span>
+<span class="sd">        (?P&lt;ident&gt;\w+)                      # Identifier</span>
+<span class="sd">        \s*                                 # Optional whitespace</span>
+<span class="sd">        :                                   # &#39;:&#39; delimeter</span>
+<span class="sd">        \s*                                 # Optional whitespace</span>
+<span class="sd">        (?:entity\s*)?                      # Optional entity</span>
+<span class="sd">        (?:(?P&lt;library&gt;\w+)(?:\.))?         # Optional library</span>
+<span class="sd">        (?P&lt;entity&gt;\w+)                     # Module name</span>
+<span class="sd">        \s*                                 # Optional whitespace</span>
+<span class="sd">        (?:generic\s+map|port\s+map)        # Generic map or port map</span>
+<span class="sd">        [^;]*                               # Everything except a Terminator</span>
+<span class="sd">        ;                                   # Terminator</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity</span> <span class="o">=</span> <span class="n">entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="n">library</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">entity</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;Component </span><span class="si">{0}</span><span class="s1"> (</span><span class="si">{1}</span><span class="s1">)&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;Component </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Component.get_all_definitions"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Component.get_all_definitions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_definitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">):</span>
+        <span class="n">definitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">Component</span><span class="o">.</span><span class="n">COMPONENT_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;entity&#39;</span><span class="p">)</span>
+            <span class="n">definitions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Component</span><span class="p">(</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">definitions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Component.get_all_references"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.Component.get_all_references">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_references</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">binding_indications</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">references</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">Component</span><span class="o">.</span><span class="n">INSTANCE_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">ident</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;ident&#39;</span><span class="p">)</span>
+            <span class="n">lib</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;library&#39;</span><span class="p">)</span>  <span class="c1"># Optional</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;entity&#39;</span><span class="p">)</span>
+            <span class="c1"># Either a component or entity instantiation</span>
+            <span class="k">if</span> <span class="n">lib</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># VHDL 93 style entity instantiation</span>
+                <span class="n">instance</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">instance</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">)</span>
+                <span class="c1"># Component instantiation</span>
+                <span class="c1"># Check the binding indications to see if the instance has</span>
+                <span class="c1"># been explictly linked to an entity or configuration:</span>
+                <span class="k">if</span> <span class="n">binding_indications</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">binding_indications</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">binding_indications</span><span class="p">[</span><span class="n">ident</span><span class="p">]:</span>
+                            <span class="n">instance</span> <span class="o">=</span> <span class="n">binding_indications</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="n">entity</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">binding_indications</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]:</span>
+                        <span class="n">instance</span> <span class="o">=</span> <span class="n">binding_indications</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">][</span><span class="n">entity</span><span class="p">]</span>
+            <span class="c1"># Add the instance reference</span>
+            <span class="n">references</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+            <span class="c1"># Instantiations referencing a compoent declaration introduce an</span>
+            <span class="c1"># implicit reference to an entity of the same name and port mapping</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
+                <span class="n">references</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Entity</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">references</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ParsedVhdlFile"><a class="viewcode-back" href="../../../reference/chiptools.parsers.vhdl.html#chiptools.parsers.vhdl.ParsedVhdlFile">[docs]</a><span class="k">class</span> <span class="nc">ParsedVhdlFile</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ParsedVhdlFile class provides a high level wrapper for a source Vhdl</span>
+<span class="sd">    file and provides convenient access to the design units referenced and</span>
+<span class="sd">    declared by a file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">LIBRARY_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                  # Word boundary</span>
+<span class="sd">        library             # Library keyword</span>
+<span class="sd">        \s*                 # Optional whitespace</span>
+<span class="sd">        (?P&lt;library&gt;\w+)    # Library name</span>
+<span class="sd">        \s*                 # Optional whitespace</span>
+<span class="sd">        ;                   # Terminator</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Find any binding indications which indicate which unit to use for a</span>
+    <span class="c1"># given instantiation.</span>
+    <span class="n">BINDING_INDICATION_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        \b                                      # Word boundary</span>
+<span class="sd">        for                                     # &#39;for&#39; keyword</span>
+<span class="sd">        \s+                                     # At least one whitespace</span>
+<span class="sd">        (?P&lt;instance_label&gt;all|\w+)             # Instance label</span>
+<span class="sd">        \s*                                     # Optional whitespace</span>
+<span class="sd">        :                                       # &#39;:&#39; delimeter</span>
+<span class="sd">        \s*                                     # Optional whitespace</span>
+<span class="sd">        (?P&lt;component_name&gt;\w+)                 # Component name</span>
+<span class="sd">        \s+                                     # At least one whitespace</span>
+<span class="sd">        use                                     # &#39;use&#39; keyword</span>
+<span class="sd">        \s+                                     # At least one whitespace</span>
+<span class="sd">        # Target spec (configuration or entity)</span>
+<span class="sd">        (?P&lt;target_spec&gt;entity|configuration)</span>
+<span class="sd">        \s*                                     # Optional whitespace</span>
+<span class="sd">        # Either a library.entity(architecture) for &#39;entity&#39; target spec</span>
+<span class="sd">        # or a library.configuration for &#39;configuration&#39; target spec</span>
+<span class="sd">        (</span>
+<span class="sd">            (?P&lt;e_library&gt;\w+)\.(?P&lt;entity&gt;\w+)\((?P&lt;architecture&gt;\w+)\) |</span>
+<span class="sd">            (?P&lt;c_library&gt;\w+)\.(?P&lt;configuration&gt;\w+)</span>
+<span class="sd">        )</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the file object and initialise a ParsedVhdlFile instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_object</span> <span class="o">=</span> <span class="n">file_object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_object</span><span class="o">.</span><span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_object</span><span class="o">.</span><span class="n">library</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;ParsedVhdlFile </span><span class="si">{0}</span><span class="s1"> (</span><span class="si">{1}</span><span class="s1">)&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_libraries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse the input string as VHDL and return any library</span>
+<span class="sd">        declarations and use-clauses&quot;&quot;&quot;</span>
+        <span class="c1"># Initialise a set containing each unique library declaration found</span>
+        <span class="c1"># in the input string.</span>
+        <span class="n">libraries</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;work&#39;</span><span class="p">])</span>  <span class="c1"># Work library is always included</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">ParsedVhdlFile</span><span class="o">.</span><span class="n">LIBRARY_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">lib</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;library&#39;</span><span class="p">)</span>
+            <span class="n">libraries</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">libraries</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_binding_indications</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+        <span class="n">indications</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">BINDING_INDICATION_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">instance_label</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;instance_label&#39;</span><span class="p">)</span>
+            <span class="n">component_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;component_name&#39;</span><span class="p">)</span>
+            <span class="n">target_spec</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;target_spec&#39;</span><span class="p">)</span>
+            <span class="n">entity_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;entity&#39;</span><span class="p">)</span>
+            <span class="n">configuration_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;configuration&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">target_spec</span> <span class="o">==</span> <span class="s1">&#39;configuration&#39;</span><span class="p">:</span>
+                <span class="n">library</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;c_library&#39;</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">configuration_name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">target_spec</span> <span class="o">==</span> <span class="s1">&#39;entity&#39;</span><span class="p">:</span>
+                <span class="n">library</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;e_library&#39;</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">entity_name</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="n">library</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;Illegal configuration target: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_spec</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># Binding indications instruct the compiler to substitute</span>
+            <span class="c1"># items with the given instance_label and entity with the given</span>
+            <span class="c1"># target_spec, which can either be a configuration or an entity.</span>
+            <span class="c1"># The instance_label can be &#39;all&#39; or a specific instance label.</span>
+            <span class="k">if</span> <span class="n">instance_label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indications</span><span class="p">:</span>
+                <span class="n">indications</span><span class="p">[</span><span class="n">instance_label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">component_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indications</span><span class="p">[</span><span class="n">instance_label</span><span class="p">]:</span>
+                <span class="n">indications</span><span class="p">[</span><span class="n">instance_label</span><span class="p">][</span><span class="n">component_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
+
+        <span class="k">return</span> <span class="n">indications</span>
+
+    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">library</span><span class="o">=</span><span class="s1">&#39;work&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the supplied data string and initialise the class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># VHDL is case insensitive</span>
+
+        <span class="c1"># Get the file data with comments removed and ensure that it is lower</span>
+        <span class="c1"># case.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">remove_comments</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="c1"># Get the libraries referenced by this file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">libraries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_libraries</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Get any binding indications used in this file.</span>
+        <span class="n">indications</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_binding_indications</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Get any package references and declarations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">package_refs</span> <span class="o">=</span> <span class="n">Package</span><span class="o">.</span><span class="n">get_all_references</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">libraries</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">package_defs</span> <span class="o">=</span> <span class="n">Package</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+
+        <span class="c1"># Get any embedded configurations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configuration_defs</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">library</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Get any component and entity references and declarations</span>
+        <span class="n">unit_references</span> <span class="o">=</span> <span class="n">Component</span><span class="o">.</span><span class="n">get_all_references</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indications</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_refs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Component</span><span class="p">),</span> <span class="n">unit_references</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_refs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Entity</span><span class="p">),</span> <span class="n">unit_references</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_defs</span> <span class="o">=</span> <span class="n">Component</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_defs</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+
+        <span class="c1"># Get any function references and declarations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_defs</span> <span class="o">=</span> <span class="n">Function</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+
+        <span class="c1"># Get any procedure references and declarations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procedure_defs</span> <span class="o">=</span> <span class="n">Procedure</span><span class="o">.</span><span class="n">get_all_definitions</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">library</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_defs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">package_defs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_defs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration_defs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_defs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definitions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">procedure_defs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_refs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">package_refs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_refs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parents</span> <span class="o">=</span> <span class="p">[]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

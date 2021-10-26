@@ -1,0 +1,30 @@
+chiptools.wrappers package
+==========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.wrappers.simulators
+   chiptools.wrappers.synthesisers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   chiptools.wrappers.simulator
+   chiptools.wrappers.synthesiser
+   chiptools.wrappers.toolchains
+   chiptools.wrappers.wrapper
+
+Module contents
+---------------
+
+.. automodule:: chiptools.wrappers
+   :members:
+   :undoc-members:
+   :show-inheritance:

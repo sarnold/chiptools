@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.common.colourer &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.common.colourer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.common.colourer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># If colorama is available use it, otherwise turn colours off (win only)</span>
+    <span class="kn">import</span> <span class="nn">colorama</span>  <span class="c1"># type: ignore</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">colorama</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_colours</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="s1">&#39;darkgray&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;darkgreen&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;brown&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="s1">&#39;fuchsia&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;turquoise&#39;</span><span class="p">,</span> <span class="s1">&#39;teal&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;lightgray&#39;</span><span class="p">,</span> <span class="s1">&#39;white&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">_attrs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;reset&#39;</span><span class="p">:</span> <span class="s1">&#39;39;49;00m&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;bold&#39;</span><span class="p">:</span> <span class="s1">&#39;01m&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;faint&#39;</span><span class="p">:</span> <span class="s1">&#39;02m&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;standout&#39;</span><span class="p">:</span> <span class="s1">&#39;03m&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;underline&#39;</span><span class="p">:</span> <span class="s1">&#39;04m&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;blink&#39;</span><span class="p">:</span> <span class="s1">&#39;05m&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">foreground_codes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">background_codes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">function_codes</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">dark</span><span class="p">,</span> <span class="n">light</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_colours</span><span class="p">):</span>
+    <span class="n">foreground_codes</span><span class="p">[</span><span class="n">dark</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[</span><span class="si">%i</span><span class="s1">m&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">foreground_codes</span><span class="p">[</span><span class="n">light</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[</span><span class="si">%i</span><span class="s1">;01m&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">background_codes</span><span class="p">[</span><span class="n">dark</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[</span><span class="si">%i</span><span class="s1">m&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="n">background_codes</span><span class="p">[</span><span class="n">light</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[</span><span class="si">%i</span><span class="s1">;01m&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">40</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">function_codes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[&#39;</span> <span class="o">+</span> <span class="n">value</span>
+
+
+<div class="viewcode-block" id="create_named_functions"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.create_named_functions">[docs]</a><span class="k">def</span> <span class="nf">create_named_functions</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">colourise</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wrapped</span></div>
+
+
+<span class="c1"># Create functions so that the colour names can be called directly outside of</span>
+<span class="c1"># this module. Note that this has the limitation of not allowing foreground,</span>
+<span class="c1"># background and effect codes to be combined, use a direct call to colourise</span>
+<span class="c1"># to achieve this.</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">foreground_codes</span><span class="p">:</span>
+    <span class="n">create_named_functions</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">function_codes</span><span class="p">:</span>
+    <span class="n">create_named_functions</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">background_codes</span><span class="p">:</span>
+    <span class="n">create_named_functions</span><span class="p">(</span><span class="s1">&#39;bg&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="colour_terminal"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.colour_terminal">[docs]</a><span class="k">def</span> <span class="nf">colour_terminal</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span> <span class="ow">and</span> <span class="n">colorama</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;isatty&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s1">&#39;COLORTERM&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="n">term</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TERM&#39;</span><span class="p">,</span> <span class="s1">&#39;dumb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;xterm&#39;</span><span class="p">,</span> <span class="s1">&#39;linux&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">term</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="colourise"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.colourise">[docs]</a><span class="k">def</span> <span class="nf">colourise</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">foreground_codes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">background_codes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">function_codes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">text</span>
+        <span class="o">+</span> <span class="n">function_codes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColouredStreamHandler"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.ColouredStreamHandler">[docs]</a><span class="k">class</span> <span class="nc">ColouredStreamHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Use this class in place of a logging.StreamHandler if coloured log</span>
+<span class="sd">    output is desired. The ColouredStreamHandler will not output coloured text</span>
+<span class="sd">    on Windows platforms if colorama is not installed&quot;&quot;&quot;</span>
+
+    <span class="n">_levels</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;INFO&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;teal&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="ColouredStreamHandler.add_colour"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.ColouredStreamHandler.add_colour">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_colour</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">levelname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">levelname</span> <span class="ow">in</span> <span class="n">ColouredStreamHandler</span><span class="o">.</span><span class="n">_levels</span><span class="p">:</span>
+            <span class="n">fg</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="n">ColouredStreamHandler</span><span class="o">.</span><span class="n">_levels</span><span class="p">[</span><span class="n">levelname</span><span class="p">]</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">colourise</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="n">fg</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="n">bg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+<div class="viewcode-block" id="ColouredStreamHandler.emit"><a class="viewcode-back" href="../../../reference/chiptools.common.colourer.html#chiptools.common.colourer.ColouredStreamHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">ColouredStreamHandler</span><span class="o">.</span><span class="n">add_colour</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

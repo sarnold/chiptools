@@ -1,0 +1,7 @@
+chiptools.core.package\_builder module
+======================================
+
+.. automodule:: chiptools.core.package_builder
+   :members:
+   :undoc-members:
+   :show-inheritance:

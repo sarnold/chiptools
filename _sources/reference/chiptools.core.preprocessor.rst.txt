@@ -1,0 +1,7 @@
+chiptools.core.preprocessor module
+==================================
+
+.. automodule:: chiptools.core.preprocessor
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chiptools.parsers.options &mdash; ChipTools 0.2.post145 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> ChipTools
+          </a>
+              <div class="version">
+                0.2.post145
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../max_hold.html">Examples: Max Hold</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../project_format.html">Project Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modules.html">chiptools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ChipTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>chiptools.parsers.options</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for chiptools.parsers.options</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Options parser package for the build/verification framework application.</span>
+
+<span class="sd">The Options class contained within provides convenient access to system</span>
+<span class="sd">configuration settings with error checking and file-modification checking.</span>
+
+<span class="sd">The path to the system configuration file is hard-coded into options_path.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">expanduser</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">chiptools.common.exceptions</span> <span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Get the user home directory</span>
+<span class="n">home</span> <span class="o">=</span> <span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<span class="c1"># The chiptools config file resides in the user home directory</span>
+<span class="n">options_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;.chiptoolsconfig&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Options"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options">[docs]</a><span class="k">class</span> <span class="nc">Options</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An Options instance provides convenient access to an INI based</span>
+<span class="sd">    configuration file.</span>
+
+<span class="sd">    When an Options instance is created it will load the &#39;.chiptoolsconfig&#39;</span>
+<span class="sd">    file located in the root of the application and parse the settings</span>
+<span class="sd">    contained within.</span>
+
+<span class="sd">    If no configuration file is preset a placeholder will be generated using</span>
+<span class="sd">    the CONFIG_DEFAULTS as a base.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">CONFIG_DEFAULTS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;modelsim simulation libraries&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+            <span class="p">(</span><span class="s1">&#39;vivado simulation libraries&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+            <span class="p">(</span><span class="s1">&#39;isim simulation libraries&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+            <span class="p">(</span><span class="s1">&#39;ghdl simulation libraries&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+            <span class="p">(</span><span class="s1">&#39;simulation executables&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+            <span class="p">(</span><span class="s1">&#39;synthesis executables&#39;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">([])),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise an Options instance.</span>
+
+<span class="sd">        An exception is raised if the system configuration file is missing or</span>
+<span class="sd">        contains invalid data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulators</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator_libraries</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options_md5</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialising options parser&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Options.startup"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.startup">[docs]</a>    <span class="k">def</span> <span class="nf">startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the system configuration file and store the settings in local</span>
+<span class="sd">        attributes.</span>
+
+<span class="sd">        The system configuration file MD5 sum is stored so that file changes</span>
+<span class="sd">        can be detected at runtime.</span>
+
+<span class="sd">        This method will return an exception if the system configuration file</span>
+<span class="sd">        is missing or contains invalid data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loading options file...&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loadOptionsFile</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span> <span class="o">=</span> <span class="n">Options</span><span class="o">.</span><span class="n">readOptionsPaths</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">,</span>
+                <span class="s1">&#39;synthesis executables&#39;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulators</span> <span class="o">=</span> <span class="n">Options</span><span class="o">.</span><span class="n">readOptionsPaths</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">,</span>
+                <span class="s1">&#39;simulation executables&#39;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;...done loading options file&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">ParsingError</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;The Options file is badly formatted, &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;parsing failed with the &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;following error:&#39;</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span></div>
+
+    <span class="k">def</span> <span class="nf">_loadOptionsFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open the system configuration file and store the configuration data in</span>
+<span class="sd">        this Options instance.</span>
+
+<span class="sd">        Store the system configuration MD5 sum to detect file changes during</span>
+<span class="sd">        runtime.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">options_path</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;The options file could not be found, a default options &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;file will be created...&#39;</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_DEFAULTS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_DEFAULTS</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">options_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cf</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;... finished creating default options file&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">options_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">options_md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">options_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Options.readOptionsPaths"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.readOptionsPaths">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">readOptionsPaths</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Could not find section: </span><span class="si">{0}</span><span class="s1"> in .chiptoolsconfig&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">section</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Options.refresh"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.refresh">[docs]</a>    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">options_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">current_md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options_md5</span> <span class="o">!=</span> <span class="n">current_md5</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Options.getOptionsPath"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.getOptionsPath">[docs]</a>    <span class="k">def</span> <span class="nf">getOptionsPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the path to the system configuration file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">options_path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Options.getSynthesisTools"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.getSynthesisTools">[docs]</a>    <span class="k">def</span> <span class="nf">getSynthesisTools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of synthesis tool name / path pairs.</span>
+
+<span class="sd">        If the configuration file was modified since the last access it will be</span>
+<span class="sd">        reloaded and the new entries returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span></div>
+
+<div class="viewcode-block" id="Options.getSimulationTools"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.getSimulationTools">[docs]</a>    <span class="k">def</span> <span class="nf">getSimulationTools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of simulation tool name / path pairs.</span>
+
+<span class="sd">        If the configuration file was modified since the last access it will be</span>
+<span class="sd">        reloaded and the new entries returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulators</span></div>
+
+<div class="viewcode-block" id="Options.get_user_tool_paths"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.get_user_tool_paths">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_tool_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of all user specified tool paths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulators</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="Options.get_synthesis_tool_path"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.get_synthesis_tool_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_synthesis_tool_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toolname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the executable path for the given simulator name &#39;toolname&#39;.</span>
+
+<span class="sd">        If no path is found for &#39;toolname&#39; NoneType will be returned.</span>
+
+<span class="sd">        If the configuration file was modified since the last access it will be</span>
+<span class="sd">        reloaded and the new entries returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">toolname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesisers</span><span class="p">[</span><span class="n">toolname</span><span class="p">]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Unknown synthesis tool: &#39;</span> <span class="o">+</span> <span class="n">toolname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Options.get_simulator_library_dependencies"><a class="viewcode-back" href="../../../reference/chiptools.parsers.options.html#chiptools.parsers.options.Options.get_simulator_library_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">get_simulator_library_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toolname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the simulator library dependencies.</span>
+
+<span class="sd">        If the configuration file was modified since the last access it will be</span>
+<span class="sd">        reloaded and the new entries returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="n">section_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> simulation libraries&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">toolname</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section_name</span><span class="p">):</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">Options</span><span class="o">.</span><span class="n">readOptionsPaths</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">,</span>
+                <span class="n">section_name</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;Could not find .chiptoolsconfig section: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">paths</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

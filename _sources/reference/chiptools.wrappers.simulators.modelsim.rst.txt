@@ -1,0 +1,7 @@
+chiptools.wrappers.simulators.modelsim module
+=============================================
+
+.. automodule:: chiptools.wrappers.simulators.modelsim
+   :members:
+   :undoc-members:
+   :show-inheritance:
