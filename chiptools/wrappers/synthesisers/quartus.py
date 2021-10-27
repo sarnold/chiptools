@@ -18,10 +18,11 @@ class Quartus(synthesiser.Synthesiser):
     given Project using the quartus_sh utility provided in a base Altera
     Quartus installation. The Quartus synthesis flow follows the following
     steps:
-    * Create synthesis directories
-    * Create a project TCL file listing FPGA part, source files and any
-    constraints * Invoke quartus_sh
-    * Archive the outputs
+
+      * Create synthesis directories
+      * Create a project TCL file listing FPGA part, source files and any
+        constraints * Invoke quartus_sh
+      * Archive the outputs
 
     In addition to running the quartus_sh synthesis flow, the Quartus
     Synthesiser instance also uses a Reporter instance to filter the synthesis
@@ -30,7 +31,6 @@ class Quartus(synthesiser.Synthesiser):
     When complete, the output files from synthesis will be stored in an
     archive bearing the name of the entity that was synthesised and a unique
     timestamp.
-
     """
 
     name = 'quartus'
@@ -51,11 +51,11 @@ class Quartus(synthesiser.Synthesiser):
         loaded project.
         The following steps are performed during synthesis:
 
-        * Create synthesis directories
-        * Create a project TCL file listing FPGA part, source files and any
-        constraints * Invoke quartus_sh
-        * Generate reports
-        * Archive the outputs
+          * Create synthesis directories
+          * Create a project TCL file listing FPGA part, source files and any
+            constraints * Invoke quartus_sh
+          * Generate reports
+          * Archive the outputs
         """
         super(Quartus, self).synthesise(library, entity, fpga_part)
         # make a temporary working directory for the synth tool
@@ -136,13 +136,13 @@ class Quartus(synthesiser.Synthesiser):
         the quartus_sh utility.
         The following items are inserted into the resulting TCL file:
 
-        * Relevant TCL imports (::quartus::project, ::quartus::flow)
-        * Entity
-        * FPGA Part
-        * Source Files
-        * Synthesis Generics (for the top level entity)
-        * Constraints (as a TCL script appended to the project TCL file)
-        * TCL commands to execute synthesis flow
+          * Relevant TCL imports (::quartus::project, ::quartus::flow)
+          * Entity
+          * FPGA Part
+          * Source Files
+          * Synthesis Generics (for the top level entity)
+          * Constraints (as a TCL script appended to the project TCL file)
+          * TCL commands to execute synthesis flow
 
         The TCL file to be written will be stored at the given
         *projectFilePath* filepath.

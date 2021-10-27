@@ -6,6 +6,9 @@ name: Coverage
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - master
+      - develop
   push:
     branches:
       - master
@@ -285,7 +288,7 @@ jobs:
     name: Generate badge image with test coverage value
     runs-on: ubuntu-20.04
     needs: [test, pre_ci]
-    if: ${{ ( github.event_name == 'pull_request' && github.actor == github.repository_owner ) || github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' }}
     outputs:
       url: ${{ steps.url.outputs.url }}
       markdown: ${{ steps.url.outputs.markdown }}

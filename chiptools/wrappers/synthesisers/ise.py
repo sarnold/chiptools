@@ -52,7 +52,6 @@ class Ise(synthesiser.Synthesiser):
     When complete, the output files from synthesis will be stored in an
     archive bearing the name of the entity that was synthesised and a unique
     timestamp.
-
     """
 
     name = 'ise'
@@ -157,14 +156,15 @@ class Ise(synthesiser.Synthesiser):
     def synthesise(self, library, entity, fpga_part=None):
         """
         Synthesise the target entity in the given library for the currently
-        loaded project.
-        The following steps are performed during synthesis:
-        * Create synthesis directories
-        * Generate an ISE project file
-        * Generate an ISE UCF constraints file
-        * Invoke XFLOW or the flow tools individually with appropriate command
-          line arguments * Generate reports
-        * Archive the outputs of the synthesis flow
+        loaded project. The following steps are performed during synthesis:
+
+          * Create synthesis directories
+          * Generate an ISE project file
+          * Generate an ISE UCF constraints file
+          * Invoke XFLOW or the flow tools individually with appropriate command
+            line arguments
+          * Generate reports
+          * Archive the outputs of the synthesis flow
         """
         super(Ise, self).synthesise(library, entity, fpga_part)
         # make a temporary working directory for the synth tool
@@ -418,7 +418,7 @@ class Ise(synthesiser.Synthesiser):
         Call the *MAP* binary, which accepts the following arguments:
 
         map [-h] [-p partname] (infile[.ngd]) [-o (outfile[.ncd])]
-        http://www.xilinx.com/support/documentation/sw_manuals/xilinx14_1/devref.pdf
+        https://www.xilinx.com/support/documentation/sw_manuals/xilinx14_1/devref.pdf
 
         * *part* is passed to the *-p* input parameter
         * *entity* is used to generate output file names

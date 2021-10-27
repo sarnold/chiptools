@@ -26,9 +26,10 @@ class FileCache:
     to the cache.
 
     Internally the cache file is stored as a Pickled dictionary of two items:
-        * LIBRARIES : A set of libraries that were added to the cache using
+
+      * LIBRARIES : A set of libraries that were added to the cache using
         *add_library*
-        * FILES : A dictionary of file path / file md5 sum pairs
+      * FILES : A dictionary of file path / file md5 sum pairs
         of files added using *add_file*
     """
 
