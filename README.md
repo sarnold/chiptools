@@ -1,5 +1,6 @@
 **ChipTools** is a utility to automate FPGA build and verification
 
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Smoke](https://github.com/sarnold/chiptools/actions/workflows/ci.yml/badge.svg)](https://github.com/sarnold/chiptools/actions/workflows/ci.yml)
 [![Coverage](https://github.com/sarnold/chiptools/actions/workflows/coverage.yml/badge.svg)](https://github.com/sarnold/chiptools/actions/workflows/coverage.yml)
 
